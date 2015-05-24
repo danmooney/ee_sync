@@ -6,7 +6,10 @@ $active_record = TRUE;
 $db['expressionengine']['hostname'] = 'localhost';
 $db['expressionengine']['username'] = 'root';
 $db['expressionengine']['password'] = 'webman';
-$db['expressionengine']['database'] = 'ee_sync';
+
+// set database dynamically based on host
+$db['expressionengine']['database'] = str_replace('-', '_', $_SERVER['HTTP_HOST']);
+
 $db['expressionengine']['dbdriver'] = 'mysqli';
 $db['expressionengine']['pconnect'] = FALSE;
 $db['expressionengine']['dbprefix'] = 'exp_';
