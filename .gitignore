@@ -20,5 +20,6 @@ _thumbs/
 
 /paid/
 .idea
-site_manager_*
+third_party/site_manager_*
+third_party/testee
 
