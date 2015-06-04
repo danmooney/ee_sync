@@ -7,6 +7,11 @@ if (!defined('BASEPATH')) {
     exit('Direct Script Access Not Allowed');
 }
 
+defined('SYNCEE_PATH')       or define('SYNCEE_PATH',       dirname(__FILE__));
+defined('SYNCEE_PATH_TESTS') or define('SYNCEE_PATH_TESTS', SYNCEE_PATH . '/tests');
+
+require_once SYNCEE_PATH . '/vendor/autoload.php';
+
 $module_autoloader = function ($class_name) {
     $module_name = basename(dirname(__FILE__));
     $class_name  = strtolower($class_name);
@@ -21,13 +26,16 @@ $module_autoloader = function ($class_name) {
     if ($class_name_begins_with_module_name) {
         switch ($class_name) {
             case $module_name . '':
-                require_once dirname(__FILE__) . '/mod.' . strtolower($module_name) . '.php';
+                require_once SYNCEE_PATH . '/mod.' . strtolower($module_name) . '.php';
                 break;
             case $module_name . '_upd':
-                require_once dirname(__FILE__) . '/upd.' . strtolower($module_name) . '.php';
+                require_once SYNCEE_PATH . '/upd.' . strtolower($module_name) . '.php';
                 break;
             case $module_name . '_mcp':
-                require_once dirname(__FILE__) . '/mcp.' . strtolower($module_name) . '.php';
+                require_once SYNCEE_PATH . '/mcp.' . strtolower($module_name) . '.php';
+                break;
+            default:
+                require_once SYNCEE_PATH . '/classes/' . strtolower($class_name) . '.php';
                 break;
         }
     }
