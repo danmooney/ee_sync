@@ -94,6 +94,7 @@ class Syncee_Upd
                 'constraint' => 255,
                 'null'       => false,
             ),
+            // TODO - probably need to put in some other table for normalization purposes
             'ee_site_id' => array(
                 'type'     => 'INT',
                 'unsigned' => true,
@@ -113,8 +114,7 @@ class Syncee_Upd
                 'type'     => 'text',
                 'null'     => false
             ),
-            // TODO - figure this part out
-            // remote request action id
+            // remote request action id for Syncee_Mcp::actionHandleRemoteDataApiCall
             'action_id' => array(
                 'type'     => 'INT',
                 'unsigned' => true,
