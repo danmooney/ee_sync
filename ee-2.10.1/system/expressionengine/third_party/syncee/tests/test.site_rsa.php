@@ -71,7 +71,7 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
         $mcp         = $this->_mcp;
         $remote_site = $this->_remote_site;
 
-        $mcp->makeRemoteDataApiCallToSite($remote_site, 'channels');
+        $mcp->makeRemoteDataApiCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
 
         $data = $mcp->getLastResponseDataDecoded();
 

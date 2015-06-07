@@ -63,7 +63,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $mcp         = $this->_mcp;
         $remote_site = $this->_remote_site;
 
-        $response    = $mcp->makeRemoteDataApiCallToSite($remote_site, 'channels');
+        $response    = $mcp->makeRemoteDataApiCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
         $curl_info   = $mcp->getLastCurlInfo();
 
         $this->assertJson($response);
@@ -82,7 +82,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $this->_switchToDatabaseBasedOnSite($remote_site);
         $remote_site->addToIpWhitelist('0.0.0.1')->save();
 
-        $response  = $mcp->makeRemoteDataApiCallToSite($remote_site, 'channels');
+        $response  = $mcp->makeRemoteDataApiCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
         $curl_info = $mcp->getLastCurlInfo();
 
         $this->assertJson($response);
@@ -101,7 +101,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $this->_switchToDatabaseBasedOnSite($remote_site);
         $remote_site->addToIpWhitelist('127.0.0.1')->save();
 
-        $response  = $mcp->makeRemoteDataApiCallToSite($remote_site, 'channels');
+        $response  = $mcp->makeRemoteDataApiCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
         $curl_info = $mcp->getLastCurlInfo();
 
         $this->assertJson($response);
@@ -125,7 +125,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
             ->save()
         ;
 
-        $response    = $mcp->makeRemoteDataApiCallToSite($remote_site, 'channels');
+        $response    = $mcp->makeRemoteDataApiCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
         $curl_info   = $mcp->getLastCurlInfo();
 
         $this->assertJson($response);
@@ -145,7 +145,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $remote_site->addToIpWhitelist('127.0.0.1')->addToIpWhitelist('0.0.0.1')->save();
         $remote_site->removeFromIpWhitelist('127.0.0.1')->save();
 
-        $response  = $mcp->makeRemoteDataApiCallToSite($remote_site, 'channels');
+        $response  = $mcp->makeRemoteDataApiCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
         $curl_info = $mcp->getLastCurlInfo();
 
         $this->assertJson($response);

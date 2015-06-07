@@ -24,15 +24,23 @@ class Syncee_Mcp
      */
     public function actionHandleRemoteDataApiCall()
     {
-        $method     = ee()->input->get('method');
-        $site_id    = ee()->input->get('site_id');
+        $entity_str        = ee()->input->get('entity');
+        $site_id           = ee()->input->get('site_id');
 
-        new Syncee_Request_Remote($method, $site_id);
+        // add back module name that was removed for security reasons
+        $entity_class_name = Syncee_Upd::MODULE_NAME . '_' . $entity_str;
+
+        new Syncee_Request_Remote(new $entity_class_name(), $site_id);
     }
 
-    public function makeRemoteDataApiCallToSite(Syncee_Site $remote_site, $method)
+    public function makeRemoteDataApiCallToSite(Syncee_Site $remote_site, Syncee_Request_Remote_Entity_Interface $entity)
     {
-        $remote_site_url = $remote_site->getSiteUrl() . "?ACT={$remote_site->action_id}&method=$method&site_id={$remote_site->site_id}";
+        $entity_class_str                  = get_class($entity);
+        $module_name                       = Syncee_Upd::MODULE_NAME;
+
+        // remove module name for later insertion to prevent a request instantiating a class that shouldn't be instantiated
+        $entity_class_str_sans_module_name = preg_replace("#^{$module_name}_#", '', $entity_class_str);
+        $remote_site_url                   = $remote_site->getSiteUrl() . "?ACT={$remote_site->action_id}&entity={$entity_class_str_sans_module_name}&site_id={$remote_site->site_id}";
 
         $ch = curl_init($remote_site_url);
         curl_setopt_array($ch, array(

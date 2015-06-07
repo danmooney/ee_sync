@@ -22,10 +22,6 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
 
-    protected $_is_empty_row = false;
-
-    protected $_is_new = true;
-
     protected $_primary = array('site_id', 'site_url');
 
     public $site_id;

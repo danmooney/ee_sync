@@ -2,7 +2,7 @@
 
 require_once dirname(__FILE__) . '/../_init.php';
 
-class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
+class Test_Site_Synchronization_Profile extends Syncee_Unit_Test_Case_Abstract
 {
     /**
      * @var Syncee_Mcp
@@ -41,18 +41,7 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
         $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
     }
 
-    public function testApiCallResponseHasData()
-    {
-        $mcp              = $this->_mcp;
-        $remote_site      = $this->_remote_site;
-        $response         = $mcp->makeRemoteDataApiCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
-
-        $decoded_response = json_decode($response, true);
-
-        $this->assertTrue(isset($decoded_response['data']) && $decoded_response['data'], 'Data in response exists and is non-empty: %s');
-    }
-
-    public function testMissingPublicKeyReturnsBadPublicKeyMessage()
+    public function testSynchronizationProfile()
     {
         $this->fail('Need to implement ' . __METHOD__);
     }
