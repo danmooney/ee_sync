@@ -20,8 +20,6 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Request_Remote
 {
-    private $_ee_site_id;
-
     private $_site_id;
 
     private $_public_key;
@@ -33,7 +31,12 @@ class Syncee_Request_Remote
 
     private $_json_mime_type = 'text/javascript';
 
-    public function __construct($method = null, $site_id = null)
+    /**
+     * Handle the request and send JSON response
+     * @param Syncee_Request_Remote_Entity_Interface $entity
+     * @param null $site_id
+     */
+    public function __construct(Syncee_Request_Remote_Entity_Interface $entity = null, $site_id = null)
     {
         $this->_site_id = intval($site_id);
 
@@ -42,13 +45,13 @@ class Syncee_Request_Remote
         $message = '';
         $this->_site_rsa = $site_rsa = new Syncee_Site_Rsa();
 
-        if (!$method || !$site_id) {
-            if (!$method) {
-                $errors[] = 'No method passed to request.';
+        if (!$entity || !$site_id) {
+            if (!$entity) {
+                $errors[] = 'Missing/invalid entity passed to request.';
             }
 
             if (!$site_id) {
-                $errors[] = 'No site id passed to request.';
+                $errors[] = 'Missing/invalid site id passed to request.';
             }
 
             $code = 400;
@@ -61,8 +64,6 @@ class Syncee_Request_Remote
          */
         $this_site         = Syncee_Site_Collection::getAllBySiteId($site_id)->filterByCondition('isCurrentLocal', true);
         $public_key        = $this->_public_key = $this_site->rsa->getPublicKey();
-
-        $method_to_execute = 'get' . $method;
 
         if (!$public_key) {
             $code    = 500;
@@ -78,58 +79,15 @@ class Syncee_Request_Remote
         } elseif ($this_site->isEmptyRow()) {
             $code    = 404;
             $message = 'Unable to find local site object to instantiate.';
-        } elseif (!method_exists($this, $method_to_execute)) {
-            $code    = 404;
-            $message = "Unknown method '$method'";
         }
 
         if ($code !== 200) {
             $this->_sendJsonResponse(array(), $errors, $code, $message);
         }
 
-        $data = $this->$method_to_execute();
+        $collection = $entity->getCollection();
 
-        $this->_sendJsonResponse($data, $errors, $code, $message);
-    }
-
-    public function getChannels()
-    {
-        $channels     = ee()->db->get('channels');
-        $field_groups = ee()->db->get('field_groups');
-        $fields       = ee()->db->get('channel_fields');
-
-        $data = array();
-
-        foreach ($channels->result_array() as $channel) {
-            if (intval($channel['site_id']) !== $this->_site_id) {
-                continue;
-            }
-
-            $channel['fields'] = array();
-
-            foreach ($fields->result_array() as $field) {
-                if ($field['group_id'] === $channel['field_group']) {
-                    $channel['fields'][] = array(
-                        'field_id'    => $field['field_id'],
-                        'field_name'  => $field['field_name'],
-                        'field_label' => $field['field_label'],
-                        'field_type'  => $field['field_type']
-                    );
-                }
-            }
-
-            $channel['field_group_name'] = '';
-            foreach ($field_groups->result_array() as $field_group) {
-                if ($field_group['group_id'] === $channel['field_group']) {
-                    $channel['field_group_name'] = $field_group['group_name'];
-                    break;
-                }
-            }
-
-            $data[] = $channel;
-        }
-
-        return $data;
+        $this->_sendJsonResponse($collection->toArray(), $errors, $code, $message);
     }
 
     private function _sendJsonResponse($data = array(), $errors = array(), $code = 200, $message = '', $meta = array())
