@@ -5,11 +5,6 @@ require_once dirname(__FILE__) . '/../_init.php';
 class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
 {
     /**
-     * @var Syncee_Mcp
-     */
-    private $_mcp;
-
-    /**
      * @var Syncee_Site_Collection
      */
     private $_site_collection;
@@ -24,6 +19,11 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
      */
     private $_remote_site;
 
+    /**
+     * @var Syncee_Request
+     */
+    private $_request;
+
     protected $_sql_file = '150525_1_ee_sync_FRESH_INSTALL.sql';
 
     protected $_truncation_setup_type = self::TRUNCATE_SYNCEE_ONLY;
@@ -36,7 +36,6 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
     {
         parent::setUp();
         $this->_seedSiteData();
-        $this->_mcp      = new Syncee_Mcp();
         $this->_site_rsa = new Syncee_Site_Rsa();
 
         $this->_site_collection = Syncee_Site_Collection::getAllBySiteId(1);
@@ -44,6 +43,7 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
         $current_local_site   = $this->_site_collection[0];
         $_SERVER['HTTP_HOST'] = parse_url($current_local_site->site_url, PHP_URL_HOST);
 
+        $this->_request       = new Syncee_Request();
         $this->_remote_site   = $this->_site_collection->filterByCondition('isRemote', true);
     }
 
@@ -68,12 +68,11 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
 
     public function testDecryptionOfRemoteApiDataWithCorrectPrivateKeyIsAnArray()
     {
-        $mcp         = $this->_mcp;
+        $request     = $this->_request;
         $remote_site = $this->_remote_site;
 
-        $mcp->makeRemoteDataApiCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
-
-        $data = $mcp->getLastResponseDataDecoded();
+        $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $data        = $request->getLastResponseDataDecoded();
 
         $this->assertTrue(is_array($data), 'Data is properly decrypted and is an array');
     }

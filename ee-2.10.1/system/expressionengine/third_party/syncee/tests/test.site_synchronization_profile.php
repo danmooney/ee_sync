@@ -44,5 +44,7 @@ class Test_Site_Synchronization_Profile extends Syncee_Unit_Test_Case_Abstract
     public function testSynchronizationProfile()
     {
         $this->fail('Need to implement ' . __METHOD__);
+
+        $this->_site_collection->getSynchronizationProfileCollection();
     }
 }
