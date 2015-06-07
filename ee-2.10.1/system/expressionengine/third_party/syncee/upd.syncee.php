@@ -6,6 +6,8 @@ class Syncee_Upd
 {
     const VERSION = '0.1.0';
 
+    const MODULE_NAME = 'Syncee';
+
     /**
      * @var EE
      */
@@ -13,7 +15,7 @@ class Syncee_Upd
 
     public $version = self::VERSION;
 
-    public $module_name = 'Syncee';
+    public $module_name = self::MODULE_NAME;
 
     public function getPrivateKeyPath()
     {
