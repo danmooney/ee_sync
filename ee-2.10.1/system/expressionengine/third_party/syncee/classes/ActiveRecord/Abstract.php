@@ -18,9 +18,13 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_ActiveRecord_Abstract
+abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 {
     const TABLE_NAME = '';
+
+    protected $_is_empty_row = false;
+
+    protected $_is_new = true;
 
     protected static $_cols = array();
 
@@ -78,17 +82,10 @@ abstract class Syncee_ActiveRecord_Abstract
 
     public function save()
     {
-        $table_cols  = static::$_cols;
-        $data        = array();
-
-        foreach ($table_cols as $table_property) {
-            if (isset($this->_col_val_mapping[$table_property])) {
-                $data[$table_property] = $this->_col_val_mapping[$table_property];
-            }
-        }
+        $row = $this->toArray();
 
         if ($this->_is_new) {
-            return ee()->db->insert(static::TABLE_NAME, $data);
+            return ee()->db->insert(static::TABLE_NAME, $row);
         }
 
         $where = array();
@@ -97,7 +94,21 @@ abstract class Syncee_ActiveRecord_Abstract
             $where[$primary_key] = $this->_col_val_mapping[$primary_key];
         }
 
-        return ee()->db->update(static::TABLE_NAME, $data, $where);
+        return ee()->db->update(static::TABLE_NAME, $row, $where);
+    }
+
+    public function toArray($table_data_only = true)
+    {
+        $table_cols = static::$_cols;
+        $row        = array();
+
+        foreach ($table_cols as $table_property) {
+            if (isset($this->_col_val_mapping[$table_property])) {
+                $row[$table_property] = $this->_col_val_mapping[$table_property];
+            }
+        }
+
+        return $row;
     }
 
     //    public function __call($method, $args) {}

@@ -18,7 +18,90 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Collection_Abstract
+abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface, Countable, Iterator, ArrayAccess
 {
+    protected $_position = 0;
 
+    protected $_rows = array();
+
+    protected $_row_model;
+
+    public function __construct(array $rows)
+    {
+        foreach ($rows as $row) {
+            if (is_array($row)) {
+                $row = new $this->_row_model($row, false);
+            }
+
+            $this->_rows[] = $row;
+        }
+    }
+
+    public function toArray($table_data_only = true)
+    {
+        $rows = array();
+
+        /**
+         * @var $row Syncee_Entity_Abstract
+         */
+        foreach ($this->_rows as $row) {
+            $rows[] = $row->toArray($table_data_only);
+        }
+
+        return $rows;
+    }
+
+    public function count()
+    {
+        return count($this->_rows);
+    }
+
+    public function rewind()
+    {
+        $this->_position = 0;
+    }
+
+    public function current()
+    {
+        return $this->_rows[$this->_position];
+    }
+
+    public function key()
+    {
+        return $this->_position;
+    }
+
+    public function next()
+    {
+        return $this->_position += 1;
+    }
+
+    public function valid()
+    {
+        return isset($this->_rows[$this->_position]);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset)) {
+            $this->_rows[] = $value;
+        } else {
+            $this->_rows[$offset] = $value;
+        }
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->_rows[$offset]);
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->_rows[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        return isset($this->_rows[$offset]) ? $this->_rows[$offset] : null;
+    }
 }
