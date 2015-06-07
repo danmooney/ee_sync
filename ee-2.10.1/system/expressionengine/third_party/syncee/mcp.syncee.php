@@ -8,6 +8,8 @@ class Syncee_Mcp
 
     private $_last_curl_info;
 
+    private $_last_response_decoded;
+
     private $_setting_keys = array(
 //        self::SETTING_REMOTE_IP_WHITELIST
     );
@@ -22,15 +24,15 @@ class Syncee_Mcp
      */
     public function actionHandleRemoteDataApiCall()
     {
-        $method    = ee()->input->get('method');
-        $site_id   = ee()->input->get('site_id');
+        $method     = ee()->input->get('method');
+        $site_id    = ee()->input->get('site_id');
 
-        new Syncee_Remote_Request($method, $site_id);
+        new Syncee_Request_Remote($method, $site_id);
     }
 
     public function makeRemoteDataApiCallToSite(Syncee_Site $remote_site, $method)
     {
-        // TODO - action id needs to be passed in a private key or something
+        // TODO - action id needs to be stored in the database!
         $handle_remote_data_api_call_action_id = ee()->db->select('action_id')->from('actions')->where('method', 'actionHandleRemoteDataApiCall')->get()->row('action_id');
         $remote_site_url                       = $remote_site->getSiteUrl() . "?ACT=$handle_remote_data_api_call_action_id&method=$method&site_id={$remote_site->site_id}";
 
@@ -41,6 +43,15 @@ class Syncee_Mcp
 
         $response              = curl_exec($ch);
         $this->_last_curl_info = curl_getinfo($ch);
+
+        $decoded_response      = json_decode($response, true);
+
+        if (is_array($decoded_response) && isset($decoded_response['data']) && is_string($decoded_response['data'])) {
+            $remote_site->rsa->getCrypt()->loadKey($remote_site->rsa->getPrivateKey());
+            $decoded_response['data']     = $remote_site->rsa->getCrypt()->decrypt(base64_decode($decoded_response['data']));
+            $this->_last_response_decoded = $decoded_response;
+            $response = json_encode($decoded_response);
+        }
 
         return $response;
     }
@@ -63,6 +74,19 @@ class Syncee_Mcp
     public function getLastCurlInfo()
     {
         return $this->_last_curl_info;
+    }
+
+    public function getLastResponseDecoded()
+    {
+        return $this->_last_response_decoded;
+    }
+
+    public function getLastResponseDataDecoded()
+    {
+        return is_array($this->_last_response_decoded) && isset($this->_last_response_decoded['data'])
+            ? json_decode($this->_last_response_decoded['data'], true)
+            : false
+        ;
     }
 
     private function _renderView($template_filename, array $options = array())

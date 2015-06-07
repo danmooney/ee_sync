@@ -33,7 +33,7 @@ class Syncee_Request_Remote
 
     private $_json_mime_type = 'text/javascript';
 
-    public function __construct($method = null, $site_id = null, $public_key = null)
+    public function __construct($method = null, $site_id = null)
     {
         $this->_site_id = intval($site_id);
 
@@ -42,7 +42,7 @@ class Syncee_Request_Remote
         $message = '';
         $this->_site_rsa = $site_rsa = new Syncee_Site_Rsa();
 
-        if (!$method || !$site_id || !$public_key) {
+        if (!$method || !$site_id) {
             if (!$method) {
                 $errors[] = 'No method passed to request.';
             }
@@ -51,29 +51,29 @@ class Syncee_Request_Remote
                 $errors[] = 'No site id passed to request.';
             }
 
-            if (!$public_key) {
-                $errors = 'No public key passed to request.';
-            }
-
-            $code = 400;
-        } elseif ($public_key && !$site_rsa->getCrypt()->loadKey($public_key)) {
-            $errors[] = 'Could not load public key properly.';
-
             $code = 400;
         } else {
             $code = 200;
         }
 
-        $this->_public_key = $public_key;
-
         /**
          * @var $this_site Syncee_Site
          */
         $this_site         = Syncee_Site_Collection::getAllBySiteId($site_id)->filterByCondition('isCurrentLocal', true);
+        $public_key        = $this->_public_key = $this_site->rsa->getPublicKey();
+
         $method_to_execute = 'get' . $method;
 
-        if (!$this_site->allowsRemoteRequestFromIp(ee()->input->ip_address())) {
-            $code = 403;
+        if (!$public_key) {
+            $code    = 500;
+
+            if ($this_site->isEmptyRow()) {
+                $message = 'Could not find data for the requesting site.  Make sure you have pasted the source site data into the target site.';
+            } else {
+                $message = 'Could not find public key for the requesting site.';
+            }
+        } elseif (!$this_site->allowsRemoteRequestFromIp(ee()->input->ip_address())) {
+            $code    = 403;
             $message = 'Request forbidden from this IP.';
         } elseif ($this_site->isEmptyRow()) {
             $code    = 404;
@@ -137,6 +137,7 @@ class Syncee_Request_Remote
         header("Content-Type: {$this->_json_mime_type}", true, $code);
 
         $site_rsa = $this->_site_rsa;
+        $site_rsa->getCrypt()->loadKey($this->_public_key);
 
         $data = base64_encode($site_rsa->getCrypt()->encrypt(json_encode($data)));
 
@@ -155,7 +156,7 @@ class Syncee_Request_Remote
 			$data['message'] = $message;
 		}
 
-		echo json_encode($data, JSON_PRETTY_PRINT);
+		echo json_encode($data, SYNCEE_TEST_MODE ? JSON_PRETTY_PRINT : 0);
         exit;
     }
 }
