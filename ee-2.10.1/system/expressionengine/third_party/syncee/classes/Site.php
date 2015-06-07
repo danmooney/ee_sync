@@ -36,6 +36,8 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 
     public $ip_whitelist;
 
+    public $action_id;
+
     /**
      * @var Syncee_Site_Rsa
      */

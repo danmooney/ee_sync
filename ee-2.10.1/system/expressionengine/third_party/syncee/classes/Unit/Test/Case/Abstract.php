@@ -112,6 +112,8 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
         $i = 1;
         while ($db_name = $this->_fetchFromConfig("database.connection.db$i", false)) {
             $this->_switchToDatabaseBasedOnNumber($i);
+            $action_id = ee()->db->select('action_id')->from('actions')->where('method', 'actionHandleRemoteDataApiCall')->get()->row('action_id');
+
             $j = 1;
             while ($site_url = $this->_fetchFromConfig("site.url$j", false)) {
 
@@ -121,7 +123,8 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
                     'site_id'    => 1,
                     'site_url'   => $site_url,
                     'ee_site_id' => 1,
-                    'public_key' => $site->rsa->getPublicKey()
+                    'public_key' => $site->rsa->getPublicKey(),
+                    'action_id'  => $action_id
                 ));
 
                 $j += 1;

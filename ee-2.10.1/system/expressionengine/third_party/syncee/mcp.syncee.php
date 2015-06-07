@@ -32,9 +32,7 @@ class Syncee_Mcp
 
     public function makeRemoteDataApiCallToSite(Syncee_Site $remote_site, $method)
     {
-        // TODO - action id needs to be stored in the database!
-        $handle_remote_data_api_call_action_id = ee()->db->select('action_id')->from('actions')->where('method', 'actionHandleRemoteDataApiCall')->get()->row('action_id');
-        $remote_site_url                       = $remote_site->getSiteUrl() . "?ACT=$handle_remote_data_api_call_action_id&method=$method&site_id={$remote_site->site_id}";
+        $remote_site_url = $remote_site->getSiteUrl() . "?ACT={$remote_site->action_id}&method=$method&site_id={$remote_site->site_id}";
 
         $ch = curl_init($remote_site_url);
         curl_setopt_array($ch, array(
