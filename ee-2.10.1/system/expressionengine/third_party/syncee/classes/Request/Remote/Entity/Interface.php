@@ -18,7 +18,26 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Database_Collection
+interface Syncee_Request_Remote_Entity_Interface
 {
+    /**
+     * Get the name of the entity
+     * @return string
+     */
+    public function getName();
 
+    /**
+     * @return Syncee_Collection_Interface
+     */
+    public function getCollection();
+
+    /**
+     * @param $ee_site_id
+     */
+    public function setEeSiteId($ee_site_id);
+
+    /**
+     * @return string
+     */
+    public function getCollectionClassName();
 }
