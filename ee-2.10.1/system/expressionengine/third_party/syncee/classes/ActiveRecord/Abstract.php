@@ -22,13 +22,50 @@ abstract class Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = '';
 
+    protected static $_cols = array();
+
+    protected $_col_val_mapping = array();
+
+    protected $_primary = array();
+
     public function __construct(array $row = array(), $is_new = true)
     {
-        $class_properties = get_class_vars(get_class($this));
+        if (isset(static::$_cols)) {
+            static::$_cols = ee()->db->list_fields(static::TABLE_NAME);
+        }
+
+        $object_properties = get_object_vars($this);
 
         foreach ($row as $key => $val) {
-            if (in_array($key, $class_properties)) {
+            if (in_array($key, array_keys($object_properties))) {
                 $this->$key = $val;
+                $this->_col_val_mapping[$key] =& $this->$key;
+            } else {
+                // assign values in row to nested objects if properties are defined
+                foreach ($object_properties as $object_key => $possible_nested_object) {
+                    if (is_object($possible_nested_object)) {
+                        $nested_object                   = $possible_nested_object;
+                        $nested_object_object_properties = get_object_vars($nested_object);
+
+                        if (in_array($key, array_keys($nested_object_object_properties))) {
+                            $this->$object_key->$key = $val;
+                            $this->_col_val_mapping[$key] =& $this->$object_key->$key;
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach ($object_properties as $object_key => $possible_nested_object) {
+            if (is_object($possible_nested_object)) {
+                $nested_object                   = $possible_nested_object;
+                $nested_object_object_properties = get_object_vars($nested_object);
+
+                foreach (static::$_cols as $col) {
+                    if (in_array($col, array_keys($nested_object_object_properties))) {
+                        $this->_col_val_mapping[$col] =& $this->$object_key->$col;
+                    }
+                }
             }
         }
 
@@ -41,11 +78,13 @@ abstract class Syncee_ActiveRecord_Abstract
 
     public function save()
     {
-        $table_properties  = ee()->db->list_fields(static::TABLE_NAME);
-        $data              = array();
+        $table_cols  = static::$_cols;
+        $data        = array();
 
-        foreach ($table_properties as $table_property) {
-            $data[$table_property] = $this->$table_property;
+        foreach ($table_cols as $table_property) {
+            if (isset($this->_col_val_mapping[$table_property])) {
+                $data[$table_property] = $this->_col_val_mapping[$table_property];
+            }
         }
 
         if ($this->_is_new) {
@@ -55,7 +94,7 @@ abstract class Syncee_ActiveRecord_Abstract
         $where = array();
 
         foreach ($this->_primary as $primary_key) {
-            $where[$primary_key] = $this->$primary_key;
+            $where[$primary_key] = $this->_col_val_mapping[$primary_key];
         }
 
         return ee()->db->update(static::TABLE_NAME, $data, $where);
@@ -65,8 +104,9 @@ abstract class Syncee_ActiveRecord_Abstract
 
     public function __set($property, $value)
     {
-        $this->$property     = $value;
-        $this->_is_empty_row = false;
+        $this->$property                   =  $value;
+        $this->_col_val_mapping[$property] =& $this->$property;
+        $this->_is_empty_row               =  false;
     }
 
 //    public function __get($property) {}
