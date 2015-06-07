@@ -15,8 +15,26 @@ class Syncee_Upd
 
     public $module_name = 'Syncee';
 
+    public function getPrivateKeyPath()
+    {
+        return SYNCEE_PATH . '/.private_keys';
+    }
+
     public function install()
     {
+        $private_key_path = $this->getPrivateKeyPath();
+
+        if (!is_dir($private_key_path)) {
+            if (!is_writable(SYNCEE_PATH)) {
+                show_error('The syncee third_party path is not writable by the web server: ' . SYNCEE_PATH . '<br>Please check your permissions.');
+            }
+
+            mkdir($private_key_path, SYNCEE_TEST_MODE ? 0777 : 0700);
+
+            // write .gitignore to prevent any private key files from getting committed
+            file_put_contents($private_key_path . '/.gitignore', "/*\n!.gitignore");
+        }
+
         ee()->load->dbforge();
 
         $module_data = array(
@@ -76,6 +94,11 @@ class Syncee_Upd
                 'constraint' => 255,
                 'null'       => false,
             ),
+            'ee_site_id' => array(
+                'type'     => 'INT',
+                'unsigned' => true,
+                'null'     => false
+            ),
             'use_https' => array(
                 'type'       => 'TINYINT',
                 'constraint' => 1,
@@ -85,6 +108,17 @@ class Syncee_Upd
                 'type'           => 'VARCHAR',
                 'constraint'     => 1000,
                 'null'           => true
+            ),
+            'public_key' => array(
+                'type'     => 'text',
+                'null'     => false
+            ),
+            // TODO - figure this part out
+            // remote request action id
+            'action_id' => array(
+                'type'     => 'INT',
+                'unsigned' => true,
+                'null'     => false
             ),
         );
 
@@ -101,6 +135,22 @@ class Syncee_Upd
 
     public function uninstall()
     {
+        // remove private keys
+        $private_key_path = $this->getPrivateKeyPath();
+
+        if (is_dir($private_key_path) && is_writable($private_key_path)) {
+            $iterator = new DirectoryIterator($private_key_path);
+            foreach ($iterator as $file) {
+                if ($file->isDir()) {
+                    continue;
+                }
+
+                unlink($file->getPathname());
+            }
+
+            rmdir($private_key_path);
+        }
+
         ee()->load->dbforge();
 
         // Unregister the module
