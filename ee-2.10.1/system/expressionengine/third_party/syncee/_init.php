@@ -36,8 +36,22 @@ $module_autoloader = function ($class_name) {
                 require_once SYNCEE_PATH . '/mcp.' . strtolower($module_name) . '.php';
                 break;
             default:
-                $class_name_sans_module_name  = preg_replace("#^{$module_name}_#i", '', $class_name);
-                $relative_path_to_class_file  = str_replace('_', '/', $class_name_sans_module_name);
+                $class_name_sans_module_name          = preg_replace("#^{$module_name}_#i", '', $class_name);
+                $relative_path_to_class_file_exploded = explode('_', $class_name_sans_module_name);
+
+                // need to support case-sensitive filesystems by naming relative paths appropriately
+                array_walk($relative_path_to_class_file_exploded, function ($val) {
+
+                    $first_letter_is_lowercase = strtolower(substr($val, 0, 1)) === substr($val, 0, 1);
+
+                    if ($first_letter_is_lowercase) {
+                        return ucfirst(strtolower($val));
+                    }
+
+                    return $val;
+                });
+
+                $relative_path_to_class_file          = implode('/', $relative_path_to_class_file_exploded);
                 require_once SYNCEE_PATH . '/classes/' . $relative_path_to_class_file . '.php';
                 break;
         }
