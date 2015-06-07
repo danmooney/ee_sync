@@ -61,8 +61,8 @@ class Syncee_Upd
             ee()->db->insert('actions', $action_data);
         }
 
-        // Add table syncee_settings
-        ee()->dbforge->drop_table('syncee_settings');
+        // Add table syncee_setting
+        ee()->dbforge->drop_table('syncee_setting');
 
         $settings_table_fields = array(
 			'setting_key' => array(
@@ -79,7 +79,7 @@ class Syncee_Upd
 
         ee()->dbforge->add_field($settings_table_fields);
         ee()->dbforge->add_key('setting_key', true);
-        ee()->dbforge->create_table('syncee_settings', true);
+        ee()->dbforge->create_table('syncee_setting', true);
 
 
         // Add table syncee_sites
@@ -122,7 +122,7 @@ class Syncee_Upd
             ),
         );
 
-        // Add table syncee_settings
+        // Add table syncee_setting
         ee()->dbforge->drop_table('syncee_site');
 
         ee()->dbforge->add_field($sites_table_fields);

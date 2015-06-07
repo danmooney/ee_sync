@@ -62,11 +62,11 @@ class Syncee_Mcp
             throw new Exception('Setting passed to ' . __METHOD__ . ' not in list of allowed settings.  Setting passed: ' . $setting_key);
         }
 
-        ee()->db->delete('syncee_settings', array(
+        ee()->db->delete('syncee_setting', array(
             'setting_key' => $setting_key
         ));
 
-        ee()->db->insert('syncee_settings', array(
+        ee()->db->insert('syncee_setting', array(
             'setting_key' => $setting_value
         ));
     }
