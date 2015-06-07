@@ -78,13 +78,16 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
         $this->assertTrue(is_array($data), 'Data is properly decrypted and is an array');
     }
 
-    public function testSavingPrivateKey()
+    public function testCreatingPrivateKeySavesToCorrectLocation()
     {
-        $this->fail('Need to implement ' . __METHOD__);
-    }
+        $remote_site          = $this->_remote_site;
 
-    public function testSavingPublicKey()
-    {
-        $this->fail('Need to implement ' . __METHOD__);
+        $reflection_method    = new ReflectionMethod($remote_site->rsa, '_getPrivateKeyPathname');
+        $reflection_method->setAccessible(true);
+
+        $private_key_pathname = $reflection_method->invoke($remote_site->rsa);
+
+        $this->assertTrue(is_file($private_key_pathname) && is_readable($private_key_pathname) && is_writable($private_key_pathname), 'Private key pathname is a file and is readable and writable');
+        $this->assertTrue(file_get_contents($private_key_pathname) === $remote_site->rsa->getPrivateKey(), 'Private key is identical to the contents of the private key file');
     }
 }
