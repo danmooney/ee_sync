@@ -9,22 +9,23 @@ if (!defined('BASEPATH')) {
 
 defined('SYNCEE_PATH')       or define('SYNCEE_PATH',       dirname(__FILE__));
 defined('SYNCEE_PATH_TESTS') or define('SYNCEE_PATH_TESTS', SYNCEE_PATH . '/tests');
+defined('SYNCEE_TEST_MODE')  or define('SYNCEE_TEST_MODE',  false);
 
 require_once SYNCEE_PATH . '/vendor/autoload.php';
 
 $module_autoloader = function ($class_name) {
-    $module_name = basename(dirname(__FILE__));
-    $class_name  = strtolower($class_name);
+    $module_name          = basename(dirname(__FILE__));
+    $lowercase_class_name = strtolower($class_name);
 
-    $class_name_begins_with_module_name = strpos($class_name, $module_name) === 0;
-    $is_test_class                      = strpos($class_name, 'test_') === 0;
+    $class_name_begins_with_module_name = strpos($lowercase_class_name, $module_name) === 0;
+    $is_test_class                      = strpos($lowercase_class_name, 'test_') === 0;
 
     if (!$class_name_begins_with_module_name && !$is_test_class) {
         return;
     }
 
     if ($class_name_begins_with_module_name) {
-        switch ($class_name) {
+        switch ($lowercase_class_name) {
             case $module_name . '':
                 require_once SYNCEE_PATH . '/mod.' . strtolower($module_name) . '.php';
                 break;
@@ -35,7 +36,9 @@ $module_autoloader = function ($class_name) {
                 require_once SYNCEE_PATH . '/mcp.' . strtolower($module_name) . '.php';
                 break;
             default:
-                require_once SYNCEE_PATH . '/classes/' . strtolower($class_name) . '.php';
+                $class_name_sans_module_name  = preg_replace("#^{$module_name}_#i", '', $class_name);
+                $relative_path_to_class_file  = str_replace('_', '/', $class_name_sans_module_name);
+                require_once SYNCEE_PATH . '/classes/' . $relative_path_to_class_file . '.php';
                 break;
         }
     }

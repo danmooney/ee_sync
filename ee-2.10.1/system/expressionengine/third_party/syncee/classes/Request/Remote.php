@@ -1,30 +1,70 @@
 <?php
 
-require_once dirname(__FILE__) . '/../_init.php';
+if (!defined('SYNCEE_PATH')) {
+    $current_dir = dirname(__FILE__);
+    $i           = 1;
 
-class Syncee_Remote_Request
+    while (($ancestor_realpath = realpath($current_dir . str_repeat('/..', $i++)) . '/_init.php') && !is_readable($ancestor_realpath)) {
+        $is_at_root = substr($ancestor_realpath, -1) === PATH_SEPARATOR;
+        if ($is_at_root) {
+            break;
+        }
+    }
+
+    if (!is_readable($ancestor_realpath)) {
+        show_error('Could not find _init.php for module');
+    }
+
+    require_once $ancestor_realpath;
+}
+
+class Syncee_Request_Remote
 {
     private $_ee_site_id;
 
     private $_site_id;
 
+    private $_public_key;
+
+    /**
+     * @var Syncee_Site_Rsa
+     */
+    private $_site_rsa;
+
     private $_json_mime_type = 'text/javascript';
 
-    public function __construct($method = null, $site_id = null)
+    public function __construct($method = null, $site_id = null, $public_key = null)
     {
         $this->_site_id = intval($site_id);
 
         $errors  = array();
 
         $message = '';
+        $this->_site_rsa = $site_rsa = new Syncee_Site_Rsa();
 
-        if (!$method || !$site_id) {
+        if (!$method || !$site_id || !$public_key) {
+            if (!$method) {
+                $errors[] = 'No method passed to request.';
+            }
+
+            if (!$site_id) {
+                $errors[] = 'No site id passed to request.';
+            }
+
+            if (!$public_key) {
+                $errors = 'No public key passed to request.';
+            }
+
+            $code = 400;
+        } elseif ($public_key && !$site_rsa->getCrypt()->loadKey($public_key)) {
+            $errors[] = 'Could not load public key properly.';
+
             $code = 400;
         } else {
             $code = 200;
         }
 
-        // TODO - (if !public_key) => 401
+        $this->_public_key = $public_key;
 
         /**
          * @var $this_site Syncee_Site
@@ -95,6 +135,10 @@ class Syncee_Remote_Request
     private function _sendJsonResponse($data = array(), $errors = array(), $code = 200, $message = '', $meta = array())
     {
         header("Content-Type: {$this->_json_mime_type}", true, $code);
+
+        $site_rsa = $this->_site_rsa;
+
+        $data = base64_encode($site_rsa->getCrypt()->encrypt(json_encode($data)));
 
 		$data = array(
             'version' => Syncee_Upd::VERSION,

@@ -1,16 +1,32 @@
 <?php
 
-require_once dirname(__FILE__) . '/../_init.php';
+if (!defined('SYNCEE_PATH')) {
+    $current_dir = dirname(__FILE__);
+    $i           = 1;
 
-class Syncee_Site
+    while (($ancestor_realpath = realpath($current_dir . str_repeat('/..', $i++)) . '/_init.php') && !is_readable($ancestor_realpath)) {
+        $is_at_root = substr($ancestor_realpath, -1) === PATH_SEPARATOR;
+        if ($is_at_root) {
+            break;
+        }
+    }
+
+    if (!is_readable($ancestor_realpath)) {
+        show_error('Could not find _init.php for module');
+    }
+
+    require_once $ancestor_realpath;
+}
+
+class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
 
-    private $_is_empty_row = false;
+    protected $_is_empty_row = false;
 
-    private $_is_new = true;
+    protected $_is_new = true;
 
-    private $_primary = array('site_id', 'site_url');
+    protected $_primary = array('site_id', 'site_url');
 
     public $site_id;
 
@@ -20,17 +36,16 @@ class Syncee_Site
 
     public $ip_whitelist;
 
+    /**
+     * @var Syncee_Site_Rsa
+     */
+    public $rsa;
+
     public function __construct(array $row = array(), $is_new = true)
     {
-        foreach ($row as $key => $val) {
-            $this->$key = $val;
-        }
+        $this->rsa = new Syncee_Site_Rsa();
 
-        if (empty($row)) {
-            $this->_is_empty_row = true;
-        }
-
-        $this->_is_new = $is_new;
+        parent::__construct($row, $is_new);
     }
 
     public function isEmptyRow()
@@ -63,28 +78,6 @@ class Syncee_Site
             $this->use_https ? 'https' : 'http',
             $this->site_url
         );
-    }
-
-    public function save()
-    {
-        $table_properties  = ee()->db->list_fields(static::TABLE_NAME);
-        $data              = array();
-
-        foreach ($table_properties as $table_property) {
-            $data[$table_property] = $this->$table_property;
-        }
-
-        if ($this->_is_new) {
-            return ee()->db->insert(static::TABLE_NAME, $data);
-        }
-
-        $where = array();
-
-        foreach ($this->_primary as $primary_key) {
-            $where[$primary_key] = $this->$primary_key;
-        }
-
-        return ee()->db->update(static::TABLE_NAME, $data, $where);
     }
 
     public function addToIpWhitelist($ip)
@@ -134,14 +127,4 @@ class Syncee_Site
 
         return in_array($ip, $ip_whitelist_exploded);
     }
-
-//    public function __call($method, $args) {}
-
-    public function __set($property, $value)
-    {
-        $this->$property     = $value;
-        $this->_is_empty_row = false;
-    }
-
-//    public function __get($property) {}
 }

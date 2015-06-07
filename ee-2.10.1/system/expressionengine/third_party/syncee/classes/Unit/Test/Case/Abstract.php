@@ -1,6 +1,23 @@
 <?php
 
-require_once dirname(__FILE__) . '/../_init.php';
+if (!defined('SYNCEE_PATH')) {
+    $current_dir = dirname(__FILE__);
+    $i           = 1;
+
+    while (($ancestor_realpath = realpath($current_dir . str_repeat('/..', $i++)) . '/_init.php') && !is_readable($ancestor_realpath)) {
+        $is_at_root = substr($ancestor_realpath, -1) === PATH_SEPARATOR;
+        if ($is_at_root) {
+            break;
+        }
+    }
+
+    if (!is_readable($ancestor_realpath)) {
+        show_error('Could not find _init.php for module');
+    }
+
+    require_once $ancestor_realpath;
+}
+
 
 abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
 {
@@ -16,6 +33,8 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
     protected $_http_host_running_tests;
 
     protected $_truncation_setup_type = self::TRUNCATE_ALL;
+
+    protected $_seed_data_files = array();
 
     public function setUp()
     {
@@ -95,15 +114,25 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
             $this->_switchToDatabaseBasedOnNumber($i);
             $j = 1;
             while ($site_url = $this->_fetchFromConfig("site.url$j", false)) {
+
+                $site = new Syncee_Site();
+                $site->rsa->createKey();
+
                 ee()->db->insert(Syncee_Site::TABLE_NAME, array(
-                    'site_id' => 1,
-                    'site_url' => $site_url
+                    'site_id'    => 1,
+                    'site_url'   => $site_url,
+                    'ee_site_id' => 1,
+                    'public_key' => $site->rsa->getPublicKey()
                 ));
 
                 $j += 1;
             }
 
             $i += 1;
+        }
+
+        foreach ($this->_seed_data_files as $seed_data_file) {
+            require SYNCEE_PATH_TESTS . '/seeds/' . strtolower($seed_data_file) . '.php';
         }
     }
 
