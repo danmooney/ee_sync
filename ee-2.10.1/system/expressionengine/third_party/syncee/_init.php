@@ -36,6 +36,8 @@ $module_autoloader = function ($class_name) {
                 require_once SYNCEE_PATH . '/mcp.' . strtolower($module_name) . '.php';
                 break;
             default:
+                // remove '_free' from module name if free version
+                $module_name                          = str_replace('_free', '', $module_name);
                 $class_name_sans_module_name          = preg_replace("#^{$module_name}_#i", '', $class_name);
                 $relative_path_to_class_file_exploded = explode('_', $class_name_sans_module_name);
 
