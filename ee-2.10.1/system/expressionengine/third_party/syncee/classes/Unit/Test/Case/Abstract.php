@@ -116,7 +116,6 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
             while ($site_url = $this->_fetchFromConfig("site.url$j", false)) {
 
                 $site = new Syncee_Site();
-                $site->rsa->createKey();
 
                 ee()->db->insert(Syncee_Site::TABLE_NAME, array(
                     'site_id'    => 1,

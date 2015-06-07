@@ -20,9 +20,9 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Site_Rsa
 {
-    private $_private_key;
+    public $private_key;
 
-    private $_public_key;
+    public $public_key;
 
     /**
      * @var Crypt_RSA
@@ -36,20 +36,24 @@ class Syncee_Site_Rsa
 
     public function getPrivateKey()
     {
-        if (!$this->_public_key) {
-            $this->createKey();
+        if (!$this->private_key) {
+            if ($this->public_key) {
+                $this->private_key = file_get_contents($this->_getPrivateKeyPathname());
+            } else {
+                $this->_createKey();
+            }
         }
 
-        return $this->_private_key;
+        return $this->private_key;
     }
 
     public function getPublicKey()
     {
-        if (!$this->_public_key) {
-            $this->createKey();
+        if (!$this->public_key) {
+            $this->_createKey();
         }
 
-        return $this->_public_key;
+        return $this->public_key;
     }
 
     public function getCrypt()
@@ -57,17 +61,24 @@ class Syncee_Site_Rsa
         return $this->_rsa_crypt;
     }
 
-    public function createKey()
+    private function _createKey()
     {
-        list($this->_private_key, $this->_public_key, $partial_key) = array_values($this->_rsa_crypt->createKey());
+        list($this->private_key, $this->public_key, $partial_key) = array_values($this->_rsa_crypt->createKey());
         $this->_writePrivateKeyToFile();
     }
 
     private function _writePrivateKeyToFile()
     {
-        $private_key_path = SYNCEE_PATH . '/.private_keys';
-        $private_key_basename = md5($this->_public_key) . '.txt';
-        file_put_contents($private_key_path . '/' . $private_key_basename, $this->_private_key);
+        file_put_contents($this->_getPrivateKeyPathname(), $this->private_key);
+    }
+
+    private function _getPrivateKeyPathname()
+    {
+        $syncee_upd           = new Syncee_Upd();
+        $private_key_path     = $syncee_upd->getPrivateKeyPath();
+        $private_key_basename = md5($this->public_key) . '.txt';
+
+        return $private_key_path . '/' . $private_key_basename;
     }
 
 //    public function __call($method, $args)
