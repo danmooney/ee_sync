@@ -15,7 +15,7 @@ class Syncee_Upd
 
     public $version = self::VERSION;
 
-    public $module_name = self::MODULE_NAME;
+    public $module_name = 'Syncee';  // distinguished from self::MODULE_NAME when free version is being used; this is the property EE looks for
 
     public function getPrivateKeyPath()
     {
