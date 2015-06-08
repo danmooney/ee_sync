@@ -32,7 +32,7 @@ abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_R
 
     public function setEeSiteId($ee_site_id)
     {
-        $this->_ee_site_id = $ee_site_id;
+        $this->_ee_site_id = intval($ee_site_id);
     }
 
     public function getCollectionClassName()
