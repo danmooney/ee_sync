@@ -22,12 +22,10 @@ class Syncee_Request_Remote
 {
     private $_site_id;
 
-    private $_public_key;
-
     /**
-     * @var Syncee_Site_Rsa
+     * @var Syncee_Site
      */
-    private $_site_rsa;
+    private $_site;
 
     private $_json_mime_type = 'text/javascript';
 
@@ -43,7 +41,6 @@ class Syncee_Request_Remote
         $errors  = array();
 
         $message = '';
-        $this->_site_rsa = $site_rsa = new Syncee_Site_Rsa();
 
         if (!$entity || !$site_id) {
             if (!$entity) {
@@ -62,8 +59,8 @@ class Syncee_Request_Remote
         /**
          * @var $this_site Syncee_Site
          */
-        $this_site         = Syncee_Site_Collection::getAllBySiteId($site_id)->filterByCondition('isCurrentLocal', true);
-        $public_key        = $this->_public_key = $this_site->rsa->getPublicKey();
+        $this_site         = $this->_site = Syncee_Site_Collection::getAllBySiteId($site_id)->filterByCondition('isCurrentLocal', true);
+        $public_key        = $this_site->rsa->getPublicKey(false);
 
         if (!$public_key) {
             $code    = 500;
@@ -94,10 +91,10 @@ class Syncee_Request_Remote
     {
         header("Content-Type: {$this->_json_mime_type}", true, $code);
 
-        $site_rsa = $this->_site_rsa;
-        $site_rsa->getCrypt()->loadKey($this->_public_key);
+        $site = $this->_site;
+        $site->rsa->getCrypt()->loadKey($site->rsa->getPublicKey());
 
-        $data = base64_encode($site_rsa->getCrypt()->encrypt(json_encode($data)));
+        $data = base64_encode($site->rsa->getCrypt()->encrypt(json_encode($data)));
 
 		$data = array(
             'version' => Syncee_Upd::VERSION,
@@ -105,6 +102,17 @@ class Syncee_Request_Remote
 			'data'    => $data,
 			'errors'  => $errors
 		);
+
+        if (SYNCEE_TEST_MODE) {
+            $meta['public_key']           = $site->rsa->getPublicKey();
+            $meta['private_key_filename'] = md5($site->rsa->getPublicKey());
+            $meta['private_key']          = $site->rsa->getPrivateKey();
+
+            $crypt = $site->rsa->getCrypt();
+            $crypt->loadKey($site->rsa->getPrivateKey());
+
+            $meta['decryption_works'] = $crypt->decrypt(base64_decode($data['data'])) !== false;
+        }
 
 		if ($meta) {
 			$data['meta'] = $meta;
