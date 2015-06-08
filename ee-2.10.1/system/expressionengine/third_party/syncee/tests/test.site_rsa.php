@@ -68,13 +68,13 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
 
     public function testDecryptionOfRemoteApiDataWithCorrectPrivateKeyIsAnArray()
     {
-        $request     = $this->_request;
-        $remote_site = $this->_remote_site;
+        $request       = $this->_request;
+        $remote_site   = $this->_remote_site;
 
-        $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
-        $data        = $request->getLastResponseDataDecoded();
+        $response      = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $decoded_data  = $response->getResponseDataDecoded();
 
-        $this->assertTrue(is_array($data), 'Data is properly decrypted and is an array');
+        $this->assertTrue(is_array($decoded_data), 'Data is properly decrypted and is an array');
     }
 
     public function testCreatingPrivateKeySavesToCorrectLocation()

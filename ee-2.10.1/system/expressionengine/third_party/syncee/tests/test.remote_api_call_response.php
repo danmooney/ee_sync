@@ -46,7 +46,7 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
         $remote_site      = $this->_remote_site;
         $request          = $this->_request;
         $response         = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
-        $decoded_response = json_decode($response, true);
+        $decoded_response = $response->getResponseDecoded();
 
         $this->assertTrue(isset($decoded_response['data']) && $decoded_response['data'], 'Data in response exists and is non-empty: %s');
     }

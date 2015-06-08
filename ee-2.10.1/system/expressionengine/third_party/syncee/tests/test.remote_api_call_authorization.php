@@ -65,12 +65,12 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $request     = $this->_request;
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
-        $curl_info   = $request->getLastCurlInfo();
+        $status_code = $response->getStatusCode();
 
-        $this->assertJson($response);
-        $this->assertEqual(200, $curl_info['http_code'], 'HTTP Response status code is 200; %s');
+        $this->assertJson($response->getRawResponse());
+        $this->assertEqual(200, $status_code, 'HTTP Response status code is 200; %s');
 
-        $decoded_response = json_decode($response, true);
+        $decoded_response = $response->getResponseDecoded();
 
         $this->assertTrue(isset($decoded_response['code']) && $decoded_response['code'] === 200, 'HTTP code is in JSON response and is 200: %s');
     }
@@ -84,12 +84,12 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $remote_site->addToIpWhitelist('0.0.0.1')->save();
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
-        $curl_info   = $request->getLastCurlInfo();
+        $status_code = $response->getStatusCode();
 
-        $this->assertJson($response);
-        $this->assertEqual(403, $curl_info['http_code'], 'HTTP Response status code is 403');
+        $this->assertJson($response->getRawResponse());
+        $this->assertEqual(403, $status_code, 'HTTP Response status code is 403');
 
-        $decoded_response = json_decode($response, true);
+        $decoded_response = $response->getResponseDecoded();
 
         $this->assertTrue(isset($decoded_response['code']) && $decoded_response['code'] === 403, 'HTTP code is in JSON response and is 403: %s');
     }
@@ -103,12 +103,12 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $remote_site->addToIpWhitelist('127.0.0.1')->save();
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
-        $curl_info   = $request->getLastCurlInfo();
+        $status_code = $response->getStatusCode();
 
-        $this->assertJson($response);
-        $this->assertEqual(200, $curl_info['http_code'], 'HTTP Response status code is 200');
+        $this->assertJson($response->getRawResponse());
+        $this->assertEqual(200, $status_code, 'HTTP Response status code is 200');
 
-        $decoded_response = json_decode($response, true);
+        $decoded_response = $response->getResponseDecoded();
 
         $this->assertTrue(isset($decoded_response['code']) && $decoded_response['code'] === 200, 'HTTP code is in JSON response and is 200: %s');
     }
@@ -127,12 +127,12 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         ;
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
-        $curl_info   = $request->getLastCurlInfo();
+        $status_code = $response->getStatusCode();
 
-        $this->assertJson($response);
-        $this->assertEqual(200, $curl_info['http_code'], 'HTTP Response status code is 200: %s');
+        $this->assertJson($response->getRawResponse());
+        $this->assertEqual(200, $status_code, 'HTTP Response status code is 200: %s');
 
-        $decoded_response = json_decode($response, true);
+        $decoded_response = $response->getResponseDecoded();
 
         $this->assertTrue(isset($decoded_response['code']) && $decoded_response['code'] === 200, 'HTTP code is in JSON response and is 200: %s');
     }
@@ -147,12 +147,12 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $remote_site->removeFromIpWhitelist('127.0.0.1')->save();
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
-        $curl_info   = $request->getLastCurlInfo();
+        $status_code = $response->getStatusCode();
 
-        $this->assertJson($response);
-        $this->assertEqual(403, $curl_info['http_code'], 'HTTP Response status code is 403: %s');
+        $this->assertJson($response->getRawResponse());
+        $this->assertEqual(403, $status_code, 'HTTP Response status code is 403: %s');
 
-        $decoded_response = json_decode($response, true);
+        $decoded_response = $response->getResponseDecoded();
 
         $this->assertTrue(isset($decoded_response['code']) && $decoded_response['code'] === 403, 'HTTP code is in JSON response and is 403: %s');
     }
