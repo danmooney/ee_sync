@@ -20,40 +20,50 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Request
 {
-    private $_last_curl_info;
+    /**
+     * @var Syncee_Helper_Curl
+     */
+    private $_curl_handle;
 
-    private $_last_response_decoded;
+    /**
+     * @var Syncee_Response
+     */
+    private $_response;
 
     public function makeEntityCallToSite(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity)
     {
         $remote_site_url = $this->_generateRemoteRequestUrl($site, $entity);
 
-        $ch = curl_init($remote_site_url);
-        curl_setopt_array($ch, array(
-            CURLOPT_RETURNTRANSFER => true,
-        ));
+        $ch = $this->_curl_handle = new Syncee_Helper_Curl($remote_site_url);
+        $ch->setOpt(CURLOPT_RETURNTRANSFER, true);
 
-        $response              = curl_exec($ch);
-        $this->_last_curl_info = curl_getinfo($ch);
-
-        $decoded_response      = json_decode($response, true);
-
-        if (is_array($decoded_response) && isset($decoded_response['data']) && is_string($decoded_response['data'])) {
-            $this->_decryptResponseData($site, $decoded_response['data']);
-
-            $decoded_response['data']     = $this->_decryptResponseData($site, $decoded_response['data']);
-            $this->_last_response_decoded = $decoded_response;
-            $response = json_encode($decoded_response);
-        }
+        $this->_response = $response = new Syncee_Response($this, $site);
 
         return $response;
     }
 
-    private function _decryptResponseData(Syncee_Site $site, $data)
+    public function isReadyToExecute()
     {
-        $crypt = $site->rsa->getCrypt();
-        $crypt->loadKey($site->rsa->getPrivateKey());
-        return $crypt->decrypt(base64_decode($data));
+        return $this->_curl_handle && $this->_curl_handle->getOpt(CURLOPT_URL);
+    }
+
+    public function execute()
+    {
+        if (!$this->isReadyToExecute()) {
+            throw new Syncee_Exception('Request isn\'t ready for execution');
+        }
+
+        $response = $this->_curl_handle->exec();
+
+        // close curl handle; request has been made and isn't ready to execute anymore
+        $this->_curl_handle->close();
+
+        return $response;
+    }
+
+    public function getCurlHandle()
+    {
+        return $this->_curl_handle;
     }
 
     private function _generateRemoteRequestUrl(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity)
@@ -66,23 +76,5 @@ class Syncee_Request
         $remote_site_url                   = $site->getSiteUrl() . "?ACT={$site->action_id}&entity={$entity_class_str_sans_module_name}&site_id={$site->site_id}";
 
         return $remote_site_url;
-    }
-
-    public function getLastCurlInfo()
-    {
-        return $this->_last_curl_info;
-    }
-
-    public function getLastResponseDecoded()
-    {
-        return $this->_last_response_decoded;
-    }
-
-    public function getLastResponseDataDecoded()
-    {
-        return is_array($this->_last_response_decoded) && isset($this->_last_response_decoded['data'])
-            ? json_decode($this->_last_response_decoded['data'], true)
-            : false
-        ;
     }
 }
