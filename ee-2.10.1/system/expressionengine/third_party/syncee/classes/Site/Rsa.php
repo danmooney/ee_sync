@@ -47,9 +47,9 @@ class Syncee_Site_Rsa
         return $this->private_key;
     }
 
-    public function getPublicKey()
+    public function getPublicKey($create_new_key_if_non_existent = true)
     {
-        if (!$this->public_key) {
+        if (!$this->public_key && $create_new_key_if_non_existent) {
             $this->_createKey();
         }
 
