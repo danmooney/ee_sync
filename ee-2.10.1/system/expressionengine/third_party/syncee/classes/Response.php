@@ -68,13 +68,22 @@ class Syncee_Response
         $this->_raw_response = $response = $request->execute();
         $this->_status_code  = (int) $curl_handle->http_status_code;
 
-        $decoded_response   = json_decode($response, true);
+        $decoded_response    = json_decode($response, true);
 
-        if (is_array($decoded_response) && isset($decoded_response['data']) && is_string($decoded_response['data'])) {
-            $decoded_response['data']  = $this->_decryptResponseData($site, $decoded_response['data']);
-            $this->_errors             = isset($decoded_response['errors']) ? $decoded_response['errors'] : null;
-            $this->_message            = isset($decoded_response['message']) ? $decoded_response['message'] : null;
+        if (is_array($decoded_response)) {
+            $this->_errors = isset($decoded_response['errors']) ? $decoded_response['errors'] : array();
+
+            if (isset($decoded_response['data']) && is_string($decoded_response['data'])) {
+                $decoded_response['data'] = $this->_decryptResponseData($site, $decoded_response['data']);
+
+                if (!$decoded_response['data']) {
+                    $this->_errors[] = 'Unable to decode response data with private key.';
+                }
+            }
+
+            $this->_message            = isset($decoded_response['message']) ? $decoded_response['message'] : '';
             $this->_response_decoded   = $decoded_response;
+
             $this->_raw_response       = json_encode($decoded_response);
         }
     }
