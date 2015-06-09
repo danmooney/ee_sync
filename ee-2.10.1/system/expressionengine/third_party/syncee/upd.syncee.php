@@ -35,6 +35,7 @@ class Syncee_Upd
 
             // write .gitignore to prevent any private key files from getting committed
             file_put_contents($private_key_path . '/.gitignore', "/*\n!.gitignore");
+            file_put_contents($private_key_path . '/.htaccess', 'Deny from all');
         }
 
         ee()->load->dbforge();
