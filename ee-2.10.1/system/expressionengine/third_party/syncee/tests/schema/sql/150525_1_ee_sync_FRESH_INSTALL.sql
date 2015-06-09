@@ -1087,7 +1087,7 @@ CREATE TABLE `exp_members` (
 --  Records of `exp_members`
 -- ----------------------------
 BEGIN;
-INSERT INTO `exp_members` VALUES ('1', '1', 'admin', 'admin', '5eeef382ef147aaae38e62647192eb93ca5cbaad77514528fdcbc5c26d0a417b330d3dbe216cf0ebd5c0e0beafdbb5a91dc1e2fb8d076113d7fa52604e5921b1', 'L|+t7N\'.<YGDCa*;Td&.LF3uD:lIBilDC@jYda\"yEi?,1DQ&\"!nj,aco*X>z~-Xldm-.[MEo.<qQEm%SWxA=dnE15$,>B3,_`pcU>3M1KKr_Q/p~L5\\kQrHvr(OV*w3l', 'dde054bde0d6e396903126d0afbcc532457d6572', 'c5f962bc2af0ad849a6ce4c38fdd9ae7588e8afb', null, 'dan.r.mooney@gmail.com', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0', 'y', '0', '0', '127.0.0.1', '1432257850', '1432573358', '1432573358', '0', '0', '0', '0', '0', '0', '0', '0', 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', 'America/New_York', '12', '%n/%j/%Y', 'n', null, null, null, null, '28', null, '18', '', null, 'n', '0', 'y', '0');
+INSERT INTO `exp_members` VALUES ('1', '1', 'admin', 'admin', '5eeef382ef147aaae38e62647192eb93ca5cbaad77514528fdcbc5c26d0a417b330d3dbe216cf0ebd5c0e0beafdbb5a91dc1e2fb8d076113d7fa52604e5921b1', 'L|+t7N\'.<YGDCa*;Td&.LF3uD:lIBilDC@jYda\"yEi?,1DQ&\"!nj,aco*X>z~-Xldm-.[MEo.<qQEm%SWxA=dnE15$,>B3,_`pcU>3M1KKr_Q/p~L5\\kQrHvr(OV*w3l', 'dde054bde0d6e396903126d0afbcc532457d6572', 'c5f962bc2af0ad849a6ce4c38fdd9ae7588e8afb', null, 'dan.mooney@example.com', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '0', 'y', '0', '0', '127.0.0.1', '1432257850', '1432573358', '1432573358', '0', '0', '0', '0', '0', '0', '0', '0', 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', 'America/New_York', '12', '%n/%j/%Y', 'n', null, null, null, null, '28', null, '18', '', null, 'n', '0', 'y', '0');
 COMMIT;
 
 -- ----------------------------
@@ -1665,15 +1665,6 @@ BEGIN;
 INSERT INTO `exp_statuses` VALUES ('1', '1', '1', 'open', '1', '009933'), ('2', '1', '1', 'closed', '2', '990000');
 COMMIT;
 
--- ----------------------------
---  Table structure for `exp_syncee_settings`
--- ----------------------------
-DROP TABLE IF EXISTS `exp_syncee_settings`;
-CREATE TABLE `exp_syncee_settings` (
-  `setting_key` varchar(50) NOT NULL,
-  `setting_value` varchar(1000) DEFAULT NULL,
-  PRIMARY KEY (`setting_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `exp_template_groups`
