@@ -110,14 +110,20 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
     protected function _seedSiteData()
     {
         $i = 1;
+
+        $sites_by_site_url = array();
+
         while ($db_name = $this->_fetchFromConfig("database.connection.db$i", false)) {
             $this->_switchToDatabaseBasedOnNumber($i);
             $action_id = ee()->db->select('action_id')->from('actions')->where('method', 'actionHandleRemoteDataApiCall')->get()->row('action_id');
 
             $j = 1;
             while ($site_url = $this->_fetchFromConfig("site.url$j", false)) {
+                if (!isset($sites_by_site_url[$site_url])) {
+                    $sites_by_site_url[$site_url] = new Syncee_Site();
+                }
 
-                $site = new Syncee_Site();
+                $site = $sites_by_site_url[$site_url];
 
                 ee()->db->insert(Syncee_Site::TABLE_NAME, array(
                     'site_id'    => 1,
@@ -130,11 +136,11 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
                 $j += 1;
             }
 
-            $i += 1;
-        }
+            foreach ($this->_seed_data_files as $seed_data_file) {
+                require SYNCEE_PATH_TESTS . '/seeds/' . strtolower($seed_data_file) . '.php';
+            }
 
-        foreach ($this->_seed_data_files as $seed_data_file) {
-            require SYNCEE_PATH_TESTS . '/seeds/' . strtolower($seed_data_file) . '.php';
+            $i += 1;
         }
     }
 
