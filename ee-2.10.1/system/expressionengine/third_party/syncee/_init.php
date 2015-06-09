@@ -9,7 +9,7 @@ if (!defined('BASEPATH')) {
 
 defined('SYNCEE_PATH')       or define('SYNCEE_PATH',       dirname(__FILE__));
 defined('SYNCEE_PATH_TESTS') or define('SYNCEE_PATH_TESTS', SYNCEE_PATH . '/tests');
-defined('SYNCEE_TEST_MODE')  or define('SYNCEE_TEST_MODE',  false);
+defined('SYNCEE_TEST_MODE')  or define('SYNCEE_TEST_MODE',  isset($_SERVER['SYNCEE_TEST_MODE']) && $_SERVER['SYNCEE_TEST_MODE']);
 
 require_once SYNCEE_PATH . '/vendor/autoload.php';
 
