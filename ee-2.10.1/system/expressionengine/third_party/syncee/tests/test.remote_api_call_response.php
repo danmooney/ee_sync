@@ -53,6 +53,17 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
 
     public function testMissingPublicKeyReturnsBadPublicKeyMessage()
     {
-        $this->fail('Need to implement ' . __METHOD__);
+        $remote_site             = $this->_remote_site;
+
+        $this->_switchToDatabaseBasedOnSite($remote_site);
+        $remote_site->public_key = 'some bs';
+        $remote_site->save();
+
+        $request   = $this->_request;
+        $response  = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+
+        $this->assertTrue($response->getStatusCode() === 500, 'Response code is 500');
+
+        $this->fail('Need to assert bad public key message returned in ' . __METHOD__);
     }
 }
