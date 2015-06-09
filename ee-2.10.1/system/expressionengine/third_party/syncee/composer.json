@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "phpseclib/phpseclib": "^0.3.10"
+    }
+}
