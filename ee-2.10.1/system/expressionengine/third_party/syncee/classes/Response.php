@@ -25,7 +25,22 @@ class Syncee_Response
      */
     private $_raw_response;
 
+    /**
+     * @var Syncee_Request_Remote_Entity_Interface
+     */
+    private $_entity;
+
     private $_response_decoded;
+
+    /**
+     * @var array
+     */
+    private $_errors;
+
+    /**
+     * @var string
+     */
+    private $_message;
 
     /**
      * @var int
@@ -41,11 +56,13 @@ class Syncee_Response
      * Execute the request and store/parse the response
      * @param Syncee_Request $request
      * @param Syncee_Site $site
+     * @param Syncee_Request_Remote_Entity_Interface|null $entity
      * @throws Syncee_Exception
      */
-    public function __construct(Syncee_Request $request, Syncee_Site $site)
+    public function __construct(Syncee_Request $request, Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity = null)
     {
         $this->_site         = $site;
+        $this->_entity       = $entity;
 
         $curl_handle         = $request->getCurlHandle();
         $this->_raw_response = $response = $request->execute();
@@ -54,9 +71,9 @@ class Syncee_Response
         $decoded_response   = json_decode($response, true);
 
         if (is_array($decoded_response) && isset($decoded_response['data']) && is_string($decoded_response['data'])) {
-            $this->_decryptResponseData($site, $decoded_response['data']);
-
             $decoded_response['data']  = $this->_decryptResponseData($site, $decoded_response['data']);
+            $this->_errors             = isset($decoded_response['errors']) ? $decoded_response['errors'] : null;
+            $this->_message            = isset($decoded_response['message']) ? $decoded_response['message'] : null;
             $this->_response_decoded   = $decoded_response;
             $this->_raw_response       = json_encode($decoded_response);
         }
@@ -65,6 +82,16 @@ class Syncee_Response
     public function getStatusCode()
     {
         return $this->_status_code;
+    }
+
+    public function getErrors()
+    {
+        return $this->_errors;
+    }
+
+    public function getMessage()
+    {
+        return $this->_message;
     }
 
     public function getRawResponse()
@@ -90,7 +117,12 @@ class Syncee_Response
      */
     public function getResponseDataDecodedAsCollection()
     {
-        // TODO
+        if (!$this->_entity) {
+            return false;
+        }
+
+        $class_name = $this->_entity->getCollectionClassName();
+        return new $class_name($this->getResponseDataDecoded());
     }
 
     public function __toString()
