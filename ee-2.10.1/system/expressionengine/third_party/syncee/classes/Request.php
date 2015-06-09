@@ -30,6 +30,16 @@ class Syncee_Request
      */
     private $_response;
 
+    public function getCurlHandle()
+    {
+        return $this->_curl_handle;
+    }
+
+    public function getResponse()
+    {
+        return $this->_response;
+    }
+
     public function makeEntityCallToSite(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity)
     {
         $remote_site_url = $this->_generateRemoteRequestUrl($site, $entity);
@@ -37,7 +47,7 @@ class Syncee_Request
         $ch = $this->_curl_handle = new Syncee_Helper_Curl($remote_site_url);
         $ch->setOpt(CURLOPT_RETURNTRANSFER, true);
 
-        $this->_response = $response = new Syncee_Response($this, $site);
+        $this->_response = $response = new Syncee_Response($this, $site, $entity);
 
         return $response;
     }
@@ -47,6 +57,10 @@ class Syncee_Request
         return $this->_curl_handle && $this->_curl_handle->getOpt(CURLOPT_URL);
     }
 
+    /**
+     * @return string
+     * @throws Syncee_Exception
+     */
     public function execute()
     {
         if (!$this->isReadyToExecute()) {
@@ -59,11 +73,6 @@ class Syncee_Request
         $this->_curl_handle->close();
 
         return $response;
-    }
-
-    public function getCurlHandle()
-    {
-        return $this->_curl_handle;
     }
 
     private function _generateRemoteRequestUrl(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity)
