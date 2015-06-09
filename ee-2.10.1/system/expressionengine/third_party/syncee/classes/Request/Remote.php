@@ -84,7 +84,15 @@ class Syncee_Request_Remote
 
         $collection = $entity->getCollection();
 
-        $this->_sendJsonResponse($collection->toArray(), $errors, $code, $message);
+        $this_site->rsa->getCrypt()->loadKey($this_site->rsa->getPublicKey());
+        $data = base64_encode($this_site->rsa->getCrypt()->encrypt(json_encode($collection->toArray())));
+
+        if (!$data) {
+            $code = 500;
+            $message = 'Bad public key.';
+        }
+
+        $this->_sendJsonResponse($data, $errors, $code, $message);
     }
 
     private function _sendJsonResponse($data = array(), $errors = array(), $code = 200, $message = '', $meta = array())
@@ -92,9 +100,6 @@ class Syncee_Request_Remote
         header("Content-Type: {$this->_json_mime_type}", true, $code);
 
         $site = $this->_site;
-        $site->rsa->getCrypt()->loadKey($site->rsa->getPublicKey());
-
-        $data = base64_encode($site->rsa->getCrypt()->encrypt(json_encode($data)));
 
 		$data = array(
             'version' => Syncee_Upd::VERSION,
