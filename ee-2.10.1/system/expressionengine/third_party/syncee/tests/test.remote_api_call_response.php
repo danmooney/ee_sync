@@ -64,7 +64,7 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
         $this->expectError('Decryption error');
         $response  = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
 
-        $this->assertTrue($response->getStatusCode() === 500, 'Response code is 500');
+        $this->assertEqual($response->getStatusCode(), 500, 'Response code is 500');
 
         $this->fail('Need to assert bad public key message returned in ' . __METHOD__);
     }

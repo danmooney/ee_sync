@@ -74,7 +74,7 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
         $response      = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
         $decoded_data  = $response->getResponseDataDecoded();
 
-        $this->assertTrue(is_array($decoded_data), 'Data is properly decrypted and is an array');
+        $this->assertIsA($decoded_data, 'array', 'Data is properly decrypted and is an array: %s');
     }
 
     public function testCreatingPrivateKeySavesToCorrectLocation()
@@ -87,6 +87,6 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
         $private_key_pathname = $reflection_method->invoke($remote_site->rsa);
 
         $this->assertTrue(is_file($private_key_pathname) && is_readable($private_key_pathname) && is_writable($private_key_pathname), 'Private key pathname is a file and is readable and writable');
-        $this->assertTrue(file_get_contents($private_key_pathname) === $remote_site->rsa->getPrivateKey(), 'Private key is identical to the contents of the private key file');
+        $this->assertEqual(file_get_contents($private_key_pathname), $remote_site->rsa->getPrivateKey(), 'Private key is identical to the contents of the private key file');
     }
 }

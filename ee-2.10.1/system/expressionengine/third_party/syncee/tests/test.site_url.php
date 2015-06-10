@@ -40,20 +40,20 @@ class Test_Site_Url extends Syncee_Unit_Test_Case_Abstract
     {
         $current_local_site = $this->_current_local_site;
 
-        $this->assertTrue(parse_url($current_local_site->getSiteUrl(), PHP_URL_SCHEME) === 'http', 'Site\'s scheme is HTTP: %s');
+        $this->assertEqual(parse_url($current_local_site->getSiteUrl(), PHP_URL_SCHEME), 'http', 'Site\'s scheme is HTTP: %s');
 
         $current_local_site->use_https = true;
 
-        $this->assertTrue(parse_url($current_local_site->getSiteUrl(), PHP_URL_SCHEME) === 'https', 'Site\'s scheme is HTTPS: %s');
+        $this->assertEqual(parse_url($current_local_site->getSiteUrl(), PHP_URL_SCHEME), 'https', 'Site\'s scheme is HTTPS: %s');
 
         $current_local_site->use_https = false;
 
-        $this->assertTrue(parse_url($current_local_site->getSiteUrl(), PHP_URL_SCHEME) === 'http', 'Site\'s scheme is HTTP: %s');
+        $this->assertEqual(parse_url($current_local_site->getSiteUrl(), PHP_URL_SCHEME), 'http', 'Site\'s scheme is HTTP: %s');
 
         $current_local_site->use_https = true;
         $current_local_site->save();
 
         $site_from_db = Syncee_Site_Collection::getAllBySiteId(1)->filterByCondition('isCurrentLocal', true);
-        $this->assertTrue(parse_url($site_from_db->getSiteUrl(), PHP_URL_SCHEME) === 'https', 'Site\'s scheme is HTTPS: %s');
+        $this->assertEqual(parse_url($site_from_db->getSiteUrl(), PHP_URL_SCHEME), 'https', 'Site\'s scheme is HTTPS: %s');
     }
 }
