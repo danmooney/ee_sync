@@ -18,9 +18,11 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ implements Syncee_Entity_Interface
+abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ implements Syncee_Entity_Interface, Syncee_Entity_Comparate_Interface
 {
     protected $_data;
+
+    protected $_ignored_columns_in_comparison = array();
 
     public function __construct(array $row = array(), $is_new = true) // TODO - is entity going to really extend active record.  It sorta makes sense.  But channel logic is way more complicated and is based in multiple tables.
     {
@@ -30,6 +32,11 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
     public function toArray($table_data_only = true)
     {
         return $this->_data;
+    }
+
+    public function columnIsIgnoredInComparison($column_name)
+    {
+        return in_array($column_name, $this->_ignored_columns_in_comparison);
     }
 
     public function __get($key)
