@@ -20,5 +20,7 @@ if (!defined('SYNCEE_PATH')) {
 
 interface Syncee_Collection_Interface extends Syncee_Entity_Interface
 {
+    public function appendToCollectionAsArray(array $row);
 
+    public function appendToCollectionAsEntity(Syncee_Entity_Interface $row);
 }
