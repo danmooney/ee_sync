@@ -27,11 +27,11 @@ class Syncee_Site_Rsa
     /**
      * @var Crypt_RSA
      */
-    private $_rsa_crypt;
+    private $_crypt;
 
     public function __construct()
     {
-        $this->_rsa_crypt = new Crypt_RSA();
+        $this->_crypt = new Crypt_RSA();
     }
 
     public function getPrivateKey()
@@ -58,12 +58,12 @@ class Syncee_Site_Rsa
 
     public function getCrypt()
     {
-        return $this->_rsa_crypt;
+        return $this->_crypt;
     }
 
     private function _createKey()
     {
-        list($this->private_key, $this->public_key, $partial_key) = array_values($this->_rsa_crypt->createKey());
+        list($this->private_key, $this->public_key, $partial_key) = array_values($this->_crypt->createKey());
         $this->_writePrivateKeyToFile();
     }
 
