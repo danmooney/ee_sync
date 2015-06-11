@@ -30,11 +30,26 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
     {
         foreach ($rows as $row) {
             if (is_array($row)) {
-                $row = new $this->_row_model($row, false);
+                $this->appendToCollectionAsArray($row);
+            } else {
+                $this->appendToCollectionAsEntity($row);
             }
-
-            $this->_rows[] = $row;
         }
+    }
+
+    public function appendToCollectionAsArray(array $row)
+    {
+        $this->_rows[] = new $this->_row_model($row, false);
+    }
+
+    public function appendToCollectionAsEntity(Syncee_Entity_Interface $row)
+    {
+        $row_model = $this->_row_model;
+        if (!$row instanceof $row_model) {
+            throw new Syncee_Exception('Row passed to ' . __METHOD__ . ' must be instance of ' . $this->_row_model . ', instance of ' . get_class($row) . ' passed');
+        }
+
+        $this->_rows[] = $row;
     }
 
     public function toArray($table_data_only = true)
