@@ -111,6 +111,17 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         return $row;
     }
 
+    public function getUniqueIdentifier()
+    {
+        $identifiers = array();
+
+        foreach ($this->_primary as $key) {
+            $identifiers[] = $this->$key;
+        }
+
+        return implode('|', $identifiers);
+    }
+
     //    public function __call($method, $args) {}
 
     public function __set($property, $value)
