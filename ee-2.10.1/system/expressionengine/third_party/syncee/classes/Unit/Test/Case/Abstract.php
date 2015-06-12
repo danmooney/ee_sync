@@ -109,7 +109,11 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
 
     protected function _seedSiteData()
     {
-        $i = 1;
+        $i         =  1;
+        $db_number =& $i;
+
+        $test_stack                    = $this->reporter->getTestList();
+        $current_test_method_to_be_run = end($test_stack);
 
         $sites_by_site_url = array();
 
@@ -136,8 +140,15 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
                 $j += 1;
             }
 
-            foreach ($this->_seed_data_files as $seed_data_file) {
-                require SYNCEE_PATH_TESTS . '/seeds/' . strtolower($seed_data_file) . '.php';
+            $seed_data_files = isset($this->_seed_data_files[$current_test_method_to_be_run])
+                ? $this->_seed_data_files[$current_test_method_to_be_run]
+                : $this->_seed_data_files
+            ;
+
+            foreach ($seed_data_files as $seed_data_file) {
+                if (is_scalar($seed_data_file)) {
+                    require SYNCEE_PATH_TESTS . '/seeds/' . strtolower($seed_data_file) . '.php';
+                }
             }
 
             $i += 1;
