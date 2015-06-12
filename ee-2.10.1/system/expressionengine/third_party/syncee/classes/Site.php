@@ -46,11 +46,6 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
         parent::__construct($row, $is_new);
     }
 
-    public function isEmptyRow()
-    {
-        return $this->_is_empty_row;
-    }
-
     /**
      * Is this instance of Syncee_Site the current website?
      * Checks based on site_url

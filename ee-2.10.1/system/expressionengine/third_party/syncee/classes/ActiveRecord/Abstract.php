@@ -80,6 +80,11 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         $this->_is_new = $is_new;
     }
 
+    public function isEmptyRow()
+    {
+        return $this->_is_empty_row;
+    }
+
     public function save()
     {
         $row = $this->toArray();
