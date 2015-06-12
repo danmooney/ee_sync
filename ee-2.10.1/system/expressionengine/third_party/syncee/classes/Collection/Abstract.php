@@ -26,7 +26,7 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
 
     protected $_row_model;
 
-    public function __construct(array $rows)
+    public function __construct(array $rows = array())
     {
         foreach ($rows as $row) {
             if (is_array($row)) {
@@ -50,6 +50,11 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
         }
 
         $this->_rows[] = $row;
+    }
+
+    public function isEmptyCollection()
+    {
+        return !count($this->_rows);
     }
 
     public function toArray($table_data_only = true)
