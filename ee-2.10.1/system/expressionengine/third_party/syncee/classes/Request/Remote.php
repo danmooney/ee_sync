@@ -85,7 +85,7 @@ class Syncee_Request_Remote
         $collection = $entity->getCollection();
 
         $this_site->rsa->getCrypt()->loadKey($this_site->rsa->getPublicKey());
-        $data = base64_encode($this_site->rsa->getCrypt()->encrypt(json_encode($collection->toArray())));
+        $data = base64_encode($this_site->rsa->getCrypt()->encrypt(json_encode($collection->toArray(false))));
 
         if (!$data) {
             $code = 500;
