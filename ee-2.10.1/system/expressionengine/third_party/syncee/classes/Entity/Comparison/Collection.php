@@ -20,5 +20,31 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract
 {
+    private $_source;
+
+    private $_target;
+
     protected $_row_model = 'Syncee_Entity_Comparison';
+
+    public function setSource(Syncee_Entity_Abstract $source)
+    {
+        $this->_source = $source;
+        return $this;
+    }
+
+    public function setTarget(Syncee_Entity_Abstract $target)
+    {
+        $this->_target = $target;
+        return $this;
+    }
+
+    public function getSource()
+    {
+        return $this->_source;
+    }
+
+    public function getTarget()
+    {
+        return $this->_target;
+    }
 }
