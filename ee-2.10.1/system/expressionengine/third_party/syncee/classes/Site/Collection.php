@@ -18,24 +18,9 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Site_Collection implements Countable, Iterator, ArrayAccess
+class Syncee_Site_Collection extends Syncee_Collection_Abstract
 {
-    private $_position = 0;
-
-    private $_rows = array();
-
-    private $_row_model = 'Syncee_Site';
-
-    public function __construct(array $rows)
-    {
-        foreach ($rows as $row) {
-            if (is_array($row)) {
-                $row = new $this->_row_model($row, false);
-            }
-
-            $this->_rows[] = $row;
-        }
-    }
+    protected $_row_model = 'Syncee_Site';
 
     public static function getAllBySiteId($site_id)
     {
@@ -66,57 +51,35 @@ class Syncee_Site_Collection implements Countable, Iterator, ArrayAccess
         }
     }
 
-    public function count()
+    /**
+     * @return Syncee_Entity_Comparison_Collection_Library
+     */
+    public function getChannelComparisonCollectionLibrary()
     {
-        return count($this->_rows);
-    }
+        $site_channel_library = new Syncee_Entity_Channel_Collection_Library();
 
-    public function rewind()
-    {
-        $this->_position = 0;
-    }
+        // get channels/fields first
+        $channel_remote_request_entity = new Syncee_Request_Remote_Entity_Channel();
 
-    public function current()
-    {
-        return $this->_rows[$this->_position];
-    }
+        /**
+         * @var $row Syncee_Site
+         * @var $collection Syncee_Entity_Channel_Collection
+         */
+        foreach ($this->_rows as $row) {
+            $request  = new Syncee_Request();
 
-    public function key()
-    {
-        return $this->_position;
-    }
+            $response   = $request->makeEntityCallToSite($row, $channel_remote_request_entity);
+            $collection = $response->getResponseDataDecodedAsCollection();
 
-    public function next()
-    {
-        return $this->_position += 1;
-    }
+            $collection->setSite($row);
 
-    public function valid()
-    {
-        return isset($this->_rows[$this->_position]);
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        if (is_null($offset)) {
-            $this->_rows[] = $value;
-        } else {
-            $this->_rows[$offset] = $value;
+            $site_channel_library->appendToLibraryAsCollection($collection);
         }
+
+        $site_channel_comparison_library = $site_channel_library->compareCollections();
+
+        return $site_channel_comparison_library;
     }
 
-    public function offsetExists($offset)
-    {
-        return isset($this->_rows[$offset]);
-    }
-
-    public function offsetUnset($offset)
-    {
-        unset($this->_rows[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        return isset($this->_rows[$offset]) ? $this->_rows[$offset] : null;
-    }
+    // TODO - implement getSynchronizationProfileCollection
 }
