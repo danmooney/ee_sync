@@ -21,4 +21,42 @@ if (!defined('SYNCEE_PATH')) {
 class Syncee_Entity_Channel_Collection extends Syncee_Collection_Abstract
 {
     protected $_row_model = 'Syncee_Entity_Channel';
+
+    /**
+     * @var Syncee_Site
+     */
+    private $_site;
+
+    public function setSite(Syncee_Site $site)
+    {
+        $this->_site = $site;
+    }
+
+    public function getSite()
+    {
+        return $this->_site;
+    }
+
+    public function getChannelByName($channel_name)
+    {
+        foreach ($this->_rows as $row) {
+            if ($row->channel_name === $channel_name) {
+                $channel = $row;
+                break;
+            }
+        }
+
+        return isset($channel) ? $channel : false;
+    }
+
+    public function getChannelNames()
+    {
+        $channel_names = array();
+
+        foreach ($this->_rows as $row) {
+            $channel_names[] = $row->channel_name;
+        }
+
+        return $channel_names;
+    }
 }
