@@ -21,7 +21,7 @@ if (!defined('SYNCEE_PATH')) {
 interface Syncee_Collection_Library_Comparator_Interface
 {
     /**
-     * @return Syncee_Entity_Comparison_Collection
+     * @return Syncee_Entity_Comparison_Collection_Library
      */
     public function compareCollections();
 }
