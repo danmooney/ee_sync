@@ -39,6 +39,17 @@ class Syncee_Entity_Channel extends Syncee_Entity_Abstract
         parent::__construct($row, $is_new);
     }
 
+    public function toArray($table_data_only = true)
+    {
+        $data = $this->_data;
+
+        if ($this->_fields) {
+            $data['fields'] = $this->_fields->toArray();
+        }
+
+        return $data;
+    }
+
     public function getFields()
     {
         return $this->_fields;
