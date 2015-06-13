@@ -43,7 +43,7 @@ class Syncee_Entity_Channel extends Syncee_Entity_Abstract
     {
         $data = $this->_data;
 
-        if ($this->_fields) {
+        if ($this->_fields && !$table_data_only) {
             $data['fields'] = $this->_fields->toArray();
         }
 
