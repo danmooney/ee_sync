@@ -20,5 +20,5 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract
 {
-    protected $_row_model = 'Syncee_Entity_Comparison_Result';
+    protected $_row_model = 'Syncee_Entity_Comparison';
 }
