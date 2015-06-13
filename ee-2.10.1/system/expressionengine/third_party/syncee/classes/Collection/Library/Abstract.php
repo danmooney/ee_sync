@@ -26,11 +26,13 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
 
     protected $_collection_model;
 
-    public function __construct(array $collections)
+    public function __construct(array $collections = array())
     {
         foreach ($collections as $collection) {
             if (is_array($collection)) {
-                $collection = new $this->_collection_model($collection);
+                $this->appendToLibraryAsArray($collection);
+            } else {
+                $this->appendToLibraryAsCollection($collection);
             }
 
             $this->_collections[] = $collection;
@@ -51,7 +53,7 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
 
         $this->_collections[] = $collection;
     }
-    
+
     public function count()
     {
         return count($this->_collections);
