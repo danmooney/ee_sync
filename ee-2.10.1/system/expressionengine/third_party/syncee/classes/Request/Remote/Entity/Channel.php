@@ -48,7 +48,7 @@ class Syncee_Request_Remote_Entity_Channel extends Syncee_Request_Remote_Entity_
                 }
             }
 
-            $channel['field_group_name'] = '';
+
             foreach ($field_groups->result_array() as $field_group) {
                 if ($field_group['group_id'] === $channel['field_group']) {
                     $channel['field_group_name'] = $field_group['group_name'];
