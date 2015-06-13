@@ -23,7 +23,7 @@ class Syncee_Entity_Comparison_Fix_Generic
     /**
      * @var Syncee_Entity_Comparison
      */
-    private $_comparison;
+    protected $_comparison;
 
     public function __construct(Syncee_Entity_Comparison $comparison)
     {
