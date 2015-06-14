@@ -30,6 +30,10 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract
         self::RESULT_COMPARATE_VALUE_DIFFERS
     );
 
+    /**
+     * @var string
+     */
+    private $_comparison_result;
 
     /**
      * @var Syncee_Entity_Abstract
@@ -83,6 +87,11 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract
         return $this;
     }
 
+    public function getComparateColumnName()
+    {
+        return $this->_comparate_column_name;
+    }
+
     public function setSourceValue($source_value)
     {
         $this->_source_value = $source_value;
@@ -123,13 +132,17 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract
 
     public function getComparisonResult()
     {
-        if (!$this->_comparate_column_exists_in_source) {
-            return self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE;
-        } elseif (!$this->_comparate_column_exists_in_target) {
-            return self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET;
-        } else {
-            return self::RESULT_COMPARATE_VALUE_DIFFERS;
+        if (!isset($this->_comparison_result)) {
+            if (!$this->_comparate_column_exists_in_source) {
+                $this->_comparison_result = self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE;
+            } elseif (!$this->_comparate_column_exists_in_target) {
+                $this->_comparison_result = self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET;
+            } else {
+                $this->_comparison_result = self::RESULT_COMPARATE_VALUE_DIFFERS;
+            }
         }
+
+        return $this->_comparison_result;
     }
 
     public function getFix()
