@@ -18,8 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Entity_Channel_Field_Collection_Library extends Syncee_Collection_Library_Abstract
-    implements Syncee_Collection_Library_Comparator_Interface
+class Syncee_Entity_Channel_Field_Collection_Library extends Syncee_Collection_Library_Comparator_Abstract
 {
     protected $_collection_model = 'Syncee_Entity_Channel_Field_Collection';
 
@@ -47,11 +46,5 @@ class Syncee_Entity_Channel_Field_Collection_Library extends Syncee_Collection_L
         }
 
         return $collection_exists_already;
-    }
-
-    public function compareCollections()
-    {
-        // TODO
-        return new Syncee_Entity_Comparison_Collection_Library();
     }
 }
