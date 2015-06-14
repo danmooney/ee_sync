@@ -86,8 +86,10 @@ class Syncee_Entity_Channel_Collection_Library extends Syncee_Collection_Library
                     ->setTarget($local_channel_entity)
                 ;
 
-                if (!$channel_comparison_library->comparisonCollectionAlreadyExists($comparison_collection)) {
-                    $channel_comparison_library->appendToLibraryAsCollection($comparison_collection);
+                // this should always return a collection!
+                $existent_channel_comparison_collection = $channel_comparison_library->getComparisonCollectionBySourceAndTarget($remote_channel_entity, $local_channel_entity);
+                foreach ($comparison_collection as $comparison) {
+                   $existent_channel_comparison_collection->appendToCollectionAsEntity($comparison);
                 }
             }
         }
