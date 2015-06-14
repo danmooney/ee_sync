@@ -20,6 +20,11 @@ if (!defined('SYNCEE_PATH')) {
 
 abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface, Countable, Iterator, ArrayAccess
 {
+    /**
+     * @var Syncee_Site
+     */
+    protected $_site;
+
     protected $_position = 0;
 
     protected $_rows = array();
@@ -37,6 +42,16 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
         }
     }
 
+    public function setSite(Syncee_Site $site)
+    {
+        $this->_site = $site;
+    }
+
+    public function getSite()
+    {
+        return $this->_site;
+    }
+
     public function appendToCollectionAsArray(array $row)
     {
         $this->_rows[] = new $this->_row_model($row, false);
@@ -50,6 +65,36 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
         }
 
         $this->_rows[] = $row;
+    }
+
+    public function getEntityByUniqueIdentifierKeyAndValue($identifier_value, $identifier_key_override = null)
+    {
+        /**
+         * @var $row Syncee_Entity_Abstract
+         */
+        if ($identifier_key_override) {
+            $unique_identifier_key = $identifier_key_override;
+        } else {
+            $row_model             = $this->_row_model;
+            $row                   = new $row_model();
+            $unique_identifier_key = $row->getUniqueIdentifierKey();
+        }
+
+        foreach ($this->_rows as $row) {
+            $row_arr = $row->toArray(false);
+
+            if (isset($row_arr[$unique_identifier_key]) &&
+                $row_arr[$unique_identifier_key] === $identifier_value
+            ) {
+                $found_entity = $row;
+                break;
+            }
+        }
+
+        return isset($found_entity)
+            ? $found_entity
+            : false
+        ;
     }
 
     public function isEmptyCollection()

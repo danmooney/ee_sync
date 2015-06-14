@@ -20,7 +20,20 @@ if (!defined('SYNCEE_PATH')) {
 
 interface Syncee_Collection_Interface extends Syncee_Entity_Interface
 {
+    /**
+     * @param Syncee_Site $site
+     * @return void
+     */
+    public function setSite(Syncee_Site $site);
+
+    /**
+     * @return Syncee_Site
+     */
+    public function getSite();
+
     public function appendToCollectionAsArray(array $row);
 
     public function appendToCollectionAsEntity(Syncee_Entity_Interface $row);
+
+    public function getEntityByUniqueIdentifierKeyAndValue($identifier_value, $identifier_key_override = null);
 }
