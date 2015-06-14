@@ -25,7 +25,7 @@ class Syncee_Entity_Channel_Collection extends Syncee_Collection_Abstract
     /**
      * @var Syncee_Site
      */
-    private $_site;
+    protected $_site;
 
     public function setSite(Syncee_Site $site)
     {
