@@ -34,8 +34,6 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
             } else {
                 $this->appendToLibraryAsCollection($collection);
             }
-
-            $this->_collections[] = $collection;
         }
     }
 
