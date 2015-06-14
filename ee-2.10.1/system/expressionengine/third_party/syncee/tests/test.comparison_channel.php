@@ -27,9 +27,9 @@ class Test_Comparison_Channel extends Syncee_Unit_Test_Case_Abstract
         'testTwoSitesWithCompletelySimilarChannelGivesEmptyComparisonLibrary' => array(
             'animals_channel',
         ),
-        'testTwoSitesWithDifferingChannelDataGivesOneResultInComparisonLibrary' => array(
+        'testTwoSitesWithDifferingChannelLangGivesOneResultInComparisonLibrary' => array(
             'animals_channel',
-            'synchronization_tests/animals_channel_alter_source_db'
+            'synchronization_tests/animals_channel_alter_channel_lang_in_target'
         ),
     );
 
@@ -54,12 +54,23 @@ class Test_Comparison_Channel extends Syncee_Unit_Test_Case_Abstract
         $this->assertTrue($channel_comparison_library->hasNoComparisons(), 'Two sites have no comparisons; they are the same');
     }
 
-    public function testTwoSitesWithDifferingChannelDataGivesOneResultInComparisonLibrary()
+    public function testTwoSitesWithDifferingChannelLangGivesOneResultInComparisonLibrary()
     {
-        $this->fail('Need to implement ' . __METHOD__);
+        $channel_comparison_library           = $this->_site_collection->getChannelComparisonCollectionLibrary();
+        $non_empty_channel_comparison_library = $channel_comparison_library->getNonEmptyComparisonCollectionLibrary();
 
-        $channel_comparison_library = $this->_site_collection->getChannelComparisonCollectionLibrary();
+        $this->assertEqual(count($non_empty_channel_comparison_library), 1, 'Number of non-empty channel comparison collections is 1');
 
-        $this->assertTrue($channel_comparison_library->hasNoComparisons(), 'Two sites have no comparisons; they are the same');
+        $channel_comparison_collection        = $non_empty_channel_comparison_library[0];
+        $this->assertEqual(count($channel_comparison_collection), 1, 'There is 1 comparison result entity in channel comparison collection');
+
+        /**
+         * @var $channel_comparison_entity Syncee_Entity_Comparison
+         */
+        $channel_comparison_entity            = $channel_comparison_collection[0];
+        $this->assertEqual($channel_comparison_entity->getComparateColumnName(), 'channel_lang', 'Lone channel comparison entity\'s comparate column name is channel_lang');
+        $this->assertEqual($channel_comparison_entity->getSourceValue(), 'english', 'Lone channel comparison entity\'s source value is english');
+        $this->assertEqual($channel_comparison_entity->getTargetValue(), 'spanish', 'Lone channel comparison entity\'s target value is spanish');
+        $this->assertEqual($channel_comparison_entity->getComparisonResult(), $channel_comparison_entity::RESULT_COMPARATE_VALUE_DIFFERS, 'Lone channel comparison entity is ' . $channel_comparison_entity::RESULT_COMPARATE_VALUE_DIFFERS);
     }
 }
