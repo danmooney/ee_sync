@@ -38,4 +38,45 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
 
         return $has_no_comparisons;
     }
+
+    public function getNonEmptyComparisonCollectionLibrary()
+    {
+        $non_empty_collections = array();
+
+        /**
+         * @var $collection Syncee_Entity_Comparison_Collection
+         */
+        foreach ($this->_collections as $collection) {
+            if (!$collection->isEmptyCollection()) {
+                $non_empty_collections[] = $collection;
+            }
+        }
+
+        return new $this($non_empty_collections);
+    }
+
+    /**
+     * @param Syncee_Entity_Abstract $source
+     * @param Syncee_Entity_Abstract $target
+     * @return Syncee_Entity_Comparison_Collection|bool
+     */
+    public function getComparisonCollectionBySourceAndTarget(Syncee_Entity_Abstract $source, Syncee_Entity_Abstract $target)
+    {
+        /**
+         * @var $collection_to_test Syncee_Entity_Comparison_Collection
+         */
+        foreach ($this->_collections as $collection_to_test) {
+            if ($collection_to_test->getSource() === $source &&
+                $collection_to_test->getTarget() === $target
+            ) {
+                $collection = $collection_to_test;
+                break;
+            }
+        }
+
+        return isset($collection)
+            ? $collection
+            : false
+        ;
+    }
 }
