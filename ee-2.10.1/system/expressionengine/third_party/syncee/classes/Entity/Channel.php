@@ -25,6 +25,8 @@ class Syncee_Entity_Channel extends Syncee_Entity_Abstract
      */
     private $_field_collection;
 
+    protected $_unique_identifier_key = 'channel_name';
+
     protected $_ignored_columns_in_comparison = array(
         'channel_url'
     );

@@ -21,4 +21,6 @@ if (!defined('SYNCEE_PATH')) {
 class Syncee_Entity_Channel_Field extends Syncee_Entity_Abstract
 {
     protected $_ignored_columns_in_comparison = array();
+
+    protected $_unique_identifier_key = 'field_name';
 }
