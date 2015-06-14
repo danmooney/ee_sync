@@ -23,4 +23,11 @@ interface Syncee_Collection_Library_Interface
     public function appendToLibraryAsArray(array $collection);
 
     public function appendToLibraryAsCollection(Syncee_Collection_Abstract $collection);
+
+    /**
+     * Does the collection passed currently exist in the library?
+     * @param Syncee_Collection_Abstract $collection
+     * @return bool
+     */
+    public function collectionAlreadyExistsInLibrary(Syncee_Collection_Abstract $collection);
 }
