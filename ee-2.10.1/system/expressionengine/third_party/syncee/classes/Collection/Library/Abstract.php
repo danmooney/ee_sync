@@ -52,6 +52,24 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
         $this->_collections[] = $collection;
     }
 
+    public function collectionAlreadyExistsInLibrary(Syncee_Collection_Abstract $collection)
+    {
+        $collection_exists_already = false;
+
+        /**
+         * @var $collection_to_test Syncee_Collection_Abstract
+         */
+        foreach ($this->_collections as $collection_to_test) {
+            // TODO - is this the way to compare properly?
+            if ($collection_to_test->toArray(false) == $collection->toArray(false)) {
+                $collection_exists_already = true;
+                break;
+            }
+        }
+
+        return $collection_exists_already;
+    }
+
     public function count()
     {
         return count($this->_collections);
