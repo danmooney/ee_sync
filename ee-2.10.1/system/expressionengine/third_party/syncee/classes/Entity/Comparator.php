@@ -42,6 +42,8 @@ class Syncee_Entity_Comparator implements Syncee_Entity_Comparator_Interface
                 $comparison->setTargetValue($target_data[$key]);
             }
 
+            $comparison->getComparisonResult();
+
             $comparison_collection->appendToCollectionAsEntity($comparison);
         }
 
@@ -61,6 +63,8 @@ class Syncee_Entity_Comparator implements Syncee_Entity_Comparator_Interface
             $comparison->setComparateColumnName($key)->setTargetValue($value_in_target);
 
             $comparison->setComparateColumnExistsInSource(false);
+
+            $comparison->getComparisonResult();
 
             $comparison_collection->appendToCollectionAsEntity($comparison);
         }
