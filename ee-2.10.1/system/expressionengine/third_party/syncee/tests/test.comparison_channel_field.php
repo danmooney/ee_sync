@@ -24,7 +24,7 @@ class Test_Comparison_Channel_Field extends Syncee_Unit_Test_Case_Abstract
     protected $_truncation_setup_type = self::TRUNCATE_ALL;
 
     protected $_seed_data_files = array(
-
+        'animals_channel',
     );
 
     public function setUp()
@@ -39,5 +39,13 @@ class Test_Comparison_Channel_Field extends Syncee_Unit_Test_Case_Abstract
         $current_local_site     = $this->_site_collection[0];
         $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
         $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
+    }
+
+    public function testTwoSitesWithCompletelySimilarChannelFieldsGivesEmptyComparisonLibrary()
+    {
+        $this->fail('Need to implement ' . __METHOD__);
+
+        $channel_field_comparison_library = $this->_site_collection->getChannelFieldComparisonCollectionLibrary();
+        $this->assertTrue($channel_field_comparison_library->hasNoComparisons(), 'Two sites have no comparisons; they are the same');
     }
 }
