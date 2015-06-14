@@ -39,12 +39,7 @@ class Syncee_Request_Remote_Entity_Channel extends Syncee_Request_Remote_Entity_
 
             foreach ($fields->result_array() as $field) {
                 if ($field['group_id'] === $channel['field_group']) {
-                    $channel['fields'][] = array(
-                        'field_id'    => $field['field_id'],
-                        'field_name'  => $field['field_name'],
-                        'field_label' => $field['field_label'],
-                        'field_type'  => $field['field_type']
-                    );
+                    $channel['fields'][] = $field;
                 }
             }
 
