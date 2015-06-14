@@ -22,9 +22,11 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
 {
     protected $_data;
 
+    protected $_unique_identifier_key;
+
     protected $_ignored_columns_in_comparison = array();
 
-    public function __construct(array $row = array(), $is_new = true) // TODO - is entity going to really extend active record.  It sorta makes sense.  But channel logic is way more complicated and is based in multiple tables.
+    public function __construct(array $row = array(), $is_new = true) // TODO - is entity going to really extend active record??  It sorta makes sense.  But channel logic is way more complicated and is based in multiple tables.
     {
         $this->_data = $row;
     }
@@ -37,6 +39,19 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
     public function columnIsIgnoredInComparison($column_name)
     {
         return in_array($column_name, $this->_ignored_columns_in_comparison);
+    }
+
+    public function getUniqueIdentifierKey()
+    {
+        return $this->_unique_identifier_key;
+    }
+
+    public function getUniqueIdentifierValue()
+    {
+        return isset($this->_data[$this->_unique_identifier_key])
+            ? $this->_data[$this->_unique_identifier_key]
+            : false
+        ;
     }
 
     public function __get($key)
