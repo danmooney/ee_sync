@@ -23,8 +23,35 @@ class Syncee_Entity_Channel_Field_Collection_Library extends Syncee_Collection_L
 {
     protected $_collection_model = 'Syncee_Entity_Channel_Field_Collection';
 
+    /**
+     * Override Syncee_Collection_Library_Abstract::collectionAlreadyExistsInLibrary to test site private member as well in comparison evaluation
+     * @param Syncee_Collection_Abstract $collection
+     * @return bool
+     */
+    public function collectionAlreadyExistsInLibrary(Syncee_Collection_Abstract $collection)
+    {
+        /**
+         * @var $collection_to_test Syncee_Entity_Channel_Collection
+         * @var $collection         Syncee_Entity_Channel_Collection
+         */
+        $collection_exists_already = false;
+
+
+        foreach ($this->_collections as $collection_to_test) {
+            if ($collection_to_test->toArray(false) == $collection->toArray(false) &&
+                $collection_to_test->getSite() === $collection->getSite()
+            ) {
+                $collection_exists_already = true;
+                break;
+            }
+        }
+
+        return $collection_exists_already;
+    }
+
     public function compareCollections()
     {
         // TODO
+        return new Syncee_Entity_Comparison_Collection_Library();
     }
 }
