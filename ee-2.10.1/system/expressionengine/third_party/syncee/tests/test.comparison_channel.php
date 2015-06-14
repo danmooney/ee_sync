@@ -68,9 +68,9 @@ class Test_Comparison_Channel extends Syncee_Unit_Test_Case_Abstract
          * @var $channel_comparison_entity Syncee_Entity_Comparison
          */
         $channel_comparison_entity            = $channel_comparison_collection[0];
-        $this->assertEqual($channel_comparison_entity->getComparateColumnName(), 'channel_lang', 'Lone channel comparison entity\'s comparate column name is channel_lang');
-        $this->assertEqual($channel_comparison_entity->getSourceValue(), 'english', 'Lone channel comparison entity\'s source value is english');
-        $this->assertEqual($channel_comparison_entity->getTargetValue(), 'spanish', 'Lone channel comparison entity\'s target value is spanish');
+        $this->assertEqual($channel_comparison_entity->getComparateColumnName(), 'channel_lang', 'Lone channel comparison entity\'s comparate column name is "channel_lang"');
+        $this->assertEqual($channel_comparison_entity->getSourceValue(), 'english', 'Lone channel comparison entity\'s source value is "english"');
+        $this->assertEqual($channel_comparison_entity->getTargetValue(), 'spanish', 'Lone channel comparison entity\'s target value is "spanish"');
         $this->assertEqual($channel_comparison_entity->getComparisonResult(), $channel_comparison_entity::RESULT_COMPARATE_VALUE_DIFFERS, 'Lone channel comparison entity is ' . $channel_comparison_entity::RESULT_COMPARATE_VALUE_DIFFERS);
     }
 }
