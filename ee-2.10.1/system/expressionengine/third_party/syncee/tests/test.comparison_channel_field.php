@@ -43,8 +43,6 @@ class Test_Comparison_Channel_Field extends Syncee_Unit_Test_Case_Abstract
 
     public function testTwoSitesWithCompletelySimilarChannelFieldsGivesEmptyComparisonLibrary()
     {
-        $this->fail('Need to implement ' . __METHOD__);
-
         $channel_field_comparison_library = $this->_site_collection->getChannelFieldComparisonCollectionLibrary();
         $this->assertTrue($channel_field_comparison_library->hasNoComparisons(), 'Two sites have no comparisons; they are the same');
     }
