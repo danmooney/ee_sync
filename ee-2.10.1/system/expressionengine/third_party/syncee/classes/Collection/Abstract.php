@@ -67,6 +67,11 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
         $this->_rows[] = $row;
     }
 
+    public function getRowModel()
+    {
+        return $this->_row_model;
+    }
+
     public function getEntityByUniqueIdentifierKeyAndValue($identifier_value, $identifier_key_override = null)
     {
         /**
@@ -95,6 +100,23 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
             ? $found_entity
             : false
         ;
+    }
+
+    public function entityAlreadyExistsInCollection(Syncee_Entity_Abstract $row)
+    {
+        $entity_already_exists = false;
+
+        /**
+         * @var $row_to_test Syncee_Entity_Comparison
+         */
+        foreach ($this->_rows as $row_to_test) {
+            if ($row->getUniqueIdentifierValue() === $row_to_test->getUniqueIdentifierValue()) {
+                $entity_already_exists = true;
+                break;
+            }
+        }
+
+        return $entity_already_exists;
     }
 
     public function isEmptyCollection()
