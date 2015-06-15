@@ -36,6 +36,11 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
         return $this->_data;
     }
 
+    public function isEmptyRow()
+    {
+        return !count($this->_data);
+    }
+
     public function columnIsIgnoredInComparison($column_name)
     {
         return in_array($column_name, $this->_ignored_columns_in_comparison);
