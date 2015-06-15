@@ -31,9 +31,25 @@ interface Syncee_Collection_Interface extends Syncee_Entity_Interface
      */
     public function getSite();
 
+    /**
+     * @return string
+     */
+    public function getRowModel();
+
     public function appendToCollectionAsArray(array $row);
 
     public function appendToCollectionAsEntity(Syncee_Entity_Interface $row);
 
+    /**
+     * @param mixed $identifier_value
+     * @param string|null $identifier_key_override
+     * @return Syncee_Entity_Abstract|bool
+     */
     public function getEntityByUniqueIdentifierKeyAndValue($identifier_value, $identifier_key_override = null);
+
+    /**
+     * @param Syncee_Entity_Abstract $row
+     * @return bool
+     */
+    public function entityAlreadyExistsInCollection(Syncee_Entity_Abstract $row);
 }
