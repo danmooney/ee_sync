@@ -158,4 +158,16 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract
 
         return $this->_fix;
     }
+
+    public function getUniqueIdentifierValue()
+    {
+        return md5(
+            serialize($this->_source_value)
+        .   serialize($this->_target_value)
+        .   serialize($this->getComparateColumnName())
+        .   $this->getComparisonResult()
+        .   serialize($this->_source->toArray())
+        .   serialize($this->_target->toArray())
+        );
+    }
 }
