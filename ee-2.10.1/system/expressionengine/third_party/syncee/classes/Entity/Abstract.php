@@ -18,13 +18,15 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ implements Syncee_Entity_Interface, Syncee_Entity_Comparate_Interface
+abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ implements Syncee_Entity_Interface, Syncee_Entity_Comparate_Interface, Syncee_Site_Storage_Interface
 {
     protected $_data;
 
     protected $_unique_identifier_key;
 
     protected $_ignored_columns_in_comparison = array();
+
+    protected $_site;
 
     public function __construct(array $row = array(), $is_new = true) // TODO - is entity going to really extend active record??  It sorta makes sense.  But channel logic is way more complicated and is based in multiple tables.
     {
@@ -57,6 +59,16 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
             ? $this->_data[$this->_unique_identifier_key]
             : false
         ;
+    }
+
+    public function setSite(Syncee_Site $site)
+    {
+        $this->_site = $site;
+    }
+
+    public function getSite()
+    {
+        return $this->_site;
     }
 
     public function __get($key)
