@@ -19,6 +19,8 @@ if (version_compare(PHP_VERSION, $minimum_php_version) < 0) {
     die("PHP version must be at least $minimum_php_version;  the version installed on the server is " . PHP_VERSION . '.  Please upgrade in order to use this module.');
 }
 
+// TODO - start tracking memory usage in tests/for the entire module in general while building
+
 defined('SYNCEE_PATH')       or define('SYNCEE_PATH',       dirname(__FILE__));
 defined('SYNCEE_PATH_TESTS') or define('SYNCEE_PATH_TESTS', SYNCEE_PATH . '/tests');
 defined('SYNCEE_TEST_MODE')  or define('SYNCEE_TEST_MODE',  isset($_SERVER['SYNCEE_TEST_MODE']) && $_SERVER['SYNCEE_TEST_MODE']);
