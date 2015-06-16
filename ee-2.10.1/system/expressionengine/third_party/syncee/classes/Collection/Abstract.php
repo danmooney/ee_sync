@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface, Countable, Iterator, ArrayAccess
+abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface, Syncee_Site_Storage_Interface, Countable, Iterator, ArrayAccess
 {
     /**
      * @var Syncee_Site
@@ -45,6 +45,13 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
     public function setSite(Syncee_Site $site)
     {
         $this->_site = $site;
+
+        /**
+         * @var $row Syncee_Entity_Abstract
+         */
+        foreach ($this->_rows as $row) {
+            $row->setSite($site);
+        }
     }
 
     public function getSite()
