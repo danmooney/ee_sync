@@ -24,6 +24,14 @@ class Syncee_Entity_Comparator implements Syncee_Entity_Comparator_Interface
     {
         $comparison_collection = new Syncee_Entity_Comparison_Collection();
 
+        $comparison_collection
+            ->setSource($source)
+            ->setTarget($target)
+        ;
+
+        // store collection comparison result for easy inspection
+        $comparison_collection->getComparisonResult();
+
         $source_data = $source->toArray();
         $target_data = $target->toArray();
 
