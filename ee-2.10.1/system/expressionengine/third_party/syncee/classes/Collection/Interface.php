@@ -21,17 +21,6 @@ if (!defined('SYNCEE_PATH')) {
 interface Syncee_Collection_Interface extends Syncee_Entity_Interface
 {
     /**
-     * @param Syncee_Site $site
-     * @return void
-     */
-    public function setSite(Syncee_Site $site);
-
-    /**
-     * @return Syncee_Site
-     */
-    public function getSite();
-
-    /**
      * @return string
      */
     public function getRowModel();
