@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Entity_Comparison extends Syncee_Entity_Abstract
+class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_Comparison_Result_Interface
 {
     const RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE = 'RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE';
     const RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET = 'RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET';
