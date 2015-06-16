@@ -56,9 +56,9 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
         foreach ($current_local_site_collection as $local_entity) {
             foreach ($other_site_collections as $site_identifier => $collection) {
                 if (!($remote_entity = $collection->getEntityByUniqueIdentifierKeyAndValue($local_entity->getUniqueIdentifierValue()))) {
-                    $remote_entity = $empty_entity;
+                    $remote_entity = new $empty_entity();
+                    $remote_entity->setSite($collection->getSite());
                 }
-
                 $comparison_collection = $entity_comparator->compareEntities($remote_entity, $local_entity);
 
                 $comparison_library->appendToLibraryAsCollection($comparison_collection);
@@ -69,7 +69,8 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
         foreach ($other_site_collections as $site_identifier => $collection) {
             foreach ($collection as $remote_entity) {
                 if (!($local_entity = $current_local_site_collection->getEntityByUniqueIdentifierKeyAndValue($remote_entity->getUniqueIdentifierValue()))) {
-                    $local_entity = $empty_entity;
+                    $local_entity = new $empty_entity();
+                    $local_entity->setSite($current_local_site_collection->getSite());
                 }
 
                 $comparison_collection = $entity_comparator->compareEntities($remote_entity, $local_entity);
