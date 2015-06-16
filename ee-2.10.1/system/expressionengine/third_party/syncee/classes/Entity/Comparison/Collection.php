@@ -18,11 +18,23 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract
+class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract implements Syncee_Comparison_Result_Interface
 {
+    const RESULT_ENTITY_MISSING_IN_SOURCE           = 'RESULT_ENTITY_MISSING_IN_SOURCE';
+    const RESULT_ENTITY_MISSING_IN_TARGET           = 'RESULT_ENTITY_MISSING_IN_TARGET';
+    const RESULT_ENTITY_EXISTS_IN_SOURCE_AND_TARGET = 'RESULT_ENTITY_EXISTS_IN_SOURCE_AND_TARGET';
+
+    /**
+     * @var Syncee_Entity_Abstract
+     */
     private $_source;
 
+    /**
+     * @var Syncee_Entity_Abstract
+     */
     private $_target;
+
+    private $_comparison_result;
 
     protected $_row_model = 'Syncee_Entity_Comparison';
 
@@ -46,5 +58,20 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract
     public function getTarget()
     {
         return $this->_target;
+    }
+
+    public function getComparisonResult()
+    {
+        if (!isset($this->_comparison_result)) {
+            if ($this->_source->isEmptyRow()) {
+                $this->_comparison_result = self::RESULT_ENTITY_MISSING_IN_SOURCE;
+            } elseif ($this->_target->isEmptyRow()) {
+                $this->_comparison_result = self::RESULT_ENTITY_MISSING_IN_TARGET;
+            } else {
+                $this->_comparison_result = self::RESULT_ENTITY_EXISTS_IN_SOURCE_AND_TARGET;
+            }
+        }
+
+        return $this->_comparison_result;
     }
 }
