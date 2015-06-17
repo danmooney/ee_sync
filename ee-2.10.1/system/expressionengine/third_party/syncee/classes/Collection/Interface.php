@@ -34,7 +34,7 @@ interface Syncee_Collection_Interface extends Syncee_Entity_Interface
      * @param string|null $identifier_key_override
      * @return Syncee_Entity_Abstract|bool
      */
-    public function getEntityByUniqueIdentifierKeyAndValue($identifier_value, $identifier_key_override = null);
+    public function getEntityByUniqueIdentifierValue($identifier_value, $identifier_key_override = null);
 
     /**
      * @param Syncee_Entity_Abstract $row
