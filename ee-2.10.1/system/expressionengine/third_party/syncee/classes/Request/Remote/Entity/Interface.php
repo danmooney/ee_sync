@@ -27,6 +27,8 @@ interface Syncee_Request_Remote_Entity_Interface
     public function getName();
 
     /**
+     * Fetch data and return collection
+     * TODO - separate into two distinct functions?
      * @return Syncee_Collection_Interface
      */
     public function getCollection();
