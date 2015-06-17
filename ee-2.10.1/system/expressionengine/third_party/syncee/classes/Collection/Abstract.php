@@ -79,7 +79,7 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
         return $this->_row_model;
     }
 
-    public function getEntityByUniqueIdentifierKeyAndValue($identifier_value, $identifier_key_override = null)
+    public function getEntityByUniqueIdentifierValue($identifier_value, $identifier_key_override = null)
     {
         /**
          * @var $row Syncee_Entity_Abstract
