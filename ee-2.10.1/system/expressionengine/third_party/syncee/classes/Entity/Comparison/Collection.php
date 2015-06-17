@@ -74,4 +74,26 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
 
         return $this->_comparison_result;
     }
+
+    /**
+     * @param $comparate_column_name
+     * @return bool|Syncee_Entity_Comparison
+     */
+    public function getComparisonEntityByComparateColumnName($comparate_column_name)
+    {
+        /**
+         * @var $row Syncee_Entity_Comparison
+         */
+        foreach ($this->_rows as $row) {
+            if ($row->getComparateColumnName() === $comparate_column_name) {
+                $comparison_entity = $row;
+                break;
+            }
+        }
+
+        return isset($comparison_entity)
+            ? $comparison_entity
+            : false
+        ;
+    }
 }
