@@ -39,6 +39,9 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
         return $has_no_comparisons;
     }
 
+    /**
+     * @return Syncee_Entity_Comparison_Collection_Library
+     */
     public function getNonEmptyComparisonCollectionLibrary()
     {
         $non_empty_collections = array();
@@ -55,6 +58,17 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
         return new $this($non_empty_collections);
     }
 
+    public function getTotalComparisonEntityCountAcrossAllCollections()
+    {
+        $comparison_entity_count = 0;
+
+        foreach ($this->_collections as $collection) {
+            $comparison_entity_count += count($collection);
+        }
+
+        return $comparison_entity_count;
+    }
+
     /**
      * @param Syncee_Entity_Abstract $source
      * @param Syncee_Entity_Abstract $target
@@ -69,6 +83,31 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
             if ($collection_to_test->getSource() === $source &&
                 $collection_to_test->getTarget() === $target
             ) {
+                $collection = $collection_to_test;
+                break;
+            }
+        }
+
+        return isset($collection)
+            ? $collection
+            : false
+        ;
+    }
+
+    /**
+     * @param $unique_identifier_value
+     * @return bool|Syncee_Entity_Comparison_Collection
+     */
+    public function getComparisonCollectionByUniqueIdentifierValue($unique_identifier_value)
+    {
+        /**
+         * @var $collection_to_test Syncee_Entity_Comparison_Collection
+         */
+        foreach ($this->_collections as $collection_to_test) {
+            $source_unique_value = $collection_to_test->getSource()->getUniqueIdentifierValue();
+            $target_unique_value = $collection_to_test->getTarget()->getUniqueIdentifierValue();
+
+            if (in_array($unique_identifier_value, array($source_unique_value, $target_unique_value), true)) {
                 $collection = $collection_to_test;
                 break;
             }
