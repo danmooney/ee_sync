@@ -22,7 +22,9 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
 
-    protected $_primary = array('site_id', 'site_url');
+    protected $_primary = array('site_id');
+
+    protected $_collection_model = 'Syncee_Site_Collection';
 
     public $site_id;
 
