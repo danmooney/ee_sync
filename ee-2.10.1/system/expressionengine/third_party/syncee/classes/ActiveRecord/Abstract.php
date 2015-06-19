@@ -22,6 +22,8 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 {
     const TABLE_NAME = '';
 
+    protected $_collection_model;
+
     protected $_is_empty_row = false;
 
     protected $_is_new = true;
@@ -31,6 +33,71 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
     protected $_col_val_mapping = array();
 
     protected $_primary = array();
+
+    public static function findAll()
+    {
+        $rows             = ee()->db->select('*')->from(static::TABLE_NAME)->get()->result_array();
+        $empty_row        = new static();
+        $collection_model = $empty_row->getCollectionModel();
+
+        return new $collection_model($rows);
+    }
+
+    public static function findAllByCondition(array $conditions)
+    {
+        ee()->db->select('*')->from(static::TABLE_NAME);
+
+        foreach ($conditions as $column => $value) {
+            if (is_numeric($column)) {
+                ee()->db->where($value);
+            } else {
+                ee()->db->where($column, $value);
+            }
+        }
+
+        $rows             = ee()->db->get()->result_array();
+        $empty_row        = new static();
+        $collection_model = $empty_row->getCollectionModel();
+
+        return new $collection_model($rows);
+    }
+
+    // TODO - test this!
+    public static function findByPk($primary_key_value)
+    {
+        /**
+         * @var $empty_row Syncee_ActiveRecord_Abstract
+         */
+        $empty_row            = new static();
+        $primary_keys_on_row  = (array) $empty_row->getPrimary();
+
+        ee()->db->select('*')->from(static::TABLE_NAME);
+
+        if (count($primary_keys_on_row) === 1) {
+            $primary_key_value = (string) $primary_key_value;
+            ee()->db->where((string) $primary_keys_on_row, $primary_key_value);
+        } else {
+            $primary_key_value = (array) $primary_key_value;
+            foreach ($primary_key_value as $key => $value) {
+                if (is_numeric($key)) {
+                    if (!isset($primary_keys_on_row[$key])) {
+                        break;
+                    }
+
+                    ee()->db->where($primary_keys_on_row[$key], $primary_key_value[$key]);
+                } else {
+                    if (!in_array($key, $primary_keys_on_row)) {
+                        continue;
+                    }
+
+                    ee()->db->where($key, $primary_key_value);
+                }
+            }
+        }
+
+        $row = ee()->db->get()->row();
+        return new static($row);
+    }
 
     public function __construct(array $row = array(), $is_new = true)
     {
@@ -83,6 +150,16 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
     public function isEmptyRow()
     {
         return $this->_is_empty_row;
+    }
+
+    public function getPrimary()
+    {
+        return $this->_primary;
+    }
+
+    public function getCollectionModel()
+    {
+        return $this->_collection_model;
     }
 
     public function save()
