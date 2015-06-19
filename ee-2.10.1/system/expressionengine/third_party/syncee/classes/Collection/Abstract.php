@@ -18,18 +18,18 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface, Syncee_Site_Storage_Interface, Countable, Iterator, ArrayAccess
+abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface, Countable, Iterator, ArrayAccess
 {
-    /**
-     * @var Syncee_Site
-     */
-    protected $_site;
-
     protected $_position = 0;
 
     protected $_rows = array();
 
     protected $_row_model;
+
+    public function sortByCallback(callable $sortFunc)
+    {
+        usort($this->_rows, $sortFunc);
+    }
 
     public function __construct(array $rows = array())
     {
@@ -40,23 +40,6 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
                 $this->appendToCollectionAsEntity($row);
             }
         }
-    }
-
-    public function setSite(Syncee_Site $site)
-    {
-        $this->_site = $site;
-
-        /**
-         * @var $row Syncee_Entity_Abstract
-         */
-        foreach ($this->_rows as $row) {
-            $row->setSite($site);
-        }
-    }
-
-    public function getSite()
-    {
-        return $this->_site;
     }
 
     public function appendToCollectionAsArray(array $row)
