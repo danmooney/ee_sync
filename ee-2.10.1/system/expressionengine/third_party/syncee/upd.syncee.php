@@ -84,8 +84,34 @@ class Syncee_Upd
         ee()->dbforge->add_key('setting_key', true);
         ee()->dbforge->create_table('syncee_setting', true);
 
+        // Add table syncee_site_group
+        $site_group_table_fields = array(
+            'site_group_id' => array(
+                'type'     => 'INT',
+                'unsigned' => true,
+                'null'     => false
+            ),
+            'title' => array(
+                'type'       => 'VARCHAR',
+                'constraint' => 255,
+                'null'       => false,
+            ),
+            'create_datetime' => array(
+                'type'  => 'DATETIME',
+                'null'  => false,
+            ),
+            'last_sync_datetime' => array(
+                'type'  => 'DATETIME',
+                'null'  => true
+            ),
+        );
 
-        // Add table syncee_sites
+        ee()->dbforge->drop_table('syncee_site_group');
+        ee()->dbforge->add_field($site_group_table_fields);
+        ee()->dbforge->add_key('site_group_id', true);
+        ee()->dbforge->create_table('syncee_site_group', true);
+
+        // Add table syncee_site
         $sites_table_fields = array(
             'site_id' => array(
                 'type'     => 'INT',
@@ -97,7 +123,6 @@ class Syncee_Upd
                 'constraint' => 255,
                 'null'       => false,
             ),
-            // TODO - probably need to put in some other table for normalization purposes
             'ee_site_id' => array(
                 'type'     => 'INT',
                 'unsigned' => true,
@@ -125,12 +150,30 @@ class Syncee_Upd
             ),
         );
 
+        // Add table syncee_site_group_map
+        $site_group_map_fields = array(
+            'site_id' => array(
+                'type'     => 'INT',
+                'unsigned' => true,
+                'null'     => false
+            ),
+            'site_group_id' => array(
+                'type'     => 'INT',
+                'unsigned' => true,
+                'null'     => false
+            ),
+        );
+
+        ee()->dbforge->drop_table('syncee_site_group_map');
+        ee()->dbforge->add_field($site_group_map_fields);
+        ee()->dbforge->add_key(array('site_id', 'site_group_id'), true);
+        ee()->dbforge->create_table('syncee_site_group_map', true);
+
         // Add table syncee_setting
         ee()->dbforge->drop_table('syncee_site');
 
         ee()->dbforge->add_field($sites_table_fields);
         ee()->dbforge->add_key('site_id', true);
-        ee()->dbforge->add_key('site_url', true);
         ee()->dbforge->create_table('syncee_site');
 
         return true;
