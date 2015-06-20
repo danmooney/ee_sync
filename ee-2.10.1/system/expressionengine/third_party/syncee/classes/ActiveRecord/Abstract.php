@@ -196,6 +196,8 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
                 foreach ($this->_primary_key_names as $idx => $primary_key_name) {
                     $this->_col_val_mapping[$primary_key_name] = $insert_id[$idx] ;
                 }
+
+                $this->_is_new = false;
             }
         } else {
             $where = array();
@@ -206,6 +208,23 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
             $success = ee()->db->update(static::TABLE_NAME, $row, $where);
         }
+
+        return $success;
+    }
+
+    public function delete()
+    {
+        if ($this->_is_new) {
+            return false;
+        }
+
+        $where = array();
+
+        foreach ($this->_primary_key_names as $primary_key) {
+            $where[$primary_key] = $this->_col_val_mapping[$primary_key];
+        }
+
+        $success = ee()->delete(static::TABLE_NAME, $where);
 
         return $success;
     }
