@@ -20,6 +20,20 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_View
 {
+    public static function render($template_filename, array $vars = array())
+    {
+        return ee()->load->view(
+            Syncee_Helper::convertCamelCaseToUnderscore($template_filename),
+            array_merge(
+                $vars,
+                array(
+
+                )
+            ),
+            true
+        );
+    }
+
     public static function addStylesheets()
     {
         $module_theme_path = self::_getThemePath();
