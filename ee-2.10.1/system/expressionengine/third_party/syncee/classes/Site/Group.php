@@ -19,14 +19,13 @@ if (!defined('SYNCEE_PATH')) {
 }
 
 class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract
-    implements Syncee_Site_Storage_Interface
 {
     const TABLE_NAME = 'syncee_site_group';
 
     /**
-     * @var Syncee_Site
+     * @var Syncee_Site_Collection
      */
-    private $_site;
+    private $_site_collection;
 
     protected $_primary_key_names = array('site_group_id');
 
@@ -34,21 +33,14 @@ class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract
 
     protected static $_cols;
 
-//    public $site_group_id;
-//
-//    public $title;
-//
-//    public $create_datetime;
-//
-//    public $last_sync_datetime;
-
-    public function setSite(Syncee_Site $site)
+    public function getSiteCollection()
     {
-        $this->_site = $site;
-    }
+        if (!isset($this->_site_collection)) {
+            $this->_site_collection = Syncee_Site::findAllByCondition(array(
+                'site_group_id' => $this->site_group_id
+            ));
+        }
 
-    public function getSite()
-    {
-        return $this->_site;
+        return $this->_site_collection;
     }
 }

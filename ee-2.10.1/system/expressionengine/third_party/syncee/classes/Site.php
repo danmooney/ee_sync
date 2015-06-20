@@ -28,16 +28,6 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 
     protected static $_cols;
 
-//    public $site_id;
-//
-//    public $site_url;
-//
-//    public $use_https;
-//
-//    public $ip_whitelist;
-//
-//    public $action_id;
-
     /**
      * @var Syncee_Site_Rsa
      */
