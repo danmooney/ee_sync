@@ -35,7 +35,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     protected $_col_val_mapping = array();
 
-    protected $_primary = array();
+    protected $_primary_key_names = array();
 
     public static function findAll()
     {
@@ -72,7 +72,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
          * @var $empty_row Syncee_ActiveRecord_Abstract
          */
         $empty_row            = new static();
-        $primary_keys_on_row  = (array) $empty_row->getPrimary();
+        $primary_keys_on_row  = (array) $empty_row->getPrimaryKeyNames();
 
         ee()->db->select('*')->from(static::TABLE_NAME);
 
@@ -108,6 +108,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             static::$_cols = ee()->db->list_fields(static::TABLE_NAME);
         }
 
+        // TODO - this has to be reworked now that public properties representing columns have been removed
         $object_properties = get_object_vars($this);
 
         foreach ($row as $key => $val) {
@@ -154,9 +155,23 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         return $this->_is_empty_row;
     }
 
-    public function getPrimary()
+    public function getPrimaryKeyNames()
     {
-        return $this->_primary;
+        return $this->_primary_key_names;
+    }
+
+    public function getPrimaryKeyValues($return_scalar = false)
+    {
+        $primary_key_values = array();
+
+        foreach ($this->_primary_key_names as $primary_key_name) {
+            $primary_key_values[] = $this->_col_val_mapping[$primary_key_name];
+        }
+
+        return $return_scalar
+            ? reset($primary_key_values)
+            : $primary_key_values
+        ;
     }
 
     public function getCollectionModel()
@@ -168,12 +183,24 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
     {
         $row = $this->toArray(true);
 
+        if (in_array('create_datetime', static::$_cols) && !isset($row['create_datetime'])) {
+            $row['create_datetime'] = gmdate('Y-m-d H:i:s');
+        }
+
         if ($this->_is_new) {
             $success = ee()->db->insert(static::TABLE_NAME, $row);
+            if ($success) {
+                // save primary key on this object
+                // TODO - test to see if ee()->db->insert_id() returns compound primary key values
+                $insert_id = (array) ee()->db->insert_id();
+                foreach ($this->_primary_key_names as $idx => $primary_key_name) {
+                    $this->_col_val_mapping[$primary_key_name] = $insert_id[$idx] ;
+                }
+            }
         } else {
             $where = array();
 
-            foreach ($this->_primary as $primary_key) {
+            foreach ($this->_primary_key_names as $primary_key) {
                 $where[$primary_key] = $this->_col_val_mapping[$primary_key];
             }
 
@@ -201,7 +228,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
     {
         $identifiers = array();
 
-        foreach ($this->_primary as $key) {
+        foreach ($this->_primary_key_names as $key) {
             $identifiers[] = $this->$key;
         }
 
@@ -212,7 +239,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     public function __set($property, $value)
     {
-        if (!array_key_exists($property, $this->_col_val_mapping)) {
+        if (!in_array($property, static::$_cols)) {
             $this->$property = $value;
         } else {
             $this->_col_val_mapping[$property] = $value;
@@ -224,8 +251,8 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     public function __get($property)
     {
-        if (!isset($this->_col_val_mapping[$property])) {
-            trigger_error('Undefined property: ' . __CLASS__ . '::' . $property, E_USER_NOTICE);
+        if (!array_key_exists($property, $this->_col_val_mapping)) {
+            trigger_error('Undefined property: ' . get_called_class() . '::' . $property, E_USER_NOTICE);
             return null;
         }
 
