@@ -46,6 +46,9 @@ class Syncee_Helper
             $path .= '&' . http_build_query($additional_query_params);
         }
 
+        // add session fingerprint
+        $path .= '&S=' . $_REQUEST['S'];
+
         return $path;
     }
 }
