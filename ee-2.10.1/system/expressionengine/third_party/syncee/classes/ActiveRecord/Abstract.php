@@ -78,7 +78,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
         if (count($primary_keys_on_row) === 1) {
             $primary_key_value = (string) $primary_key_value;
-            ee()->db->where((string) $primary_keys_on_row, $primary_key_value);
+            ee()->db->where(reset($primary_keys_on_row), $primary_key_value);
         } else {
             $primary_key_value = (array) $primary_key_value;
             foreach ($primary_key_value as $key => $value) {
@@ -98,8 +98,8 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             }
         }
 
-        $row = ee()->db->get()->row();
-        return new static($row);
+        $row = (array) ee()->db->get()->row();
+        return new static($row, false);
     }
 
     public function __construct(array $row = array(), $is_new = true)
@@ -224,7 +224,11 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             $where[$primary_key] = $this->_col_val_mapping[$primary_key];
         }
 
-        $success = ee()->delete(static::TABLE_NAME, $where);
+        $success = ee()->db->delete(static::TABLE_NAME, $where);
+
+        if ($success) {
+            $this->_is_new = true;
+        }
 
         return $success;
     }
