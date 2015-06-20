@@ -28,7 +28,10 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     protected $_is_new = true;
 
-    protected static $_cols = array();
+    /**
+     * @var array
+     */
+    protected static $_cols;
 
     protected $_col_val_mapping = array();
 
@@ -101,16 +104,15 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     public function __construct(array $row = array(), $is_new = true)
     {
-        if (isset(static::$_cols)) {
+        if (!isset(static::$_cols)) {
             static::$_cols = ee()->db->list_fields(static::TABLE_NAME);
         }
 
         $object_properties = get_object_vars($this);
 
         foreach ($row as $key => $val) {
-            if (in_array($key, array_keys($object_properties))) {
+            if (in_array($key, static::$_cols)) {
                 $this->$key = $val;
-                $this->_col_val_mapping[$key] =& $this->$key;
             } else {
                 // assign values in row to nested objects if properties are defined
                 foreach ($object_properties as $object_key => $possible_nested_object) {
@@ -164,19 +166,21 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     public function save()
     {
-        $row = $this->toArray();
+        $row = $this->toArray(true);
 
         if ($this->_is_new) {
-            return ee()->db->insert(static::TABLE_NAME, $row);
+            $success = ee()->db->insert(static::TABLE_NAME, $row);
+        } else {
+            $where = array();
+
+            foreach ($this->_primary as $primary_key) {
+                $where[$primary_key] = $this->_col_val_mapping[$primary_key];
+            }
+
+            $success = ee()->db->update(static::TABLE_NAME, $row, $where);
         }
 
-        $where = array();
-
-        foreach ($this->_primary as $primary_key) {
-            $where[$primary_key] = $this->_col_val_mapping[$primary_key];
-        }
-
-        return ee()->db->update(static::TABLE_NAME, $row, $where);
+        return $success;
     }
 
     public function toArray($table_data_only = true)
@@ -208,10 +212,23 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     public function __set($property, $value)
     {
-        $this->$property                   =  $value;
-        $this->_col_val_mapping[$property] =& $this->$property;
-        $this->_is_empty_row               =  false;
+        if (!array_key_exists($property, $this->_col_val_mapping)) {
+            $this->$property = $value;
+        } else {
+            $this->_col_val_mapping[$property] = $value;
+            $this->_is_empty_row               = false;
+        }
+
+        return $this;
     }
 
-//    public function __get($property) {}
+    public function __get($property)
+    {
+        if (!isset($this->_col_val_mapping[$property])) {
+            trigger_error('Undefined property: ' . __CLASS__ . '::' . $property, E_USER_NOTICE);
+            return null;
+        }
+
+        return $this->_col_val_mapping[$property];
+    }
 }
