@@ -4,16 +4,21 @@ require_once dirname(__FILE__) . '/_init.php';
 
 class Syncee_Mcp
 {
+    private $_default_method = 'viewSiteGroupList';
+
     public function __construct()
     {
         ee()->view->cp_page_title = lang('syncee_module_name');
         Syncee_View::addStylesheets();
         Syncee_View::addScripts();
-    }
 
-    public function index()
-    {
-        return $this->viewSiteGroupList();
+        if (!ee()->input->get('method')) {
+            $_GET['method'] = $this->_default_method;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['method'])) {
+            $_GET['method'] .= 'POST';
+        }
     }
 
     public function viewSiteGroupList()
@@ -36,6 +41,89 @@ class Syncee_Mcp
         return Syncee_View::render(__FUNCTION__, array(
             'ee_sites' => $ee_sites,
         ));
+    }
+
+    public function newSiteGroupPOST()
+    {
+        $new_syncee_site_group = new Syncee_Site_Group();
+
+        foreach ($_POST as $key => $val) {
+            $new_syncee_site_group->$key = $val;
+        }
+
+        if (!$new_syncee_site_group->save()) {
+            // TODO
+        }
+
+        $new_site_group_id = $new_syncee_site_group->getPrimaryKeyValues(true);
+
+        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('viewSiteGroup', array(
+            'site_group_id' => $new_site_group_id
+        )));
+    }
+
+    public function editSiteGroup()
+    {
+        $syncee_site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
+
+        if ($syncee_site_group->isEmptyRow()) {
+            // TODO
+        }
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'syncee_site_group' => $syncee_site_group
+        ));
+    }
+
+    public function editSiteGroupPOST()
+    {
+        $syncee_site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
+
+        if ($syncee_site_group->isEmptyRow()) {
+            // TODO
+        }
+
+        foreach ($_POST as $key => $val) {
+            $syncee_site_group->$key = $val;
+        }
+
+        if (!$syncee_site_group->save()) {
+            // TODO
+        }
+
+        $site_group_id = $syncee_site_group->getPrimaryKeyValues(true);
+
+        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('viewSiteGroup', array(
+            'site_group_id' => $site_group_id
+        )));
+    }
+
+    public function deleteSiteGroup()
+    {
+        $syncee_site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
+
+        if ($syncee_site_group->isEmptyRow()) {
+            // TODO
+        }
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'syncee_site_group' => $syncee_site_group
+        ));
+    }
+
+    public function deleteSiteGroupPOST()
+    {
+        $syncee_site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
+
+        if ($syncee_site_group->isEmptyRow()) {
+            // TODO
+        }
+
+        if (!$syncee_site_group->delete()) {
+            // TODO
+        }
+
+        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('viewSiteGroupList'));
     }
 
     public function viewSiteGroup()
