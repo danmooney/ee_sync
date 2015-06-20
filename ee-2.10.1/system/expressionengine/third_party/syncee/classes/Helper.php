@@ -51,4 +51,9 @@ class Syncee_Helper
 
         return $path;
     }
+
+    public static function convertUTCDateToLocalizedHumanDatetime($utc_datetime)
+    {
+        return ee()->localize->human_time(strtotime($utc_datetime . ' UTC'));
+    }
 }
