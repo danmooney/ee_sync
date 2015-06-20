@@ -87,9 +87,10 @@ class Syncee_Upd
         // Add table syncee_site_group
         $site_group_table_fields = array(
             'site_group_id' => array(
-                'type'     => 'INT',
-                'unsigned' => true,
-                'null'     => false
+                'type'           => 'INT',
+                'unsigned'       => true,
+                'null'           => false,
+                'auto_increment' => true
             ),
             'title' => array(
                 'type'       => 'VARCHAR',
@@ -114,9 +115,10 @@ class Syncee_Upd
         // Add table syncee_site
         $sites_table_fields = array(
             'site_id' => array(
-                'type'     => 'INT',
-                'unsigned' => true,
-                'null'     => false
+                'type'           => 'INT',
+                'unsigned'       => true,
+                'null'           => false,
+                'auto_increment' => true
             ),
             'site_url' => array(
                 'type'       => 'VARCHAR',
