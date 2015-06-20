@@ -22,19 +22,21 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
 
-    protected $_primary = array('site_id');
+    protected $_primary_key_names = array('site_id');
 
     protected $_collection_model = 'Syncee_Site_Collection';
 
-    public $site_id;
+    protected static $_cols;
 
-    public $site_url;
-
-    public $use_https;
-
-    public $ip_whitelist;
-
-    public $action_id;
+//    public $site_id;
+//
+//    public $site_url;
+//
+//    public $use_https;
+//
+//    public $ip_whitelist;
+//
+//    public $action_id;
 
     /**
      * @var Syncee_Site_Rsa

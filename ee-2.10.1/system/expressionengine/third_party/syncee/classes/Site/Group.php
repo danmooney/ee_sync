@@ -28,17 +28,19 @@ class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract
      */
     private $_site;
 
-    protected $_primary = array('site_group_id');
+    protected $_primary_key_names = array('site_group_id');
 
-    protected $_collection_model = 'Syncee_Site_Collection';
+    protected $_collection_model = 'Syncee_Site_Group_Collection';
 
-    public $site_group_id;
+    protected static $_cols;
 
-    public $title;
-
-    public $create_datetime;
-
-    public $last_sync_datetime;
+//    public $site_group_id;
+//
+//    public $title;
+//
+//    public $create_datetime;
+//
+//    public $last_sync_datetime;
 
     public function setSite(Syncee_Site $site)
     {
