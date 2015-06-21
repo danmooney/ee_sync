@@ -18,27 +18,5 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
-{
-    public function newRemoteSiteToSiteGroup()
-    {
-
-    }
-
-    public function newRemoteSiteToSiteGroupPOST()
-    {
-
-    }
-
-    public function viewRemoteSiteList()
-    {
-        return Syncee_View::render(__FUNCTION__, array(
-
-        ), $this);
-    }
-
-    public function pingRemoteSite()
-    {
-
-    }
-}
+abstract class Syncee_Mcp_Abstract
+{}
