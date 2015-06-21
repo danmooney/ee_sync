@@ -22,15 +22,25 @@ class Syncee_View
 {
     public static function render($template_filename, array $vars = array())
     {
-        return ee()->load->view(
-            Syncee_Helper::convertCamelCaseToUnderscore($template_filename),
-            array_merge(
-                $vars,
-                array(
+        extract($vars);
 
-                )
-            ),
-            true
+        ob_start();
+        include SYNCEE_PATH_VIEWS . '/_shared/menu.php';
+        $menu_html = ob_get_clean();
+
+        return sprintf(
+            '<div id="syncee">%s<div id="syncee-page">%s</div></div>',
+            $menu_html,
+            ee()->load->view(
+                Syncee_Helper::convertCamelCaseToUnderscore($template_filename),
+                array_merge(
+                    $vars,
+                    array(
+
+                    )
+                ),
+                true
+            )
         );
     }
 
