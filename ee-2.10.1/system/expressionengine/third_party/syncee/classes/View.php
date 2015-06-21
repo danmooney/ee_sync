@@ -20,7 +20,7 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_View
 {
-    public static function render($template_filename, array $vars = array())
+    public static function render($template_filename, array $vars = array(), Syncee_Mcp_Abstract $mcp)
     {
         extract($vars);
 
@@ -36,12 +36,26 @@ class Syncee_View
                 array_merge(
                     $vars,
                     array(
-
+                        'mcp' => $mcp
                     )
                 ),
                 true
             )
         );
+    }
+
+    public static function setPageTitle($title)
+    {
+        $ee     = ee();
+
+        // add module name and version to title
+        $title .= sprintf('<span class="syncee-version">%s</span>', Syncee_Upd::MODULE_NAME . ' ' . Syncee_Upd::VERSION . '<a class="btn go-pro" href="#">Go Pro</a>');
+
+        if (isset($ee->cp) && method_exists($ee->cp, 'set_variable')) {
+            $ee->cp->set_variable('cp_page_title', $title);
+        } else {
+            ee()->view->cp_page_title = $title;
+        }
     }
 
     public static function addStylesheets()
