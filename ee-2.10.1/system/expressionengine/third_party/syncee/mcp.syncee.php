@@ -10,7 +10,7 @@ class Syncee_Mcp
 
     public function __construct()
     {
-        ee()->view->cp_page_title = lang('syncee_module_name');
+        Syncee_View::setPageTitle(lang('syncee_module_name'));
         Syncee_View::addStylesheets();
         Syncee_View::addScripts();
 
@@ -56,6 +56,12 @@ class Syncee_Mcp
             }
 
             $contents = file_get_contents($file->getPathname());
+
+            // don't instantiate abstract classes
+            if (stripos($contents, 'abstract class') !== false) {
+                continue;
+            }
+
             preg_match('#class ([a-z_]+)#i', $contents, $matches);
 
             if (!isset($matches[1])) {
