@@ -6,6 +6,8 @@ class Syncee_Mcp
 {
     private $_default_method = 'viewSiteGroupList';
 
+    private static $_real_method;
+
     public function __construct()
     {
         ee()->view->cp_page_title = lang('syncee_module_name');
@@ -19,131 +21,60 @@ class Syncee_Mcp
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['method'])) {
             $_GET['method'] .= 'POST';
         }
+
+        // Set method to proxy and save real method so EE will execute the method and not display "Requested page not found" error
+        self::$_real_method = $_GET['method'];
+        $_GET['method']     = 'proxy';
     }
 
-    public function viewSiteGroupList()
+    /**
+     * Proxy and overload without error
+     * @return string
+     */
+    public function proxy()
     {
-        $ee_sites           = ee()->db->get('sites')->result_array();
-        $syncee_sites       = Syncee_Site::findAll();
-        $syncee_site_groups = Syncee_Site_Group::findAll();
-
-        return Syncee_View::render(__FUNCTION__, array(
-            'ee_sites'           => $ee_sites,
-            'syncee_sites'       => $syncee_sites,
-            'syncee_site_groups' => $syncee_site_groups
-        ));
+        $_GET['method'] = self::$_real_method;
+        return $this->__call($_GET['method'], array());
     }
 
-    public function newSiteGroup()
+    /**
+     * Route to separate control panel classes based on component so we don't have a billion methods in here
+     * @param $method
+     * @param $args
+     * @return string
+     */
+    public function __call($method, $args)
     {
-        $ee_sites = ee()->db->get('sites')->result_array();
+        $dir_iterator = new RecursiveDirectoryIterator(SYNCEE_PATH . '/classes/Mcp', RecursiveDirectoryIterator::SKIP_DOTS);
 
-        return Syncee_View::render(__FUNCTION__, array(
-            'ee_sites' => $ee_sites,
-        ));
-    }
+        /**
+         * @var $file SplFileInfo
+         */
+        foreach (new RecursiveIteratorIterator($dir_iterator) as $file) {
+            if (!$file->isFile() || !$file->isReadable()) {
+                continue;
+            }
 
-    public function newSiteGroupPOST()
-    {
-        $new_syncee_site_group = new Syncee_Site_Group();
+            $contents = file_get_contents($file->getPathname());
+            preg_match('#class ([a-z_]+)#i', $contents, $matches);
 
-        foreach ($_POST as $key => $val) {
-            $new_syncee_site_group->$key = $val;
+            if (!isset($matches[1])) {
+                continue;
+            }
+
+            $class_name = $matches[1];
+            $mcp_obj    = new $class_name();
+
+            if (method_exists($mcp_obj, $method)) {
+                $return_value = $mcp_obj->$method();
+                break;
+            }
         }
 
-        if (!$new_syncee_site_group->save()) {
-            // TODO
-        }
-
-        $new_site_group_id = $new_syncee_site_group->getPrimaryKeyValues(true);
-
-        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('viewSiteGroup', array(
-            'site_group_id' => $new_site_group_id
-        )));
-    }
-
-    public function editSiteGroup()
-    {
-        $syncee_site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
-
-        if ($syncee_site_group->isEmptyRow()) {
-            // TODO
-        }
-
-        return Syncee_View::render(__FUNCTION__, array(
-            'syncee_site_group' => $syncee_site_group
-        ));
-    }
-
-    public function editSiteGroupPOST()
-    {
-        $syncee_site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
-
-        if ($syncee_site_group->isEmptyRow()) {
-            // TODO
-        }
-
-        foreach ($_POST as $key => $val) {
-            $syncee_site_group->$key = $val;
-        }
-
-        if (!$syncee_site_group->save()) {
-            // TODO
-        }
-
-        $site_group_id = $syncee_site_group->getPrimaryKeyValues(true);
-
-        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('viewSiteGroup', array(
-            'site_group_id' => $site_group_id
-        )));
-    }
-
-    public function deleteSiteGroup()
-    {
-        $syncee_site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
-
-        if ($syncee_site_group->isEmptyRow()) {
-            // TODO
-        }
-
-        return Syncee_View::render(__FUNCTION__, array(
-            'syncee_site_group' => $syncee_site_group
-        ));
-    }
-
-    public function deleteSiteGroupPOST()
-    {
-        $syncee_site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
-
-        if ($syncee_site_group->isEmptyRow()) {
-            // TODO
-        }
-
-        if (!$syncee_site_group->delete()) {
-            // TODO
-        }
-
-        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('viewSiteGroupList'));
-    }
-
-    public function viewSiteGroup()
-    {
-
-    }
-
-    public function newSiteToSiteGroup()
-    {
-
-    }
-
-    public function synchronizeSiteGroup()
-    {
-
-    }
-
-    public function viewSiteGroupSynchronizationLog()
-    {
-
+        return isset($return_value)
+            ? $return_value
+            : lang('requested_page_not_found')
+        ;
     }
 
     /**
