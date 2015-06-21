@@ -26,6 +26,8 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 
     protected $_collection_model = 'Syncee_Site_Collection';
 
+    protected $_has_many_map = 'Syncee_Site_Group_Map';
+
     protected static $_cols;
 
     /**
