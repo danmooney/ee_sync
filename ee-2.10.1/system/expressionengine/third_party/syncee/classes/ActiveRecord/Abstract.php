@@ -37,6 +37,10 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     protected $_primary_key_names = array();
 
+    protected $_has_many_map;
+
+    protected $_belongs_to;
+
     public static function findAll()
     {
         $rows             = ee()->db->select('*')->from(static::TABLE_NAME)->get()->result_array();
@@ -48,18 +52,36 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     public static function findAllByCondition(array $conditions)
     {
-        ee()->db->select('*')->from(static::TABLE_NAME);
+        ee()->db->select(static::TABLE_NAME . '.*')->from(static::TABLE_NAME);
+
+        /**
+         * @var $empty_map_row Syncee_ActiveRecord_Abstract
+         */
+        $empty_row    = new static();
+        $has_many_map = $empty_row->getHasManyMap();
 
         foreach ($conditions as $column => $value) {
             if (is_numeric($column)) {
                 ee()->db->where($value);
             } else {
+                if (!in_array($column, static::$_cols) && $has_many_map) {
+                    $empty_map_row = new $has_many_map();
+
+                    $empty_row_table_name     = $empty_row::TABLE_NAME;
+                    $empty_map_row_table_name = $empty_map_row::TABLE_NAME;
+
+                    ee()->db->join(
+                        $empty_map_row_table_name,
+                        "{$empty_row_table_name}.{$empty_row->getPrimaryKeyNames(true)} = {$empty_map_row_table_name}.{$empty_row->getPrimaryKeyNames(true)}"
+                    );
+                }
+
                 ee()->db->where($column, $value);
             }
         }
 
         $rows             = ee()->db->get()->result_array();
-        $empty_row        = new static();
+
         $collection_model = $empty_row->getCollectionModel();
 
         return new $collection_model($rows);
@@ -155,9 +177,12 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         return $this->_is_empty_row;
     }
 
-    public function getPrimaryKeyNames()
+    public function getPrimaryKeyNames($return_scalar = false)
     {
-        return $this->_primary_key_names;
+        return $return_scalar
+            ? reset($this->_primary_key_names)
+            : $this->_primary_key_names
+        ;
     }
 
     public function getPrimaryKeyValues($return_scalar = false)
@@ -177,6 +202,16 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
     public function getCollectionModel()
     {
         return $this->_collection_model;
+    }
+
+    public function getBelongsTo()
+    {
+        return $this->_belongs_to;
+    }
+
+    public function getHasManyMap()
+    {
+        return $this->_has_many_map;
     }
 
     public function save()
