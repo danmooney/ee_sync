@@ -22,10 +22,16 @@ class Syncee_Mcp_Site_Local extends Syncee_Mcp_Abstract
 {
     public function viewLocalSiteList()
     {
-        $ee_sites = ee()->db->get('sites')->result_array();
+        $ee_sites           = ee()->db->get('sites')->result_object();
+        $syncee_local_sites = Syncee_Site::getLocalSiteCollection();
 
         return Syncee_View::render(__FUNCTION__, array(
-            'ee_sites'           => $ee_sites,
+            'ee_sites' => $ee_sites,
         ), $this);
+    }
+
+    public function viewLocalSite()
+    {
+        return Syncee_View::render(__FUNCTION__, array(), $this);
     }
 }
