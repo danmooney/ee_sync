@@ -31,12 +31,14 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
     public function viewSiteGroup()
     {
+        return Syncee_View::render(__FUNCTION__, array(
 
+        ), $this);
     }
 
     public function newSiteGroup()
     {
-        $ee_sites = ee()->db->get('sites')->result_array();
+        $ee_sites = ee()->db->get('sites')->result_object();
 
         return Syncee_View::render(__FUNCTION__, array(
             'ee_sites' => $ee_sites,
