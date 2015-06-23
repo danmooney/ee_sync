@@ -22,18 +22,28 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
 
+    protected static $_cols;
+
     protected $_primary_key_names = array('site_id');
 
     protected $_collection_model = 'Syncee_Site_Collection';
 
     protected $_has_many_map = 'Syncee_Site_Group_Map';
 
-    protected static $_cols;
-
     /**
      * @var Syncee_Site_Rsa
      */
     public $rsa;
+
+    public static function getLocalSiteCollection()
+    {
+        return static::findAllByCondition(array('is_local' => true));
+    }
+
+    public static function getRemoteSiteCollection()
+    {
+        return static::findAllByCondition(array('is_local' => false));
+    }
 
     public function __construct(array $row = array(), $is_new = true)
     {
