@@ -130,6 +130,11 @@ class Syncee_Upd
                 'unsigned' => true,
                 'null'     => false
             ),
+            'is_local' => array(
+                'type'       => 'TINYINT',
+                'constraint' => 1,
+                'null'       => false,
+            ),
             'use_https' => array(
                 'type'       => 'TINYINT',
                 'constraint' => 1,
@@ -144,13 +149,27 @@ class Syncee_Upd
                 'type'     => 'text',
                 'null'     => false
             ),
+
+            // TODO - add private_key???
+
             // remote request action id for Syncee_Mcp::actionHandleRemoteDataApiCall
             'action_id' => array(
                 'type'     => 'INT',
                 'unsigned' => true,
                 'null'     => false
             ),
+            'remote_requests_enabled' => array(
+                'type'       => 'TINYINT',
+                'constraint' => 1,
+                'null'       => false,
+            ),
         );
+
+        ee()->dbforge->drop_table('syncee_site');
+
+        ee()->dbforge->add_field($sites_table_fields);
+        ee()->dbforge->add_key('site_id', true);
+        ee()->dbforge->create_table('syncee_site');
 
         // Add table syncee_site_group_map
         $site_group_map_fields = array(
@@ -170,13 +189,6 @@ class Syncee_Upd
         ee()->dbforge->add_field($site_group_map_fields);
         ee()->dbforge->add_key(array('site_id', 'site_group_id'), true);
         ee()->dbforge->create_table('syncee_site_group_map', true);
-
-        // Add table syncee_setting
-        ee()->dbforge->drop_table('syncee_site');
-
-        ee()->dbforge->add_field($sites_table_fields);
-        ee()->dbforge->add_key('site_id', true);
-        ee()->dbforge->create_table('syncee_site');
 
         return true;
     }

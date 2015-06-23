@@ -26,6 +26,7 @@ class Syncee_View
 
         ob_start();
         include SYNCEE_PATH_VIEWS . '/_shared/menu.php';
+        include SYNCEE_PATH_VIEWS . '/_shared/version.php';
         $menu_html = ob_get_clean();
 
         return sprintf(
@@ -46,10 +47,7 @@ class Syncee_View
 
     public static function setPageTitle($title)
     {
-        $ee     = ee();
-
-        // add module name and version to title
-        $title .= sprintf('<span class="syncee-version">%s</span>', Syncee_Upd::MODULE_NAME . ' ' . Syncee_Upd::VERSION . '<a class="btn go-pro" href="#">Go Pro</a>');
+        $ee = ee();
 
         if (isset($ee->cp) && method_exists($ee->cp, 'set_variable')) {
             $ee->cp->set_variable('cp_page_title', $title);
