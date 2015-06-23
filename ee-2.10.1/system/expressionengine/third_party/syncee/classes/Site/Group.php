@@ -22,6 +22,8 @@ class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site_group';
 
+    protected static $_cols;
+
     /**
      * @var Syncee_Site_Collection
      */
@@ -32,8 +34,6 @@ class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract
     protected $_has_many_map = 'Syncee_Site_Group_Map';
 
     protected $_collection_model = 'Syncee_Site_Group_Collection';
-
-    protected static $_cols;
 
     public function getSiteCollection()
     {
