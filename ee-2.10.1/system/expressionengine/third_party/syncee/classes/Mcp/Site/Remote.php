@@ -32,8 +32,10 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
 
     public function viewRemoteSiteList()
     {
-        return Syncee_View::render(__FUNCTION__, array(
+        $syncee_remote_sites = Syncee_Site::getRemoteSiteCollection();
 
+        return Syncee_View::render(__FUNCTION__, array(
+            'syncee_remote_sites' => $syncee_remote_sites
         ), $this);
     }
 
