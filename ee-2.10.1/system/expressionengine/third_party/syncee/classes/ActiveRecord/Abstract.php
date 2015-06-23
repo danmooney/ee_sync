@@ -22,6 +22,9 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 {
     const TABLE_NAME = '';
 
+    /**
+     * @var string
+     */
     protected $_collection_model;
 
     protected $_is_empty_row = false;
@@ -199,9 +202,12 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         ;
     }
 
+    /**
+     * @return Syncee_Collection_Abstract
+     */
     public function getCollectionModel()
     {
-        return $this->_collection_model;
+        return new $this->_collection_model();
     }
 
     public function getBelongsTo()
