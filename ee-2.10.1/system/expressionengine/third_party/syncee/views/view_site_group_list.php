@@ -18,7 +18,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                     <th>Local Site</th>
                     <th># of Remote Sites in Group</th>
                     <th>Date Created</th>
-                    <th>Date Last Synchronization</th>
+                    <th>Date Last Synchronized</th>
                     <th>ID</th>
                     <th>Edit</th>
                     <th>Delete</th>
@@ -31,7 +31,7 @@ require_once dirname(__FILE__) . '/../_init.php';
         */
         foreach ($syncee_site_groups as $syncee_site_group): ?>
             <tr>
-                <td><a href="#"><?= $syncee_site_group->title ?></a></td>
+                <td><a href="<?= Syncee_Helper::createModuleCpUrl('viewSiteGroup', array('site_group_id' => $syncee_site_group->site_group_id)) ?>"><?= $syncee_site_group->title ?></a></td>
                 <td><?= 'TODO - Local Site' ?></td>
                 <td><?= count($syncee_site_group->getSiteCollection()) ?></td>
                 <td><?= Syncee_Helper::convertUTCDateToLocalizedHumanDatetime($syncee_site_group->create_datetime) ?></td>
