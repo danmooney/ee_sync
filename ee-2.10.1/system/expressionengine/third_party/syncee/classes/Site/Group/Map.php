@@ -22,12 +22,12 @@ class Syncee_Site_Group_Map extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site_group_map';
 
+    protected static $_cols;
+
     protected $_primary_key_names = array('site_id', 'site_group_id');
 
     protected $_belongs_to = array(
         'Syncee_Site'        => 'site_id',
         'Syncee_Site_Group'  => 'site_group_id'
     );
-
-    protected static $_cols;
 }
