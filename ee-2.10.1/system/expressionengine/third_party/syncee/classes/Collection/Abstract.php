@@ -109,6 +109,29 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
         return $entity_already_exists;
     }
 
+    public function filterByCondition($method, $return_single_row_model = false)
+    {
+        $filtered_rows = array_values(array_filter($this->_rows, function ($row) use ($method) {
+            if (is_string($method) && method_exists($row, $method)) {
+                return $row->$method();
+            } elseif (is_callable($method)) {
+                return $method($row);
+            } else {
+                throw new Syncee_Exception('Argument passed to ' . __METHOD__ . ' must be callable or a string on which method exists.  Method passed: ' . $method);
+            }
+        }));
+
+        if ($return_single_row_model) {
+            if (count($filtered_rows) > 1) {
+                trigger_error('Count of filtered rows in ' . __METHOD__ . ' is greater than 1, but asked to return single row model only', E_USER_WARNING);
+            }
+
+            return isset($filtered_rows[0]) ? $filtered_rows[0] : new $this->_row_model();
+        } else {
+            return new static($filtered_rows);
+        }
+    }
+
     public function isEmptyCollection()
     {
         return !count($this->_rows);
