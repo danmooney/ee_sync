@@ -1,3 +1,8 @@
+<?php
+
+require_once dirname(__FILE__) . '/../_init.php';
+
+?>
 Are you sure you'd like to delete <?= $syncee_site_group->title ?>?
 
 <form method="post">

@@ -1,11 +1,9 @@
-<select>
-    <option value="" disabled selected>Select a Site</option>
-    <?php
-        foreach ($ee_sites as $ee_site): ?>
-            <option value="<?= $ee_site['site_id'] ?>"><?= $ee_site['site_label'] ?></option>
-    <?php
-        endforeach ?>
-</select>
+<?php
+
+require_once dirname(__FILE__) . '/../_init.php';
+
+?>
+
 
 <p>In order to transmit data between source and target servers, </p>
 
