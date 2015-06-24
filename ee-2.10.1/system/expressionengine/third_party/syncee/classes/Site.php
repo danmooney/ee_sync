@@ -35,11 +35,17 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
      */
     public $rsa;
 
+    /**
+     * @return Syncee_Site_Collection
+     */
     public static function getLocalSiteCollection()
     {
         return static::findAllByCondition(array('is_local' => true));
     }
 
+    /**
+     * @return Syncee_Site_Collection
+     */
     public static function getRemoteSiteCollection()
     {
         return static::findAllByCondition(array('is_local' => false));
@@ -60,14 +66,20 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
     public function isCurrentLocal()
     {
         return (
-            strpos('http://'  . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], $this->site_url) === 0 ||
-            strpos('https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], $this->site_url) === 0
+            $this->is_local && $this->getPrimaryKeyValues(true) // TODO
+//            strpos('http://'  . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], $this->site_url) === 0 ||
+//            strpos('https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], $this->site_url) === 0
         );
+    }
+
+    public function isLocal()
+    {
+        return $this->is_local;
     }
 
     public function isRemote()
     {
-        return !$this->isCurrentLocal();
+        return !$this->is_local;
     }
 
     public function getSiteUrl()
@@ -125,5 +137,35 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
         $ip_whitelist_exploded = array_filter(explode('|', $this->ip_whitelist));
 
         return in_array($ip, $ip_whitelist_exploded);
+    }
+
+    /**
+     * @return stdClass
+     * @throws Syncee_Exception
+     */
+    public function getCorrespondingLocalEeSiteRow()
+    {
+        if (!$this->isLocal()) {
+            throw new Syncee_Exception('Cannot fetch corresponding local ee site row in ' . __METHOD__ . ' since this row is remote');
+        }
+
+        $corresponding_local_ee_site = ee()->db->select('*')->from('sites')->where('site_id', $this->ee_site_id)->get()->row();
+
+        if (!$corresponding_local_ee_site) {
+            throw new Syncee_Exception('Could not find corresponding local EE site in ' . __METHOD__ . '.   Site id is ' . $this->ee_site_id);
+        }
+
+        return $corresponding_local_ee_site;
+    }
+
+    public function save()
+    {
+        if ($this->_is_new) {
+            $this->action_id   = ee()->db->select('action_id')->from('actions')->where('method', 'actionHandleRemoteDataApiCall')->get()->row('action_id');
+            $this->public_key  = $this->rsa->getPublicKey();
+            $this->private_key = $this->rsa->getPrivateKey();
+        }
+
+        return parent::save();
     }
 }
