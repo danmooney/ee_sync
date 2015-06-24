@@ -109,6 +109,11 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
         return $entity_already_exists;
     }
 
+    /**
+     * @param $method
+     * @param bool $return_single_row_model
+     * @return Syncee_Collection_Abstract|Syncee_Entity_Abstract|Syncee_ActiveRecord_Abstract
+     */
     public function filterByCondition($method, $return_single_row_model = false)
     {
         $filtered_rows = array_values(array_filter($this->_rows, function ($row) use ($method) {
@@ -116,8 +121,19 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
                 return $row->$method();
             } elseif (is_callable($method)) {
                 return $method($row);
+            } elseif (is_array($method)) {
+                $passes = true;
+
+                foreach ($method as $key => $val) {
+                    if ($row->$key != $val) {
+                        $passes = false;
+                        break;
+                    }
+                }
+
+                return $passes;
             } else {
-                throw new Syncee_Exception('Argument passed to ' . __METHOD__ . ' must be callable or a string on which method exists.  Method passed: ' . $method);
+                throw new Syncee_Exception('Argument passed to ' . __METHOD__ . ' must be callable, array, or string on which method exists.  Method passed: ' . $method);
             }
         }));
 
