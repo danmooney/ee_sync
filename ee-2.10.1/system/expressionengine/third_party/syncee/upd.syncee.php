@@ -173,12 +173,12 @@ class Syncee_Upd
 
         // Add table syncee_site_group_map
         $site_group_map_fields = array(
-            'site_id' => array(
+            'site_group_id' => array(
                 'type'     => 'INT',
                 'unsigned' => true,
                 'null'     => false
             ),
-            'site_group_id' => array(
+            'site_id' => array(
                 'type'     => 'INT',
                 'unsigned' => true,
                 'null'     => false
@@ -187,8 +187,8 @@ class Syncee_Upd
 
         ee()->dbforge->drop_table('syncee_site_group_map');
         ee()->dbforge->add_field($site_group_map_fields);
-        ee()->dbforge->add_key(array('site_id', 'site_group_id'), true);
-        ee()->dbforge->create_table('syncee_site_group_map', true);
+        ee()->dbforge->add_key(array('site_group_id', 'site_id'), true);
+        ee()->dbforge->create_table('syncee_site_group_site_map', true);
 
         return true;
     }
