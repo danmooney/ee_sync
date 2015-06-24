@@ -233,10 +233,15 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             if ($success) {
                 // save primary key on this object
                 // TODO - test to see if ee()->db->insert_id() returns compound primary key values
-                $insert_id = (array) ee()->db->insert_id();
-                foreach ($this->_primary_key_names as $idx => $primary_key_name) {
-                    $this->_col_val_mapping[$primary_key_name] = $insert_id[$idx] ;
+                $insert_id = ee()->db->insert_id();
+
+                if ($insert_id) {
+                    $insert_id = (array) $insert_id;
+                    foreach ($this->_primary_key_names as $idx => $primary_key_name) {
+                        $this->_col_val_mapping[$primary_key_name] = $insert_id[$idx];
+                    }
                 }
+
 
                 $this->_is_new = false;
             }
@@ -248,6 +253,32 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             }
 
             $success = ee()->db->update(static::TABLE_NAME, $row, $where);
+        }
+
+        /**
+         * Save map model if it exists
+         * @var $map_model Syncee_ActiveRecord_Abstract
+         */
+        if ($has_many_map = $this->_has_many_map) {
+            $map_model                                = new $has_many_map();
+            $compound_key_values_missing_in_map_model = false;
+
+            foreach ($map_model->getPrimaryKeyNames() as $primary_key_name) {
+                if (isset($this->_col_val_mapping[$primary_key_name])) {
+                    $primary_key_value = $this->_col_val_mapping[$primary_key_name];
+                } elseif (isset($this->$primary_key_name)) {
+                    $primary_key_value = $this->$primary_key_name;
+                } else {
+                    $compound_key_values_missing_in_map_model = true;
+                    break;
+                }
+
+                $map_model->$primary_key_name = $primary_key_value;
+            }
+
+            if (!$compound_key_values_missing_in_map_model) {
+                $map_model->save();
+            }
         }
 
         return $success;
