@@ -44,6 +44,9 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     protected $_belongs_to;
 
+    /**
+     * @return Syncee_Collection_Abstract
+     */
     public static function findAll()
     {
         $rows             = ee()->db->select('*')->from(static::TABLE_NAME)->get()->result_array();
@@ -300,6 +303,32 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
         if ($success) {
             $this->_is_new = true;
+        }
+
+        /**
+         * Delete map model if it exists
+         * @var $map_model Syncee_ActiveRecord_Abstract
+         */
+        if ($has_many_map = $this->_has_many_map) {
+            $map_model                                = new $has_many_map();
+            $compound_key_values_missing_in_map_model = false;
+
+            foreach ($map_model->getPrimaryKeyNames() as $primary_key_name) {
+                if (isset($this->_col_val_mapping[$primary_key_name])) {
+                    $primary_key_value = $this->_col_val_mapping[$primary_key_name];
+                } elseif (isset($this->$primary_key_name)) {
+                    $primary_key_value = $this->$primary_key_name;
+                } else {
+                    $compound_key_values_missing_in_map_model = true;
+                    break;
+                }
+
+                $map_model->$primary_key_name = $primary_key_value;
+            }
+
+            if (!$compound_key_values_missing_in_map_model) {
+                $map_model->delete();
+            }
         }
 
         return $success;
