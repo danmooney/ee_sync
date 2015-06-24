@@ -125,6 +125,11 @@ class Syncee_Upd
                 'constraint' => 255,
                 'null'       => false,
             ),
+            'site_host' => array(
+                'type'       => 'VARCHAR',
+                'constraint' => 255,
+                'null'       => false,
+            ),
             'ee_site_id' => array(
                 'type'     => 'INT',
                 'unsigned' => true,
@@ -149,9 +154,10 @@ class Syncee_Upd
                 'type'     => 'text',
                 'null'     => false
             ),
-
-            // TODO - add private_key???
-
+            'private_key' => array(
+                'type'     => 'text',
+                'null'     => false
+            ),
             // remote request action id for Syncee_Mcp::actionHandleRemoteDataApiCall
             'action_id' => array(
                 'type'     => 'INT',
@@ -185,7 +191,7 @@ class Syncee_Upd
             ),
         );
 
-        ee()->dbforge->drop_table('syncee_site_group_map');
+        ee()->dbforge->drop_table('syncee_site_group_site_map');
         ee()->dbforge->add_field($site_group_map_fields);
         ee()->dbforge->add_key(array('site_group_id', 'site_id'), true);
         ee()->dbforge->create_table('syncee_site_group_site_map', true);
@@ -241,6 +247,7 @@ class Syncee_Upd
 
         ee()->dbforge->drop_table('syncee_setting');
         ee()->dbforge->drop_table('syncee_site');
+        ee()->dbforge->drop_table('syncee_site_group_site_map');
 
         return true;
     }
