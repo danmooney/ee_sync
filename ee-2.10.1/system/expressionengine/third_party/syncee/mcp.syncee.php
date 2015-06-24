@@ -72,6 +72,10 @@ class Syncee_Mcp
             $mcp_obj    = new $class_name();
 
             if (method_exists($mcp_obj, $method)) {
+                if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                   $this->_runLocalSiteCleanup();
+                }
+
                 $return_value = $mcp_obj->$method();
                 break;
             }
@@ -104,5 +108,49 @@ class Syncee_Mcp
         $entity->setEeSiteId($ee_site_id);
 
         new Syncee_Request_Remote($entity, $site_id);
+    }
+
+    private function _runLocalSiteCleanup()
+    {
+        $syncee_site_collection        = Syncee_Site::findAll();
+        $sites_with_current_local_host = $syncee_site_collection->filterByCondition(array('site_host' => $_SERVER['HTTP_HOST']));
+        $local_ee_sites                = ee()->db->get('sites')->result_object();
+
+        $discrepancy_exists_between_local_syncee_sites_and_local_ee_sites = count($local_ee_sites) !== count($sites_with_current_local_host);
+
+        if (!$discrepancy_exists_between_local_syncee_sites_and_local_ee_sites) {
+            return;
+        }
+
+        foreach ($local_ee_sites as $local_ee_site) {
+            $corresponding_local_syncee_site = $sites_with_current_local_host->filterByCondition(array('ee_site_id' => $local_ee_site->site_id), true);
+            if ($corresponding_local_syncee_site->isEmptyRow()) {
+                $corresponding_local_syncee_site->ee_site_id = $local_ee_site->site_id;
+                $corresponding_local_syncee_site->is_local   = true;
+                $corresponding_local_syncee_site->site_url   = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']);
+                $corresponding_local_syncee_site->site_host  = $_SERVER['HTTP_HOST'];
+                $corresponding_local_syncee_site->save();
+            }
+        }
+
+        // re-evaluate $sites_with_current_local_host
+        $sites_with_current_local_host = $syncee_site_collection->filterByCondition(array('site_host' => $_SERVER['HTTP_HOST']));
+
+        /**
+         * @var $site_with_current_local_host Syncee_ActiveRecord_Abstract
+         */
+        foreach ($sites_with_current_local_host as $site_with_current_local_host) {
+            $corresponding_local_ee_site = null;
+            foreach ($local_ee_sites as $local_ee_site) {
+                if ($local_ee_site->site_id === $site_with_current_local_host->ee_site_id) {
+                    $corresponding_local_ee_site = $local_ee_site;
+                    break;
+                }
+            }
+
+            if (!$corresponding_local_ee_site) {
+                $site_with_current_local_host->delete();
+            }
+        }
     }
 }
