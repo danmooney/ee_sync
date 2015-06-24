@@ -9,6 +9,9 @@ $menu = array(
     'Remote Sites' => array(
         'method' => 'viewRemoteSiteList'
     ),
+    'Conflicts' => array(
+        'method' => 'viewConflictList'
+    ),
     'Help' => array(
         'method' => 'help'
     ),
