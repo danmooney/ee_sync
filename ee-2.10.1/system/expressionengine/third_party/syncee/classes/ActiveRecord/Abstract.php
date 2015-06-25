@@ -99,7 +99,12 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         /**
          * @var $empty_row Syncee_ActiveRecord_Abstract
          */
-        $empty_row            = new static();
+        $empty_row  = new static();
+
+        if (!$primary_key_value) {
+            return $empty_row;
+        }
+
         $primary_keys_on_row  = (array) $empty_row->getPrimaryKeyNames();
 
         ee()->db->select('*')->from(static::TABLE_NAME);
@@ -121,7 +126,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
                         continue;
                     }
 
-                    ee()->db->where($key, $primary_key_value);
+                    ee()->db->where($key, $value);
                 }
             }
         }
@@ -196,7 +201,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         $primary_key_values = array();
 
         foreach ($this->_primary_key_names as $primary_key_name) {
-            $primary_key_values[] = $this->_col_val_mapping[$primary_key_name];
+            $primary_key_values[] = array_key_exists($primary_key_name, $this->_col_val_mapping) ? $this->_col_val_mapping[$primary_key_name] : null;
         }
 
         return $return_scalar
@@ -375,11 +380,17 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     public function __get($property)
     {
-        if (!array_key_exists($property, $this->_col_val_mapping)) {
+        if (!in_array($property, static::$_cols) && !isset($this->$property)) {
             trigger_error('Undefined property: ' . get_called_class() . '::' . $property, E_USER_NOTICE);
             return null;
         }
 
-        return $this->_col_val_mapping[$property];
+        if (array_key_exists($property, $this->_col_val_mapping)) {
+            return $this->_col_val_mapping[$property];
+        } elseif (isset($this->$property)) {
+            return $this->$property;
+        } else {
+            return null;
+        }
     }
 }
