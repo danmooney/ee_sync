@@ -42,6 +42,10 @@ class Syncee_Helper
             $path .= '&method=' . $method;
         }
 
+        $additional_query_params = array_filter($additional_query_params, function ($additional_query_param) {
+            return $additional_query_param !== null;
+        });
+
         if ($additional_query_params) {
             $path .= '&' . http_build_query($additional_query_params);
         }
