@@ -37,11 +37,7 @@ class Syncee_Site_Rsa
     public function getPrivateKey()
     {
         if (!$this->private_key) {
-            if ($this->public_key) {
-                $this->private_key = file_get_contents($this->_getPrivateKeyPathname());
-            } else {
-                $this->_createKey();
-            }
+            $this->_createKey();
         }
 
         return $this->private_key;
@@ -64,27 +60,5 @@ class Syncee_Site_Rsa
     private function _createKey()
     {
         list($this->private_key, $this->public_key, $partial_key) = array_values($this->_crypt->createKey());
-        $this->_writePrivateKeyToFile();
     }
-
-    private function _writePrivateKeyToFile()
-    {
-        file_put_contents($this->_getPrivateKeyPathname(), $this->private_key);
-    }
-
-    private function _getPrivateKeyPathname()
-    {
-        $syncee_upd           = new Syncee_Upd();
-        $private_key_path     = $syncee_upd->getPrivateKeyPath();
-        $private_key_basename = md5($this->public_key) . '.txt';
-
-        return $private_key_path . '/' . $private_key_basename;
-    }
-
-//    public function __call($method, $args)
-//    {
-//        if (method_exists($this->_rsa_crypt, $method)) {
-//            return call_user_func_array(array($this->_rsa_crypt, $method), $args);
-//        }
-//    }
 }

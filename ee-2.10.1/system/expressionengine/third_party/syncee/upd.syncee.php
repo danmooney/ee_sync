@@ -17,27 +17,8 @@ class Syncee_Upd
 
     public $module_name = 'Syncee';  // distinguished from self::MODULE_NAME when free version is being used; this is the property EE looks for
 
-    public function getPrivateKeyPath()
-    {
-        return SYNCEE_PATH . '/.private_keys';
-    }
-
     public function install()
     {
-        $private_key_path = $this->getPrivateKeyPath();
-
-        if (!is_dir($private_key_path)) {
-            if (!is_writable(SYNCEE_PATH)) {
-                show_error('The syncee third_party path is not writable by the web server: ' . SYNCEE_PATH . '<br>Please check your permissions.');
-            }
-
-            mkdir($private_key_path, SYNCEE_TEST_MODE ? 0777 : 0700);
-
-            // write .gitignore to prevent any private key files from getting committed
-            file_put_contents($private_key_path . '/.gitignore', "/*\n!.gitignore");
-            file_put_contents($private_key_path . '/.htaccess', 'Deny from all');
-        }
-
         ee()->load->dbforge();
 
         $module_data = array(
@@ -201,22 +182,6 @@ class Syncee_Upd
 
     public function uninstall()
     {
-        // remove private keys
-        $private_key_path = $this->getPrivateKeyPath();
-
-        if (is_dir($private_key_path) && is_writable($private_key_path)) {
-            $iterator = new DirectoryIterator($private_key_path);
-            foreach ($iterator as $file) {
-                if ($file->isDir()) {
-                    continue;
-                }
-
-                unlink($file->getPathname());
-            }
-
-            rmdir($private_key_path);
-        }
-
         ee()->load->dbforge();
 
         // Unregister the module
