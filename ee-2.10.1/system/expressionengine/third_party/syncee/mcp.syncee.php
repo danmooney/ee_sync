@@ -125,10 +125,11 @@ class Syncee_Mcp
         foreach ($local_ee_sites as $local_ee_site) {
             $corresponding_local_syncee_site = $sites_with_current_local_host->filterByCondition(array('ee_site_id' => $local_ee_site->site_id), true);
             if ($corresponding_local_syncee_site->isEmptyRow()) {
-                $corresponding_local_syncee_site->ee_site_id = $local_ee_site->site_id;
-                $corresponding_local_syncee_site->is_local   = true;
-                $corresponding_local_syncee_site->site_url   = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']);
-                $corresponding_local_syncee_site->site_host  = $_SERVER['HTTP_HOST'];
+                $corresponding_local_syncee_site->ee_site_id                         = $local_ee_site->site_id;
+                $corresponding_local_syncee_site->is_local                           = true;
+                $corresponding_local_syncee_site->site_url                           = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']);
+                $corresponding_local_syncee_site->site_host                          = $_SERVER['HTTP_HOST'];
+                $corresponding_local_syncee_site->requests_from_remote_sites_enabled = false;
                 $corresponding_local_syncee_site->save();
             }
         }
