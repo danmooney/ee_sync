@@ -36,7 +36,7 @@ class Syncee_Site_Rsa
 
     public function getPrivateKey()
     {
-        if (!$this->private_key) {
+        if (!$this->public_key) { // private key could be null if site is remote.  check if public key exists and if not then create both public/private
             $this->_createKey();
         }
 
