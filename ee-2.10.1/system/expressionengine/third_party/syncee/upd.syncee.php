@@ -116,6 +116,12 @@ class Syncee_Upd
                 'unsigned' => true,
                 'null'     => false
             ),
+            // Just an easy way for a user to refer to it (should probably only be used for remote sites)
+            'title' => array(
+                'type'       => 'VARCHAR',
+                'constraint' => 255,
+                'null'       => true,
+            ),
             'is_local' => array(
                 'type'       => 'TINYINT',
                 'constraint' => 1,
@@ -137,7 +143,7 @@ class Syncee_Upd
             ),
             'private_key' => array(
                 'type'     => 'text',
-                'null'     => false
+                'null'     => true // in the case of remote sites
             ),
             // remote request action id for Syncee_Mcp::actionHandleRemoteDataApiCall
             'action_id' => array(
@@ -145,10 +151,15 @@ class Syncee_Upd
                 'unsigned' => true,
                 'null'     => false
             ),
-            'remote_requests_enabled' => array(
+            // for local sites
+            'requests_from_remote_sites_enabled' => array(
                 'type'       => 'TINYINT',
                 'constraint' => 1,
-                'null'       => false,
+                'null'       => true,
+            ),
+            'create_datetime' => array(
+                'type'  => 'DATETIME',
+                'null'  => false,
             ),
         );
 
