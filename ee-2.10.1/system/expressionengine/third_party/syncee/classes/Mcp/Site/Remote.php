@@ -20,6 +20,81 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
 {
+    public function viewRemoteSiteList()
+    {
+        $syncee_remote_sites = Syncee_Site::getRemoteSiteCollection();
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'syncee_remote_sites' => $syncee_remote_sites
+        ), $this);
+    }
+
+    public function newRemoteSite()
+    {
+        unset($_GET['site_id']);
+        return $this->editRemoteSite();
+    }
+
+    public function newRemoteSitePOST()
+    {
+        $encoded_payload = ee()->input->post('remote_site_settings_payload');
+        $syncee_site     = Syncee_Site::getByDecodingRemoteSiteSettingsPayload($encoded_payload);
+
+        if ($syncee_site->isEmptyRow()) {
+            // TODO
+        }
+
+        if (!$syncee_site->save()) {
+            // TODO
+        }
+
+        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('editRemoteSite', array(
+            'site_id' => $syncee_site->getPrimaryKeyValues(true)
+        )));
+    }
+
+    public function editRemoteSite()
+    {
+        /**
+         * @var $syncee_site
+         */
+        $site_id        = ee()->input->get('site_id');
+        $site_id_passed = (bool) $site_id;
+        $syncee_site    = Syncee_Site::findByPk(ee()->input->get('site_id'));
+
+        if ($site_id_passed) {
+            if ($syncee_site->isEmptyRow() || !$syncee_site->isRemote()) {
+                // TODO
+            }
+        }
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'syncee_remote_site' => $syncee_site
+        ), $this);
+    }
+
+    public function editRemoteSitePOST()
+    {
+        $site_id     = ee()->input->get('site_id');
+        $syncee_site = Syncee_Site::findByPk($site_id);
+
+        if (!$syncee_site->isRemote()) {
+            // TODO
+        }
+
+        foreach ($_POST as $key => $val) {
+            $syncee_site->$key = $val;
+        }
+
+        if (!$syncee_site->save()) {
+            // TODO
+        }
+
+        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('editRemoteSite', array(
+            'site_id' => $site_id
+        )));
+    }
+
     public function newRemoteSiteToSiteGroup()
     {
 
@@ -30,16 +105,17 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
 
     }
 
-    public function viewRemoteSiteList()
+    public function pingRemoteSite()
     {
-        $syncee_remote_sites = Syncee_Site::getRemoteSiteCollection();
 
-        return Syncee_View::render(__FUNCTION__, array(
-            'syncee_remote_sites' => $syncee_remote_sites
-        ), $this);
     }
 
-    public function pingRemoteSite()
+    public function deleteRemoteSite()
+    {
+
+    }
+
+    public function deleteRemoteSitePOST()
     {
 
     }
