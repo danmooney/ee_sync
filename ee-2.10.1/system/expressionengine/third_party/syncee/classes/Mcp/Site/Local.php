@@ -42,4 +42,26 @@ class Syncee_Mcp_Site_Local extends Syncee_Mcp_Abstract
             'syncee_local_site' => $syncee_site
         ), $this);
     }
+
+    public function editLocalSitePOST()
+    {
+        $site_id     = ee()->input->get('site_id');
+        $syncee_site = Syncee_Site::findByPk($site_id);
+
+        if (!$syncee_site->isLocal()) {
+            // TODO
+        }
+
+        foreach ($_POST as $key => $val) {
+            $syncee_site->$key = $val;
+        }
+
+        if (!$syncee_site->save()) {
+            // TODO
+        }
+
+        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('editLocalSite', array(
+            'site_id' => $site_id
+        )));
+    }
 }
