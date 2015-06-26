@@ -51,6 +51,18 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
         return static::findAllByCondition(array('is_local' => false));
     }
 
+    public static function getByDecodingRemoteSiteSettingsPayload($remote_site_settings_payload)
+    {
+        $decoded_payload = @unserialize(base64_decode($remote_site_settings_payload));
+
+        // if decoding payload fails, return empty instance
+        if (!is_array($decoded_payload)) {
+            return new static();
+        }
+
+        return new static($decoded_payload);
+    }
+
     public function __construct(array $row = array(), $is_new = true)
     {
         $this->rsa = new Syncee_Site_Rsa();
