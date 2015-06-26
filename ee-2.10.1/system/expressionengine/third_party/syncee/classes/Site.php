@@ -158,6 +158,17 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
         return $corresponding_local_ee_site;
     }
 
+    public function generateRemoteSiteSettingsPayload()
+    {
+        return base64_encode(serialize(array(
+            'site_url'    => $this->site_url,
+            'site_host'   => $this->site_host,
+            'ee_site_id'  => $this->ee_site_id,
+            'public_key'  => $this->public_key,
+            'action_id'   => $this->action_id
+        )));
+    }
+
     public function save()
     {
         if ($this->_is_new) {
