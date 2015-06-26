@@ -24,7 +24,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                     <?php /* <th>Call Over HTTPS?</th> */ ?>
                     <?php /* <th>IP Whitelist</th> */ ?>
                     <th>Date Created</th>
-                    <th>ID</th>
+                    <th>Syncee Site ID</th>
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>
@@ -36,8 +36,8 @@ require_once dirname(__FILE__) . '/../_init.php';
             ?>
             <tr>
                 <?php /* <td><a href="<?= Syncee_Helper::createModuleCpUrl('viewSiteGroup', $primary_key_value_map) ?>"><?= $syncee_remote_site->title ?></a></td> */ ?>
-                <td><?= $syncee_remote_site->title ?></td>
-                <td><?= $syncee_remote_site->site_url ?></td>
+                <td><?= $syncee_remote_site->title ?: '<i>(None)</i>' ?></td>
+                <td><?= $syncee_remote_site->getSiteUrl() ?></td>
                 <td><?= $syncee_remote_site->ee_site_id ?></td>
                 <td><?= $syncee_remote_site->action_id ?></td>
                 <?php /*<td><?= $syncee_remote_site->use_https ? 'Yes' : 'No' ?></td> */ ?>

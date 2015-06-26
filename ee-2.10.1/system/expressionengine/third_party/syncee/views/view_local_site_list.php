@@ -14,9 +14,9 @@ require_once dirname(__FILE__) . '/../_init.php';
             <th>Local Site Name</th>
             <th>EE Site ID</th>
             <th>Allows calls from remote sites?</th>
-            <th>Call over HTTPS?</th>
+            <?php /* <th>Call over HTTPS?</th> */ ?>
             <th>IP Whitelist</th>
-            <th>ID</th>
+            <th>Syncee Site ID</th>
             <th>Edit</th>
         </tr>
     </thead>
@@ -30,7 +30,7 @@ require_once dirname(__FILE__) . '/../_init.php';
         <td><?= $ee_site->site_label ?></td>
         <td><?= $syncee_local_site->ee_site_id ?></td>
         <td><?= $syncee_local_site->requests_from_remote_sites_enabled ? 'Yes' : 'No' ?></td>
-        <td><?= $syncee_local_site->use_https ? 'Yes' : 'No' ?></td>
+        <?php /* <td><?= $syncee_local_site->use_https ? 'Yes' : 'No' ?></td> */ ?>
         <td><?= $syncee_local_site->ip_whitelist ?: '<i>(Empty)</i>' ?></td>
         <td><?= $syncee_local_site->getPrimaryKeyValues(true) ?></td>
         <td><a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $primary_key_value_map) ?>">Edit</a></td>

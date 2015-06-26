@@ -23,7 +23,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                     <th># of Remote Sites in Group</th>
                     <th>Date Created</th>
                     <th>Date Last Synchronized</th>
-                    <th>ID</th>
+                    <th>Syncee Site Group ID</th>
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>
