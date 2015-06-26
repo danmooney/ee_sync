@@ -170,7 +170,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
                 foreach (static::$_cols as $col) {
                     if (in_array($col, array_keys($nested_object_object_properties))) {
-                        $this->_col_val_mapping[$col] =& $this->$object_key->$col;
+                        $this->$object_key->$col =& $this->_col_val_mapping[$col];
                     }
                 }
             }
