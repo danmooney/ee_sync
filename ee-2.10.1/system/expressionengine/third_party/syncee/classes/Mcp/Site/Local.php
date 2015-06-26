@@ -22,16 +22,24 @@ class Syncee_Mcp_Site_Local extends Syncee_Mcp_Abstract
 {
     public function viewLocalSiteList()
     {
-        $ee_sites           = ee()->db->get('sites')->result_object();
         $syncee_local_sites = Syncee_Site::getLocalSiteCollection();
 
         return Syncee_View::render(__FUNCTION__, array(
-            'ee_sites' => $ee_sites,
+            'syncee_local_sites' => $syncee_local_sites
         ), $this);
     }
 
-    public function viewLocalSite()
+    public function editLocalSite()
     {
-        return Syncee_View::render(__FUNCTION__, array(), $this);
+        $site_id     = ee()->input->get('site_id');
+        $syncee_site = Syncee_Site::findByPk($site_id);
+
+        if (!$syncee_site->isLocal()) {
+            // TODO
+        }
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'syncee_local_site' => $syncee_site
+        ), $this);
     }
 }
