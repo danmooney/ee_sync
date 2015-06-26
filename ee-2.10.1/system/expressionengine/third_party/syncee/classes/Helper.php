@@ -35,7 +35,7 @@ class Syncee_Helper
 
     public static function createModuleCpUrl($method = '', array $additional_query_params = array())
     {
-        $base = ee()->config->item('cp_url', false) . '?D=cp';
+        $base = BASE;
         $path = str_replace('&amp;', '&', $base) . '&C=addons_modules&M=show_module_cp&module=' . strtolower(Syncee_Upd::MODULE_NAME);
 
         if ($method) {
@@ -49,9 +49,6 @@ class Syncee_Helper
         if ($additional_query_params) {
             $path .= '&' . http_build_query($additional_query_params);
         }
-
-        // add session fingerprint
-        $path .= '&S=' . $_REQUEST['S'];
 
         return $path;
     }
