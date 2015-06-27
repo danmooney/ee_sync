@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/../_init.php';
         <p>You currently don't have any remote sites set up.  Click the "New Remote Site" button to set up one.</p>
 <?php
     endif ?>
-    <a class="btn" href="<?= Syncee_Helper::createModuleCpUrl('newRemoteSite') ?>">New Remote Site</a>
+    <a class="btn" href="<?= Syncee_Helper::createModuleCpUrl('newRemoteSite') ?>">New Remote Site</a><br><br>
 <?php
     if (count($syncee_remote_sites)): ?>
         <table>

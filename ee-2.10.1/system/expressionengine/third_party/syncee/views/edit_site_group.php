@@ -8,10 +8,10 @@ require_once dirname(__FILE__) . '/../_init.php';
 ?>
 
 <form method="post">
-    <p>Enter your Site Group Name</p>
-    <input type="text" name="title" value="<?= $syncee_site_group->title ?>">
-    <p>Choose a Local Site</p>
-    <select name="ee_site_id">
+    <label for="title">Enter your Site Group Name</label><br>
+    <input id="title" type="text" name="title" value="<?= $syncee_site_group->title ?>"><br><br>
+    <label for="ee_site_id">Choose a Local Site</label><br>
+    <select id="ee_site_id" name="ee_site_id">
         <option value="" disabled selected>Select a Local Site</option>
     <?php
         foreach ($ee_sites as $ee_site):
@@ -20,8 +20,8 @@ require_once dirname(__FILE__) . '/../_init.php';
     <?php
         endforeach ?>
     </select>
-    <br>
-    <button type="submit"><?= $syncee_site_group->isEmptyRow() ? 'Add New' : 'Update' ?> Site Group</button>
+    <br><br><br>
+    <button class="btn" type="submit"><?= $syncee_site_group->isEmptyRow() ? 'Add New' : 'Update' ?> Site Group</button>
     <input type="hidden" name="XID" value="<?= ee()->csrf->get_user_token() ?>">
     <input type="hidden" name="csrf_token" value="<?= ee()->csrf->get_user_token() ?>">
 </form>

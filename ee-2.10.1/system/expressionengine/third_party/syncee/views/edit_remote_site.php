@@ -14,7 +14,7 @@ require_once dirname(__FILE__) . '/../_init.php';
             <div class="remote-site-settings-payload-container">
                 <label for="remote_site_settings_payload">Copy the settings payload from a local site on another Syncee installation and paste them into here.</label>
                 <textarea id="remote_site_settings_payload" name="remote_site_settings_payload"><?= $syncee_remote_site->isEmptyRow() ? '' : $syncee_remote_site->generateRemoteSiteSettingsPayload() ?></textarea>
-                <button type="submit">Save New Remote Site</button>
+                <button class="btn" type="submit">Save New Remote Site</button>
             </div>
             <input type="hidden" name="XID" value="<?= ee()->csrf->get_user_token() ?>">
             <input type="hidden" name="csrf_token" value="<?= ee()->csrf->get_user_token() ?>">
@@ -41,7 +41,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                     <label for="remote_site_settings_payload">Paste Settings from Remote Site Below</label>
                     <textarea id="remote_site_settings_payload" name="remote_site_settings_payload"><?= !$syncee_remote_site->isEmptyRow() ? $syncee_remote_site->generateRemoteSiteSettingsPayload() : '' ?></textarea>
                 </div>*/ ?>
-                <button type="submit">Update Remote Site Settings</button>
+                <button class="btn" type="submit">Update Remote Site Settings</button>
                 <input type="hidden" name="XID" value="<?= ee()->csrf->get_user_token() ?>">
                 <input type="hidden" name="csrf_token" value="<?= ee()->csrf->get_user_token() ?>">
             </form>

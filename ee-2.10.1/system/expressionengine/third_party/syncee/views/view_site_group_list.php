@@ -12,7 +12,7 @@ require_once dirname(__FILE__) . '/../_init.php';
         <p>You currently don't have any site groups set up.  Click the "New Site Group" button to set up one.</p>
 <?php
     endif ?>
-    <a class="btn" href="<?= Syncee_Helper::createModuleCpUrl('newSiteGroup') ?>">New Site Group</a>
+    <a class="btn" href="<?= Syncee_Helper::createModuleCpUrl('newSiteGroup') ?>">New Site Group</a><br><br>
 <?php
     if (count($syncee_site_groups)): ?>
         <table>

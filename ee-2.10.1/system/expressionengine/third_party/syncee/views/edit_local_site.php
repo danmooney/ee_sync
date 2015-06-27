@@ -25,7 +25,7 @@ require_once dirname(__FILE__) . '/../_init.php';
         <label for="ip_whitelist">IP Whitelist (If left empty with master override set to 'Yes', any remote site can make requests to this local site and view its encrypted responses.)<br>Enter one IP per line.  CIDR notation will not be converted to IP ranges. <?php // TODO - Add multiple inputs for this field (and lookup how to validate/convert CIDR ranges) ?></label><br>
         <textarea id="ip_whitelist" name="ip_whitelist"><?= $syncee_local_site->ip_whitelist ?></textarea>
         <br><br>
-        <button type="submit">Update Local Site Settings</button>
+        <button class="btn" type="submit">Update Local Site Settings</button>
         <input type="hidden" name="XID" value="<?= ee()->csrf->get_user_token() ?>">
         <input type="hidden" name="csrf_token" value="<?= ee()->csrf->get_user_token() ?>">
     </form>

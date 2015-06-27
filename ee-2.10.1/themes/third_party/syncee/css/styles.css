@@ -1,0 +1,131 @@
+#mainContent .contents .heading {
+    background: #3E4C54;
+    box-shadow: inset 0 1px #175E58 !important;
+    border-left: 2px solid #3E4C54;
+    border-top: 2px solid #3E4C54;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    -webkit-font-smoothing: antialiased;
+}
+
+#mainContent .contents .syncee-version {
+    font-size: 14px;
+    position: absolute;
+    top: 13px;
+    right: 40px;
+}
+
+#breadCrumb .syncee-version {
+    display: none;
+}
+
+#mainContent .contents .syncee-version .btn {
+    background: #D5BDB5;
+    color: #FFF;
+}
+
+#mainContent .contents .heading .edit {
+    background: 0;
+}
+
+#mainContent .pageContents {
+    padding: 0;
+    border: 0;
+}
+
+#syncee .menu {
+    display: table;
+    width: 100%;
+    /*background: #3E4C54;*/
+    background: #98AAB6;
+}
+
+#syncee .menu li {
+    float: left;
+    margin: 8px 10px;
+}
+
+#syncee .menu li a {
+    color: #FFF;
+    display: block;
+    padding: 8px 12px;
+    background: #56646C;
+    border-radius: 4px;
+    box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+#syncee .menu li a.active {
+    background: #1B1D36;
+}
+
+#syncee .menu li a:hover {
+    text-decoration: none;
+}
+
+#syncee .menu li a.not-active:hover {
+    background: #3E4C54;
+}
+
+.clr {
+    clear: both;
+}
+
+#syncee-page {
+    padding: 14px;
+}
+
+.remote-site-settings-payload-container {
+    width: 45%;
+    float: right;
+}
+
+.remote-site-settings-payload-container textarea {
+    min-height: 150px;
+}
+
+.site-settings-container {
+    width: 45%;
+    float: left;
+}
+
+
+#syncee-page table {
+    border-collapse: collapse;
+}
+
+#syncee-page table tr {
+
+}
+
+#syncee-page table tr > * {
+    border: 1px solid gray;
+}
+
+#syncee-page table tr th {
+    background: #1B1D36;
+    color: #FFF;
+    padding: 8px 23px;
+}
+
+#syncee-page table tr td {
+    background: white;
+    padding: 8px;
+}
+
+#syncee-page .btn {
+    background: red;
+    color: #FFF;
+    padding: 7px 11px;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    border-radius: 5px;
+    border: 1px solid #DB0D0D;
+    text-shadow: 0 0 1px #939393;
+}
+
+#syncee-page .btn:hover {
+    text-decoration: none;
+    background: #FF3636;
+}
