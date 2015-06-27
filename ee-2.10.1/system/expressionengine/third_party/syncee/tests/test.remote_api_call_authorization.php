@@ -29,12 +29,11 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
         $this->_seedSiteData();
 
-        $this->_site_collection = Syncee_Site_Collection::getAllBySiteId(1);
+        $this->_site_collection = Syncee_Site_Group::findByPk(1)->getSiteCollection();
 
-        $current_local_site   = $this->_site_collection[0];
-        $_SERVER['HTTP_HOST'] = parse_url($current_local_site->site_url, PHP_URL_HOST);
-
-        $this->_remote_site   = $this->_site_collection->filterByCondition('isRemote', true);
+        $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
+        $current_local_site     = $this->_site_collection->filterByCondition('isLocal', true);
+        $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
 
         $this->_request       = new Syncee_Request();
     }
@@ -77,17 +76,24 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
     public function testRemoteApiCallFailsWithWhitelistThatHasFailingIp()
     {
+        /**
+         * @var $remote_site Syncee_Site
+         */
         $request     = $this->_request;
         $remote_site = $this->_remote_site;
 
         $this->_switchToDatabaseBasedOnSite($remote_site);
+
+        // need to be wary of when changing dbs; primary keys change too.  explicitly fetch the remote (now actually local since db switch) site's row
+        $remote_site = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => 1), true);
+
         $remote_site->addToIpWhitelist('0.0.0.1')->save();
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
         $status_code = $response->getStatusCode();
 
         $this->assertJson($response->getRawResponse());
-        $this->assertEqual(403, $status_code, 'HTTP Response status code is 403');
+        $this->assertEqual(403, $status_code, 'HTTP Response status code is 403: %s');
 
         $decoded_response = $response->getResponseDecoded();
 
@@ -96,17 +102,24 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
     public function testRemoteApiCallPassesWithWhitelistThatPasses()
     {
+        /**
+         * @var $remote_site Syncee_Site
+         */
         $request     = $this->_request;
         $remote_site = $this->_remote_site;
 
         $this->_switchToDatabaseBasedOnSite($remote_site);
+
+        // need to be wary of when changing dbs; primary keys change too.  explicitly fetch the remote (now actually local since db switch) site's row
+        $remote_site = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => 1), true);
+
         $remote_site->addToIpWhitelist('127.0.0.1')->save();
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
         $status_code = $response->getStatusCode();
 
         $this->assertJson($response->getRawResponse());
-        $this->assertEqual(200, $status_code, 'HTTP Response status code is 200');
+        $this->assertEqual(200, $status_code, 'HTTP Response status code is 200: %s');
 
         $decoded_response = $response->getResponseDecoded();
 
@@ -115,10 +128,17 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
     public function testRemoteApiCallPassesWithWhitelistThatHasPassingAndFailingIps()
     {
+        /**
+         * @var $remote_site Syncee_Site
+         */
         $request     = $this->_request;
         $remote_site = $this->_remote_site;
 
         $this->_switchToDatabaseBasedOnSite($remote_site);
+
+        // need to be wary of when changing dbs; primary keys change too.  explicitly fetch the remote (now actually local since db switch) site's row
+        $remote_site = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => 1), true);
+
         $remote_site
             ->addToIpWhitelist('127.0.0.1')
             ->addToIpWhitelist('0.0.0.1')
@@ -139,10 +159,17 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
     public function testRemoteApiCallFailsAfterAddingAndRemovingPassingIp()
     {
+        /**
+         * @var $remote_site Syncee_Site
+         */
         $request     = $this->_request;
         $remote_site = $this->_remote_site;
 
         $this->_switchToDatabaseBasedOnSite($remote_site);
+
+        // need to be wary of when changing dbs; primary keys change too.  explicitly fetch the remote (now actually local since db switch) site's row
+        $remote_site = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => 1), true);
+
         $remote_site->addToIpWhitelist('127.0.0.1')->addToIpWhitelist('0.0.0.1')->save();
         $remote_site->removeFromIpWhitelist('127.0.0.1')->save();
 

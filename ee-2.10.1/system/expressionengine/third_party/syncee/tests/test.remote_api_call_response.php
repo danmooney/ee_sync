@@ -33,11 +33,11 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
 
         $this->_seedSiteData();
 
-        $this->_site_collection = Syncee_Site_Collection::getAllBySiteId(1);
+        $this->_site_collection = Syncee_Site_Group::findByPk(1)->getSiteCollection();
 
-        $current_local_site     = $this->_site_collection[0];
-        $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
         $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
+        $current_local_site     = $this->_site_collection->filterByCondition('isLocal', true);
+        $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
         $this->_request         = new Syncee_Request();
     }
 
@@ -56,6 +56,10 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
         $remote_site             = $this->_remote_site;
 
         $this->_switchToDatabaseBasedOnSite($remote_site);
+
+        // need to be wary of when changing dbs; primary keys change too.  explicitly fetch the remote (now actually local since db switch) site's row
+        $remote_site = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => 1), true);
+
         $remote_site->public_key = 'some bs';
         $remote_site->save();
 
@@ -64,7 +68,7 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
         $this->expectError('Decryption error');
         $response  = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
 
-        $this->assertEqual($response->getStatusCode(), 500, 'Response code is 500');
+        $this->assertEqual($response->getStatusCode(), 500, 'Response code is 500: %s');
 
         $this->fail('Need to assert bad public key message returned in ' . __METHOD__);
     }

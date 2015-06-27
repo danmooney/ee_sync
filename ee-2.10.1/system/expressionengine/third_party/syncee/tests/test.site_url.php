@@ -29,11 +29,10 @@ class Test_Site_Url extends Syncee_Unit_Test_Case_Abstract
 
         $this->_seedSiteData();
 
-        $this->_mcp = new Syncee_Mcp();
-        $this->_site_collection = Syncee_Site_Collection::getAllBySiteId(1);
+        $this->_site_collection = Syncee_Site_Group::findByPk(1)->getSiteCollection();
 
-        $current_local_site   = $this->_current_local_site = $this->_site_collection[0];
-        $_SERVER['HTTP_HOST'] = parse_url($current_local_site->site_url, PHP_URL_HOST);
+        $current_local_site     = $this->_current_local_site = $this->_site_collection->filterByCondition('isLocal', true);
+        $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
     }
 
     public function testSiteUrlSchemeChangePasses()
@@ -53,7 +52,7 @@ class Test_Site_Url extends Syncee_Unit_Test_Case_Abstract
         $current_local_site->use_https = true;
         $current_local_site->save();
 
-        $site_from_db = Syncee_Site_Collection::getAllBySiteId(1)->filterByCondition('isCurrentLocal', true);
+        $site_from_db = $this->_current_local_site;
         $this->assertEqual(parse_url($site_from_db->getSiteUrl(), PHP_URL_SCHEME), 'https', 'Site\'s scheme is HTTPS: %s');
     }
 }

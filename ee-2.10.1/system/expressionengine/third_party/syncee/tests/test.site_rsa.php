@@ -38,13 +38,13 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
         $this->_seedSiteData();
         $this->_site_rsa = new Syncee_Site_Rsa();
 
-        $this->_site_collection = Syncee_Site_Collection::getAllBySiteId(1);
+        $this->_site_collection = Syncee_Site_Group::findByPk(1)->getSiteCollection();
 
-        $current_local_site   = $this->_site_collection[0];
-        $_SERVER['HTTP_HOST'] = parse_url($current_local_site->site_url, PHP_URL_HOST);
+        $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
+        $current_local_site     = $this->_site_collection->filterByCondition('isLocal', true);
+        $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
 
         $this->_request       = new Syncee_Request();
-        $this->_remote_site   = $this->_site_collection->filterByCondition('isRemote', true);
     }
 
     public function testPrivateKeyDecryption()
@@ -75,18 +75,5 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
         $decoded_data  = $response->getResponseDataDecoded();
 
         $this->assertIsA($decoded_data, 'array', 'Data is properly decrypted and is an array: %s');
-    }
-
-    public function testCreatingPrivateKeySavesToCorrectLocation()
-    {
-        $remote_site          = $this->_remote_site;
-
-        $reflection_method    = new ReflectionMethod($remote_site->rsa, '_getPrivateKeyPathname');
-        $reflection_method->setAccessible(true);
-
-        $private_key_pathname = $reflection_method->invoke($remote_site->rsa);
-
-        $this->assertTrue(is_file($private_key_pathname) && is_readable($private_key_pathname) && is_writable($private_key_pathname), 'Private key pathname is a file and is readable and writable');
-        $this->assertEqual(file_get_contents($private_key_pathname), $remote_site->rsa->getPrivateKey(), 'Private key is identical to the contents of the private key file');
     }
 }
