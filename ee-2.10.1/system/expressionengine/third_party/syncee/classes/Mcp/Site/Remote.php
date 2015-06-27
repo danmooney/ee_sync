@@ -112,11 +112,39 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
 
     public function deleteRemoteSite()
     {
+        $site_id     = ee()->input->get('site_id');
+        $syncee_site = Syncee_Site::findByPk($site_id);
 
+        if ($syncee_site->isEmptyRow()) {
+
+        }
+
+        if (!$syncee_site->isRemote()) {
+            // TODO
+        }
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'syncee_remote_site' => $syncee_site
+        ), $this);
     }
 
     public function deleteRemoteSitePOST()
     {
+        $site_id     = ee()->input->get('site_id');
+        $syncee_site = Syncee_Site::findByPk($site_id);
 
+        if ($syncee_site->isEmptyRow()) {
+            // TODO
+        }
+
+        if (!$syncee_site->isRemote()) {
+            // TODO
+        }
+
+        if (!$syncee_site->delete()) {
+            // TODO
+        }
+
+        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('viewRemoteSiteList'));
     }
 }
