@@ -11,7 +11,7 @@ class Syncee_Mcp
     public function __construct()
     {
         // all of the logic below is for the control panel context, not when in the context of an action (AKA remote site API call)
-        if (REQ !== 'CP' || $_SERVER['REQUEST_METHOD'] !== 'GET') {
+        if (REQ !== 'CP') {
             return;
         }
 
