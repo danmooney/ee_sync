@@ -40,13 +40,14 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
     {
         $this->_http_host_running_tests = $_SERVER['HTTP_HOST'];
         $this->_installFreshDatabases();
+        $this->_switchToDatabaseBasedOnNumber();
     }
 
     public function tearDown()
     {
         $_SERVER['HTTP_HOST'] = $this->_http_host_running_tests;
         $this->_truncateTables();
-        $this->_switchToDatabaseBasedOnNumber();
+        $this->_switchToDatabaseBasedOnNumber(1);
     }
 
     public function assertJson($compare, $message = '%s')
@@ -115,27 +116,59 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
         $test_stack                    = $this->reporter->getTestList();
         $current_test_method_to_be_run = end($test_stack);
 
-        $sites_by_site_url = array();
+        $sites_by_site_url             = array();
+        $local_sites_by_db_connection  = array();
+        $site_groups_by_db_connection  = array();
 
         while ($db_name = $this->_fetchFromConfig("database.connection.db$i", false)) {
             $this->_switchToDatabaseBasedOnNumber($i);
-            $action_id = ee()->db->select('action_id')->from('actions')->where('method', 'actionHandleRemoteDataApiCall')->get()->row('action_id');
 
             $j = 1;
+
+            /**
+             * @var $site_group Syncee_Site_Group
+             * @var $site Syncee_Site
+             */
             while ($site_url = $this->_fetchFromConfig("site.url$j", false)) {
                 if (!isset($sites_by_site_url[$site_url])) {
-                    $sites_by_site_url[$site_url] = new Syncee_Site();
+                    $sites_by_site_url[$site_url] = $site = new Syncee_Site();
+
+                    $site->site_url               = $site_url;
+                    $site->is_local               = $j === $i;
+
+                    if ($site->isLocal()) {
+                        $local_sites_by_db_connection[$i] = $site;
+                    } else {
+                        // if site is remote, switch to database based on $j (remember, if local, $j === $i) and get the action id and all that jazz by saving the now local site on the local db
+                        $this->_switchToDatabaseBasedOnNumber($j);
+                        $site->save();
+
+                        // revert back to previous database
+                        $this->_switchToDatabaseBasedOnNumber($i);
+                    }
                 }
 
-                $site = $sites_by_site_url[$site_url];
+                $site           = $sites_by_site_url[$site_url];
+                $site->is_local = $j === $i;
 
-                ee()->db->insert(Syncee_Site::TABLE_NAME, array(
-                    'site_id'    => 1,
-                    'site_url'   => $site_url,
-                    'ee_site_id' => 1,
-                    'public_key' => $site->rsa->getPublicKey(),
-                    'action_id'  => $action_id
-                ));
+                // If site is considered remote, simulate transfer of the remote site's encoded settings payload
+                if ($site->isRemote()) {
+                    $site = Syncee_Site::getByDecodingRemoteSiteSettingsPayload($site->generateRemoteSiteSettingsPayload());
+                }
+
+                if (!isset($site_groups_by_db_connection[$i])) {
+                    $site_group          = $site_groups_by_db_connection[$i] = new Syncee_Site_Group();
+                    $site_group->title   = 'Site group for ' . $site_url;
+                    $site_group->save();
+                }
+
+                $site_group = $site_groups_by_db_connection[$i];
+
+                // Save/update site to database connection
+                $site->ee_site_id    = 1;
+                $site->site_group_id = $site_group->getPrimaryKeyValues(true);
+
+                $site->save();
 
                 $j += 1;
             }
@@ -153,6 +186,8 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
 
             $i += 1;
         }
+
+        $this->_switchToDatabaseBasedOnNumber(1);
     }
 
     private function _installFreshDatabases()
