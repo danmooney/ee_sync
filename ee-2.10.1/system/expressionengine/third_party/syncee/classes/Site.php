@@ -142,13 +142,14 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 
     public function allowsRemoteRequestFromIp($ip)
     {
-        if (!$this->ip_whitelist) {
+        // if no ip whitelist and requests_from_remote_sites_enabled, then request is allowed
+        if (!$this->ip_whitelist && $this->requests_from_remote_sites_enabled) {
             return true;
         }
 
         $ip_whitelist_exploded = array_filter(explode('|', $this->ip_whitelist));
 
-        return in_array($ip, $ip_whitelist_exploded);
+        return in_array($ip, $ip_whitelist_exploded) && $this->requests_from_remote_sites_enabled;
     }
 
     /**

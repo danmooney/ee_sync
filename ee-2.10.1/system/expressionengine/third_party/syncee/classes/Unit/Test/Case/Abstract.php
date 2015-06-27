@@ -168,6 +168,10 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
                 $site->ee_site_id    = 1;
                 $site->site_group_id = $site_group->getPrimaryKeyValues(true);
 
+                if ($site->isLocal()) {
+                    $site->requests_from_remote_sites_enabled = true;
+                }
+
                 $site->save();
 
                 $j += 1;

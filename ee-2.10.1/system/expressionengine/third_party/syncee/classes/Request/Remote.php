@@ -73,7 +73,12 @@ class Syncee_Request_Remote
             }
         } elseif (!$requested_site->allowsRemoteRequestFromIp(ee()->input->ip_address())) {
             $code    = 403;
-            $message = 'Request forbidden from this IP.';
+
+            if (!$requested_site->requests_from_remote_sites_enabled) {
+                $message = 'Request forbidden from all IPs with master override.';
+            } else {
+                $message = 'Request forbidden from this IP.';
+            }
         } elseif ($requested_site->isEmptyRow()) {
             $code    = 404;
             $message = 'Unable to find local site object to instantiate.';
