@@ -23,17 +23,6 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract
     protected $_row_model = 'Syncee_Site';
 
     /**
-     * @deprecated
-     * @param $site_id
-     * @return static
-     */
-    public static function getAllBySiteId($site_id)
-    {
-        $rows = ee()->db->select('*')->from(static::getRowModelTableName())->where('site_id', $site_id)->get()->result_array();
-        return new static($rows);
-    }
-
-    /**
      * @return Syncee_Entity_Comparison_Collection_Library
      */
     public function getChannelComparisonCollectionLibrary()
