@@ -143,7 +143,7 @@ class Syncee_Upd
             ),
             'private_key' => array(
                 'type'     => 'text',
-                'null'     => true // in the case of remote sites
+                'null'     => false  // private key has to be on both target and source sites... there's just no way to do it otherwise
             ),
             // remote request action id for Syncee_Mcp::actionHandleRemoteDataApiCall
             'action_id' => array(
@@ -169,7 +169,7 @@ class Syncee_Upd
         ee()->dbforge->add_key('site_id', true);
         ee()->dbforge->create_table('syncee_site');
 
-        // Add table syncee_site_group_map
+        // Add table syncee_site_group_site_map
         $site_group_map_fields = array(
             'site_group_id' => array(
                 'type'     => 'INT',
