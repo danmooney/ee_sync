@@ -82,7 +82,7 @@ class Syncee_Request
 
         // remove module name for later insertion to prevent a request instantiating a class that shouldn't be instantiated
         $entity_class_str_sans_module_name = preg_replace("#^{$module_name}_#", '', $entity_class_str);
-        $remote_site_url                   = $site->getSiteUrl() . "?ACT={$site->action_id}&entity={$entity_class_str_sans_module_name}&site_id={$site->site_id}";
+        $remote_site_url                   = $site->getSiteUrl() . "?ACT={$site->action_id}&entity={$entity_class_str_sans_module_name}&ee_site_id={$site->ee_site_id}";
 
         return $remote_site_url;
     }
