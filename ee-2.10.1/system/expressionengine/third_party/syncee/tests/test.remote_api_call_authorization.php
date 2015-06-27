@@ -183,4 +183,31 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
         $this->assertTrue(isset($decoded_response['code']) && $decoded_response['code'] === 403, 'HTTP code is in JSON response and is 403: %s');
     }
+
+    public function testRemoteApiCallFailsWhenAllRemoteRequestsDisabled()
+    {
+        /**
+         * @var $remote_site Syncee_Site
+         */
+        $request     = $this->_request;
+        $remote_site = $this->_remote_site;
+
+        $this->_switchToDatabaseBasedOnSite($remote_site);
+
+        // need to be wary of when changing dbs; primary keys change too.  explicitly fetch the remote (now actually local since db switch) site's row
+        $remote_site = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => 1), true);
+
+        $remote_site->requests_from_remote_sites_enabled = false;
+        $remote_site->addToIpWhitelist('127.0.0.1')->addToIpWhitelist('0.0.0.1')->save();
+
+        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $status_code = $response->getStatusCode();
+
+        $this->assertJson($response->getRawResponse());
+        $this->assertEqual(403, $status_code, 'HTTP Response status code is 403: %s');
+
+        $decoded_response = $response->getResponseDecoded();
+
+        $this->assertTrue(isset($decoded_response['code']) && $decoded_response['code'] === 403, 'HTTP code is in JSON response and is 403: %s');
+    }
 }
