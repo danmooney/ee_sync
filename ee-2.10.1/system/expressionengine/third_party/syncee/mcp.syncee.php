@@ -10,6 +10,11 @@ class Syncee_Mcp
 
     public function __construct()
     {
+        // all of the logic below is for the control panel context, not when in the context of an action (AKA remote site API call)
+        if (REQ !== 'CP' || $_SERVER['REQUEST_METHOD'] !== 'GET') {
+            return;
+        }
+
         Syncee_View::setPageTitle(lang('syncee_module_name'));
         Syncee_View::addStylesheets();
         Syncee_View::addScripts();
@@ -93,10 +98,7 @@ class Syncee_Mcp
     public function actionHandleRemoteDataApiCall()
     {
         $entity_str        = ee()->input->get('entity');
-        $site_id           = ee()->input->get('site_id');
-
-        // TODO - figure out how to do this best.  Keep EE multi-site builds in mind!  Of course remove the ee_site_id fallback ternary operator in near future!
-        $ee_site_id        = ee()->input->get('ee_site_id') ?: 1;
+        $ee_site_id        = ee()->input->get('ee_site_id');
 
         // add back module name that was removed for security reasons
         $entity_class_name = Syncee_Upd::MODULE_NAME . '_' . $entity_str;
@@ -107,7 +109,7 @@ class Syncee_Mcp
         $entity = new $entity_class_name();
         $entity->setEeSiteId($ee_site_id);
 
-        new Syncee_Request_Remote($entity, $site_id);
+        new Syncee_Request_Remote($entity);
     }
 
     private function _runLocalSiteCleanup()
@@ -128,7 +130,6 @@ class Syncee_Mcp
                 $corresponding_local_syncee_site->ee_site_id                         = $local_ee_site->site_id;
                 $corresponding_local_syncee_site->is_local                           = true;
                 $corresponding_local_syncee_site->site_url                           = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']);
-                $corresponding_local_syncee_site->site_host                          = $_SERVER['HTTP_HOST'];
                 $corresponding_local_syncee_site->requests_from_remote_sites_enabled = false;
                 $corresponding_local_syncee_site->save();
             }
