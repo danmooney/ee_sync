@@ -173,22 +173,46 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
     public function generateRemoteSiteSettingsPayload()
     {
         return base64_encode(serialize(array(
-            'site_url'    => $this->site_url,
-            'site_host'   => $this->site_host,
-            'ee_site_id'  => $this->ee_site_id,
-            'public_key'  => $this->public_key,
-            'action_id'   => $this->action_id
+            'site_url'     => $this->site_url,
+            'site_host'    => $this->site_host,
+            'ee_site_id'   => $this->ee_site_id,
+            'public_key'   => $this->public_key,
+            'private_key'  => $this->private_key,
+            'action_id'    => $this->action_id
         )));
     }
 
     public function save()
     {
         if ($this->_is_new) {
-            $this->action_id   = ee()->db->select('action_id')->from('actions')->where('method', 'actionHandleRemoteDataApiCall')->get()->row('action_id');
             $this->public_key  = $this->rsa->getPublicKey();
+            $this->action_id   = ee()->db->select('action_id')->from('actions')->where('method', 'actionHandleRemoteDataApiCall')->get()->row('action_id');
+
             $this->private_key = $this->rsa->getPrivateKey();
+
+            // if requests_from_remote_sites_enabled isn't set, set it to default false
+            if ($this->isLocal() && null === $this->requests_from_remote_sites_enabled) {
+                $this->requests_from_remote_sites_enabled = false;
+            }
         }
 
         return parent::save();
+    }
+
+    /**
+     * Override Syncee_ActiveRecord_Abstract::__set in order to dynamically set site_host if site_url is being set
+     * @param $property
+     * @param $value
+     * @return $this
+     */
+    public function __set($property, $value)
+    {
+        $return_value = parent::__set($property, $value);
+
+        if ($property === 'site_url') {
+            $this->site_host = parse_url($this->site_url, PHP_URL_HOST);
+        }
+
+        return $return_value;
     }
 }
