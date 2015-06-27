@@ -131,7 +131,7 @@ class Syncee_Response
         }
 
         $class_name = $this->_entity->getCollectionClassName();
-        return new $class_name($this->getResponseDataDecoded());
+        return new $class_name((array) $this->getResponseDataDecoded());
     }
 
     public function __toString()
