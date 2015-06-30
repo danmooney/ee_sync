@@ -53,7 +53,8 @@ class Syncee_Mcp
         $dir_iterator = new RecursiveDirectoryIterator(SYNCEE_PATH . '/classes/Mcp', RecursiveDirectoryIterator::SKIP_DOTS);
 
         /**
-         * @var $file SplFileInfo
+         * @var $file    SplFileInfo
+         * @var $mcp_obj Syncee_Mcp_Abstract
          */
         foreach (new RecursiveIteratorIterator($dir_iterator) as $file) {
             if (!$file->isFile() || !$file->isReadable()) {
@@ -81,6 +82,7 @@ class Syncee_Mcp
                    $this->_runLocalSiteCleanup();
                 }
 
+                $mcp_obj->setCalledMethod($method);
                 $return_value = $mcp_obj->$method();
                 break;
             }
