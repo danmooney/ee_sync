@@ -45,24 +45,26 @@
     margin: 8px 10px;
 }
 
-#syncee .menu li a {
+#syncee a.btn-secondary {
     color: #FFF;
-    display: block;
+    display: inline-block;
     padding: 8px 12px;
     background: #56646C;
     border-radius: 4px;
     box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.2);
 }
 
-#syncee .menu li a.active {
+#syncee a.btn-secondary.active {
     background: #1B1D36;
 }
 
-#syncee .menu li a:hover {
+#syncee a.btn-secondary:hover {
     text-decoration: none;
 }
 
-#syncee .menu li a.not-active:hover {
+#syncee a.btn-secondary.not-active:hover,
+#syncee-page a.btn-secondary:hover
+{
     background: #3E4C54;
 }
 
@@ -128,4 +130,14 @@
 #syncee-page .btn:hover {
     text-decoration: none;
     background: #FF3636;
+}
+
+.remote-site-settings-payload-container > div#remote_site_settings_payload {
+    background: #FFF;
+    width: 100%;
+    min-height: 300px;
+    overflow: hidden;
+    resize: vertical;
+
+    border: 1px solid #CCC;
 }
