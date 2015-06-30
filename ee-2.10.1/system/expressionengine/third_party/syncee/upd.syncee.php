@@ -188,6 +188,55 @@ class Syncee_Upd
         ee()->dbforge->add_key(array('site_group_id', 'site_id'), true);
         ee()->dbforge->create_table('syncee_site_group_site_map', true);
 
+        // Add table syncee_site_request_log
+        $site_request_log_fields = array(
+            'request_id' => array(
+                'type'           => 'INT',
+                'unsigned'       => true,
+                'null'           => false,
+                'auto_increment' => true
+            ),
+            'site_id' => array(
+                'type'          => 'INT',
+                'unsigned'      => true,
+                'null'          => false,
+            ),
+            // status code
+            'code' => array(
+                'type' => 'INT',
+                'null' => false
+            ),
+            'version' => array(
+                'type'       => 'VARCHAR',
+                'constraint' => 25,
+                'null'       => true
+            ),
+            'message' => array(
+                'type'       => 'VARCHAR',
+                'constraint' => 255,
+                'null'       => true,
+            ),
+            'errors' => array(
+                'type'       => 'VARCHAR',
+                'constraint' => 1000,
+                'null'       => true
+            ),
+            'raw_response' => array(
+                'type'  => 'LONGTEXT',
+                'null'  => true,
+            ),
+            'create_datetime' => array(
+                'type'  => 'DATETIME',
+                'null'  => false,
+            ),
+        );
+
+        ee()->dbforge->drop_table('syncee_site_request_log');
+        ee()->dbforge->add_field($site_request_log_fields);
+        ee()->dbforge->add_key('request_id', true);
+        ee()->dbforge->add_key('site_id', false);
+        ee()->dbforge->create_table('syncee_site_request_log', true);
+
         return true;
     }
 
@@ -224,6 +273,7 @@ class Syncee_Upd
         ee()->dbforge->drop_table('syncee_setting');
         ee()->dbforge->drop_table('syncee_site');
         ee()->dbforge->drop_table('syncee_site_group_site_map');
+        ee()->dbforge->drop_table('syncee_site_request_log');
 
         return true;
     }
