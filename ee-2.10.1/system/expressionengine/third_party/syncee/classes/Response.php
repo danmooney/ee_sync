@@ -108,17 +108,29 @@ class Syncee_Response
         return $this->_raw_response;
     }
 
-    public function getResponseDecoded()
+    public function getResponseDecoded($key = null)
     {
-        return $this->_response_decoded;
+        if (null === $key) {
+            return $this->_response_decoded;
+        }
+
+        return is_array($this->_response_decoded) && isset($this->_response_decoded[$key])
+            ? $this->_response_decoded[$key]
+            : null
+        ;
     }
 
     public function getResponseDataDecoded()
     {
-        return is_array($this->_response_decoded) && isset($this->_response_decoded['data'])
-            ? json_decode($this->_response_decoded['data'], true)
-            : false
-        ;
+        if (!is_array($this->_response_decoded) || !isset($this->_response_decoded['data'])) {
+            return false;
+        }
+
+        if (!is_array($this->_response_decoded['data'])) {
+            $this->_response_decoded['data'] = json_decode($this->_response_decoded['data'], true);
+        }
+
+        return $this->_response_decoded['data'];
     }
 
     /**
