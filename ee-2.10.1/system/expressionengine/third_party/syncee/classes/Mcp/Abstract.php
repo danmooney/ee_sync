@@ -19,4 +19,16 @@ if (!defined('SYNCEE_PATH')) {
 }
 
 abstract class Syncee_Mcp_Abstract
-{}
+{
+    protected $_called_method;
+
+    public function setCalledMethod($called_method)
+    {
+        $this->_called_method = $called_method;
+    }
+
+    public function getCalledMethod()
+    {
+        return $this->_called_method;
+    }
+}
