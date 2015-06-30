@@ -9,8 +9,14 @@ $menu = array(
     'Remote Sites' => array(
         'method' => 'viewRemoteSiteList'
     ),
+    'Remote Request Log' => array(
+        'method' => 'viewRemoteRequestLogList',
+    ),
     'Conflicts' => array(
         'method' => 'viewConflictList'
+    ),
+    'Settings' => array(
+        'method' => 'viewSettingsList',
     ),
     'Help' => array(
         'method' => 'help'
@@ -24,7 +30,7 @@ $current_method = ee()->input->get('method');
 <?php
     foreach ($menu as $label => $data): ?>
     <li>
-        <a class="<?= in_array($data['method'], get_class_methods(get_class($mcp))) ? 'active' : 'not-active' ?>" href="<?= Syncee_Helper::createModuleCpUrl($data['method']) ?>"><?= $label ?></a>
+        <a class="btn-secondary <?= in_array($data['method'], get_class_methods(get_class($mcp))) ? 'active' : 'not-active' ?>" href="<?= Syncee_Helper::createModuleCpUrl($data['method']) ?>"><?= $label ?></a>
     </li>
 <?php
     endforeach ?>
