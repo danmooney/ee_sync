@@ -39,7 +39,7 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract
         foreach ($this->_rows as $row) {
             $request  = new Syncee_Request();
 
-            $response   = $request->makeEntityCallToSite($row, $channel_remote_request_entity);
+            $response   = $request->makeEntityCallToSite($row, $channel_remote_request_entity, new Syncee_Site_Request_Log());
             $collection = $response->getResponseDataDecodedAsCollection();
 
             $collection->setSite($row);
@@ -66,7 +66,7 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract
          */
         foreach ($this->_rows as $row) {
             $request            = new Syncee_Request();
-            $response           = $request->makeEntityCallToSite($row, $channel_remote_request_entity);
+            $response           = $request->makeEntityCallToSite($row, $channel_remote_request_entity, new Syncee_Site_Request_Log());
             $channel_collection = $response->getResponseDataDecodedAsCollection();
 
             // get fields from channel collection and add to channel field collection
