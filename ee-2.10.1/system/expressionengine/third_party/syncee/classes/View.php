@@ -29,6 +29,8 @@ class Syncee_View
         include SYNCEE_PATH_VIEWS . '/_shared/version.php';
         $menu_html = ob_get_clean();
 
+        static::setPageTitle(static::getPageTitleByMcp($mcp));
+
         return sprintf(
             '<div id="syncee">%s<div id="syncee-page">%s</div></div>',
             $menu_html,
@@ -54,6 +56,28 @@ class Syncee_View
         } else {
             ee()->view->cp_page_title = $title;
         }
+    }
+
+    public static function getPageTitleByMcp(Syncee_Mcp_Abstract $mcp)
+    {
+        $view_method          = $mcp->getCalledMethod();
+
+        if (!$view_method) {
+            return false;
+        }
+
+        $view_method_exploded = explode('_', Syncee_Helper::convertCamelCaseToUnderscore($view_method));
+
+        if ('view' === $view_method_exploded[0]) {
+            array_shift($view_method_exploded);
+        }
+
+        if ('list' === $view_method_exploded[count($view_method_exploded) - 1]) {
+            array_pop($view_method_exploded);
+            $view_method_exploded[count($view_method_exploded) - 1] .= 's';
+        }
+
+        return ucwords(implode(' ', $view_method_exploded));
     }
 
     public static function addStylesheets()
