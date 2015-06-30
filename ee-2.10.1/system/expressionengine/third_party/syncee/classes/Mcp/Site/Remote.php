@@ -105,9 +105,17 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
 
     }
 
-    public function pingRemoteSite()
+    public function pingRemoteSitePOST()
     {
+        $site_id     = ee()->input->get('site_id');
+        $syncee_site = Syncee_Site::findByPk($site_id);
 
+        $request     = new Syncee_Request();
+        $response    = $request->makeEntityCallToSite($syncee_site, new Syncee_Request_Remote_Entity_Empty(), new Syncee_Site_Request_Log());
+
+        header('Content-type: text/javascript');
+        echo $response->getRawResponse();
+        exit(0);
     }
 
     public function deleteRemoteSite()
