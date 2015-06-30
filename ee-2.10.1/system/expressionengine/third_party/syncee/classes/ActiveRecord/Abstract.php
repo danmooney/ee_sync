@@ -236,6 +236,12 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             $row['create_datetime'] = gmdate('Y-m-d H:i:s');
         }
 
+        foreach ($row as $key => $val) {
+            if (!is_scalar($val)) {
+                $row[$key] = serialize($val);
+            }
+        }
+
         if ($this->_is_new) {
             $success = ee()->db->insert(static::TABLE_NAME, $row);
             if ($success) {
