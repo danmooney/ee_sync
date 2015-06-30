@@ -27,7 +27,7 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
         $other_site_collections        = array();
 
         /**
-         * @var $collection Syncee_Collection_Abstract
+         * @var $collection Syncee_Entity_Comparate_Collection_Abstract
          * @var $local_entity  Syncee_Entity_Abstract
          * @var $remote_entity Syncee_Entity_Abstract
          * @var $empty_entity  Syncee_Entity_Abstract
