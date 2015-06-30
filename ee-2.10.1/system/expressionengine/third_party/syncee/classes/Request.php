@@ -40,14 +40,26 @@ class Syncee_Request
         return $this->_response;
     }
 
-    public function makeEntityCallToSite(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity)
+    public function makeEntityCallToSite(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity, Syncee_Site_Request_Log $log = null)
     {
         $remote_site_url = $this->_generateRemoteRequestUrl($site, $entity);
 
         $ch = $this->_curl_handle = new Syncee_Helper_Curl($remote_site_url);
         $ch->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $ch->setOpt(CURLOPT_FOLLOWLOCATION, true);
 
         $this->_response = $response = new Syncee_Response($this, $site, $entity);
+
+        if ($log) {
+            $log->site_id      = $site->getPrimaryKeyValues(true);
+            $log->code         = $response->getStatusCode();
+            $log->version      = $response->getResponseDecoded('version');
+            $log->message      = $response->getMessage();
+            $log->errors       = $response->getErrors();
+            $log->raw_response = $response->getRawResponse();
+
+            $log->save();
+        }
 
         return $response;
     }
