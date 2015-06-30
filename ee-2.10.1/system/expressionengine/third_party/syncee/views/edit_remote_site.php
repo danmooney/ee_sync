@@ -9,7 +9,7 @@ require_once dirname(__FILE__) . '/../_init.php';
     if ($syncee_remote_site->isEmptyRow()): // TODO - move this into new_remote_site.php???? ?>
         <form method="POST">
             <div class="site-settings-container">
-                <h1>Add New Remote Site</h1>
+
             </div>
             <div class="remote-site-settings-payload-container">
                 <label for="remote_site_settings_payload">Copy the settings payload from a local site on another Syncee installation and paste them into here.</label>
@@ -22,9 +22,8 @@ require_once dirname(__FILE__) . '/../_init.php';
 <?php
     else: ?>
         <div class="site-settings-container">
-            <h1>Edit Remote Site</h1>
-            <h2><?= "{$syncee_remote_site->getSiteUrl()} (EE Site ID: {$syncee_remote_site->ee_site_id})" ?></h2>
-            <button>Ping Site</button>
+            <h1><?= "{$syncee_remote_site->getSiteUrl()}" ?></h1>
+            <h2>(EE Site ID: <?= $syncee_remote_site->ee_site_id ?>)</h2>
             <br><br>
             <form method="post">
                 <label for="title">Label (make it anything you want so you can identify it easier)</label>
@@ -45,6 +44,17 @@ require_once dirname(__FILE__) . '/../_init.php';
                 <input type="hidden" name="XID" value="<?= ee()->csrf->get_user_token() ?>">
                 <input type="hidden" name="csrf_token" value="<?= ee()->csrf->get_user_token() ?>">
             </form>
+        </div>
+        <div class="remote-site-settings-payload-container">
+            <div style="float: right;">
+                <a href="<?= Syncee_Helper::createModuleCpUrl('viewRemoteRequestLogList', array('site_id' => $syncee_remote_site->getPrimaryKeyValues(true))) ?>">View Ping Log for this Remote Site</a>
+                <a href="<?= Syncee_Helper::createModuleCpUrl('pingRemoteSite', array('site_id' => $syncee_remote_site->getPrimaryKeyValues(true))) ?>" class="btn-secondary btn-ping-site">Ping Site</a>
+            </div>
+            <div class="clr"></div>
+            <br>
+            <div id="remote_site_settings_payload">
+
+            </div>
         </div>
 <?php
     endif ?>

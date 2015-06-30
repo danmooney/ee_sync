@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/../_init.php';
 <table>
     <thead>
         <tr>
-            <th>Local Site Name</th>
+            <th>Label</th>
             <th>EE Site ID</th>
             <th>Allows calls from remote sites?</th>
             <?php /* <th>Call over HTTPS?</th> */ ?>
@@ -28,12 +28,25 @@ require_once dirname(__FILE__) . '/../_init.php';
         ?>
         <?php /*<td><a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $primary_key_value_map) ?>"><?= $ee_site->site_label ?></a></td> */ ?>
         <td><?= $ee_site->site_label ?></td>
-        <td><?= $syncee_local_site->ee_site_id ?></td>
-        <td><?= $syncee_local_site->requests_from_remote_sites_enabled ? 'Yes' : 'No' ?></td>
+        <td align="right"><?= $syncee_local_site->ee_site_id ?></td>
+        <td align="center"><?= $syncee_local_site->requests_from_remote_sites_enabled ? 'Yes' : 'No' ?></td>
         <?php /* <td><?= $syncee_local_site->use_https ? 'Yes' : 'No' ?></td> */ ?>
-        <td><?= $syncee_local_site->ip_whitelist ?: '<i>(Empty)</i>' ?></td>
-        <td><?= $syncee_local_site->getPrimaryKeyValues(true) ?></td>
-        <td><a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $primary_key_value_map) ?>">Edit</a></td>
+        <td align="center">
+            <?php
+                $ip_whitelist_exploded = explode($syncee_local_site->getIpWhitelistNewlineCharacter(), $syncee_local_site->ip_whitelist);
+                $ip_whitelist_count    = count($ip_whitelist_exploded);
+
+                if ($ip_whitelist_count >= 5) {
+                    echo "$ip_whitelist_count IP addresses";
+                } elseif ($ip_whitelist_count) {
+                    echo implode('<br>', $ip_whitelist_exploded);
+                } else {
+                    echo '<i>(Empty)</i>';
+                }
+            ?>
+        </td>
+        <td align="right"><?= $syncee_local_site->getPrimaryKeyValues(true) ?></td>
+        <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $primary_key_value_map) ?>">Edit</a></td>
 <?php
     endforeach ?>
     </tbody>

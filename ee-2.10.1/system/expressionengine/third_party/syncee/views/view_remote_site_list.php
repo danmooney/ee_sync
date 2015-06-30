@@ -17,7 +17,7 @@ require_once dirname(__FILE__) . '/../_init.php';
         <table>
             <thead>
                 <tr>
-                    <th>Name</th>
+                    <th>Label</th>
                     <th>URL</th>
                     <th>EE Site ID</th>
                     <th>EE Action ID</th>
@@ -37,15 +37,15 @@ require_once dirname(__FILE__) . '/../_init.php';
             <tr>
                 <?php /* <td><a href="<?= Syncee_Helper::createModuleCpUrl('viewSiteGroup', $primary_key_value_map) ?>"><?= $syncee_remote_site->title ?></a></td> */ ?>
                 <td><?= $syncee_remote_site->title ?: '<i>(None)</i>' ?></td>
-                <td><?= $syncee_remote_site->getSiteUrl() ?></td>
-                <td><?= $syncee_remote_site->ee_site_id ?></td>
-                <td><?= $syncee_remote_site->action_id ?></td>
+                <td align="center"><a href="<?= $syncee_remote_site->getSiteUrl() ?>" target="_blank"><?= $syncee_remote_site->getSiteUrl() ?></a></td>
+                <td align="right"><?= $syncee_remote_site->ee_site_id ?></td>
+                <td align="right"><?= $syncee_remote_site->action_id ?></td>
                 <?php /*<td><?= $syncee_remote_site->use_https ? 'Yes' : 'No' ?></td> */ ?>
                 <?php /* <td><?= $syncee_remote_site->ip_whitelist ?></td> */ ?>
                 <td><?= Syncee_Helper::convertUTCDateToLocalizedHumanDatetime($syncee_remote_site->create_datetime) ?></td>
-                <td><?= $syncee_remote_site->getPrimaryKeyValues(true) ?></td>
-                <td><a href="<?= Syncee_Helper::createModuleCpUrl('editRemoteSite', $primary_key_value_map) ?>">Edit</a></td>
-                <td><a href="<?= Syncee_Helper::createModuleCpUrl('deleteRemoteSite', $primary_key_value_map) ?>">Delete</a></td>
+                <td align="right"><?= $syncee_remote_site->getPrimaryKeyValues(true) ?></td>
+                <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('editRemoteSite', $primary_key_value_map) ?>">Edit</a></td>
+                <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('deleteRemoteSite', $primary_key_value_map) ?>">Delete</a></td>
             </tr>
     <?php
         endforeach ?>

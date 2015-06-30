@@ -5,7 +5,6 @@
 require_once dirname(__FILE__) . '/../_init.php';
 
 ?>
-<h1>Delete Site Group</h1><br>
 <p>Are you sure you'd like to delete <strong><?= $syncee_site_group->title ?></strong>?</p>
 <br>
 <form method="post">

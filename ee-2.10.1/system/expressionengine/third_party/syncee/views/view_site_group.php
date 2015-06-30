@@ -14,8 +14,7 @@ $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
 
 ?>
 
-<h1>Site Group</h1>
-<h2><?= $syncee_site_group->title ?></h2>
+<h1><?= $syncee_site_group->title ?></h1>
 <br><br>
 <h3>Local Site: <a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', array('site_id' => $local_site->getPrimaryKeyValues(true))) ?>"><?= $local_site->getCorrespondingLocalEeSiteRow()->site_label ?></a></h3>
 <br><br>

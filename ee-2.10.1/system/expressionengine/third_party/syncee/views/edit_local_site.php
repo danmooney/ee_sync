@@ -6,8 +6,7 @@ require_once dirname(__FILE__) . '/../_init.php';
 
 ?>
 <div class="site-settings-container">
-    <h1>Edit Local Site</h1>
-    <h2><?= $syncee_local_site->getCorrespondingLocalEeSiteRow()->site_label ?></h2><br>
+    <h1><?= $syncee_local_site->getCorrespondingLocalEeSiteRow()->site_label ?></h1><br>
     <form method="post">
         <label for="requests_from_remote_sites_enabled">MASTER OVERRIDE: Are remote sites allowed to call this local site?</label><br>
         <select id="requests_from_remote_sites_enabled" name="requests_from_remote_sites_enabled">
@@ -31,7 +30,7 @@ require_once dirname(__FILE__) . '/../_init.php';
     </form>
 </div>
 <div class="remote-site-settings-payload-container">
-    <label for="remote_site_settings_payload">Want remote sites to get information from this local site?  Copy the settings below and paste them into a new remote site configuration on another Syncee installation.</label>
+    <label for="remote_site_settings_payload">Want remote sites to get information from this local site?  Copy the encoded settings payload below and paste them into a new remote site configuration on another Syncee installation.</label>
     <textarea id="remote_site_settings_payload" name="remote_site_settings_payload" readonly onclick="this.select()"><?= $syncee_local_site->generateRemoteSiteSettingsPayload() ?></textarea>
 </div>
 <div class="clr"></div>
