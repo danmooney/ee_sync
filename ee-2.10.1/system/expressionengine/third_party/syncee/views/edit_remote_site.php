@@ -47,13 +47,18 @@ require_once dirname(__FILE__) . '/../_init.php';
         </div>
         <div class="remote-site-settings-payload-container">
             <div style="float: right;">
-                <a href="<?= Syncee_Helper::createModuleCpUrl('viewRemoteRequestLogList', array('site_id' => $syncee_remote_site->getPrimaryKeyValues(true))) ?>">View Ping Log for this Remote Site</a>
                 <a href="<?= Syncee_Helper::createModuleCpUrl('pingRemoteSite', array('site_id' => $syncee_remote_site->getPrimaryKeyValues(true))) ?>" class="btn-secondary btn-ping-site">Ping Site</a>
             </div>
             <div class="clr"></div>
             <br>
             <div id="remote_site_settings_payload">
-
+                <div id="remote_site_settings_payload_contents">
+                    <p>Click the "Ping Site" button to make a request to the site to check that everything's OK</p>
+                </div>
+            </div>
+            <br>
+            <div style="float: right;">
+                <a href="<?= Syncee_Helper::createModuleCpUrl('viewRequestLogList', array('site_id' => $syncee_remote_site->getPrimaryKeyValues(true))) ?>">View Ping Log for this Remote Site</a>
             </div>
         </div>
 <?php
