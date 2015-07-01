@@ -12,6 +12,11 @@ if (!extension_loaded('json')) {
     die('JSON extension required for this module.');
 }
 
+// JSON_PRETTY_PRINT is PHP 5.4+
+if (!defined('JSON_PRETTY_PRINT')) {
+    define('JSON_PRETTY_PRINT', 0);
+}
+
 $minimum_php_version = '5.3';
 
 if (version_compare(PHP_VERSION, $minimum_php_version) < 0) {
@@ -25,6 +30,11 @@ defined('SYNCEE_PATH')       or define('SYNCEE_PATH',       dirname(__FILE__));
 defined('SYNCEE_PATH_TESTS') or define('SYNCEE_PATH_TESTS', SYNCEE_PATH . '/tests');
 defined('SYNCEE_TEST_MODE')  or define('SYNCEE_TEST_MODE',  isset($_SERVER['SYNCEE_TEST_MODE']) && $_SERVER['SYNCEE_TEST_MODE']);
 defined('SYNCEE_PATH_VIEWS') or define('SYNCEE_PATH_VIEWS', SYNCEE_PATH . '/views');
+
+if (SYNCEE_TEST_MODE) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', true);
+}
 
 require_once SYNCEE_PATH . '/vendor/autoload.php';
 
