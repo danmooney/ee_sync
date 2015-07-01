@@ -18,12 +18,14 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Mcp_Site_Remote_Request extends Syncee_Mcp_Abstract
+class Syncee_Mcp_Site_Request_Log extends Syncee_Mcp_Abstract
 {
-    public function viewRemoteRequestLogList()
+    public function viewRequestLogList()
     {
-        return Syncee_View::render(__FUNCTION__, array(
+        $request_log_collection = Syncee_Site_Request_Log::findAll();
 
+        return Syncee_View::render(__FUNCTION__, array(
+            'syncee_request_log_collection' => $request_log_collection
         ), $this);
     }
 }
