@@ -141,10 +141,13 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
                     } else {
                         // if site is remote, switch to database based on $j (remember, if local, $j === $i) and get the action id and all that jazz by saving the now local site on the local db
                         $this->_switchToDatabaseBasedOnNumber($j);
+
+                        $site->is_local = true;
                         $site->save();
 
                         // revert back to previous database
                         $this->_switchToDatabaseBasedOnNumber($i);
+                        $site->is_local = false;
                     }
                 }
 
