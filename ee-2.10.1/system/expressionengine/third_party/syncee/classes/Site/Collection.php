@@ -37,7 +37,7 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract
          * @var $collection Syncee_Entity_Channel_Collection
          */
         foreach ($this->_rows as $row) {
-            $request  = new Syncee_Request();
+            $request    = new Syncee_Request();
 
             $response   = $request->makeEntityCallToSite($row, $channel_remote_request_entity, new Syncee_Site_Request_Log());
             $collection = $response->getResponseDataDecodedAsCollection();
