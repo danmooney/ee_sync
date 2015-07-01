@@ -201,6 +201,11 @@ class Syncee_Upd
                 'unsigned'      => true,
                 'null'          => false,
             ),
+            'entity' => array(
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
+                'null'       => false,
+            ),
             // status code
             'code' => array(
                 'type' => 'INT',
@@ -235,6 +240,7 @@ class Syncee_Upd
         ee()->dbforge->add_field($site_request_log_fields);
         ee()->dbforge->add_key('request_id', true);
         ee()->dbforge->add_key('site_id', false);
+        ee()->dbforge->add_key('entity', false);
         ee()->dbforge->create_table('syncee_site_request_log', true);
 
         return true;

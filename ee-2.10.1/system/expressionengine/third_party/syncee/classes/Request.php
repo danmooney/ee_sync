@@ -52,6 +52,7 @@ class Syncee_Request
 
         if ($log) {
             $log->site_id      = $site->getPrimaryKeyValues(true);
+            $log->entity       = get_class($entity);
             $log->code         = $response->getStatusCode();
             $log->version      = $response->getResponseDecoded('version');
             $log->message      = $response->getMessage();
