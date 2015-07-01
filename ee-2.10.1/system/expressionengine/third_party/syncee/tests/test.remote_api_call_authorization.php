@@ -33,7 +33,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
         $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
         $current_local_site     = $this->_site_collection->filterByCondition('isLocal', true);
-        $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
+        $_SERVER['HTTP_HOST']   = $current_local_site->site_host;
 
         $this->_request       = new Syncee_Request();
     }
@@ -63,7 +63,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $remote_site = $this->_remote_site;
         $request     = $this->_request;
 
-        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $status_code = $response->getStatusCode();
 
         $this->assertJson($response->getRawResponse());
@@ -89,7 +89,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
         $remote_site->addToIpWhitelist('0.0.0.1')->save();
 
-        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $status_code = $response->getStatusCode();
 
         $this->assertJson($response->getRawResponse());
@@ -115,7 +115,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
         $remote_site->addToIpWhitelist('127.0.0.1')->save();
 
-        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $status_code = $response->getStatusCode();
 
         $this->assertJson($response->getRawResponse());
@@ -146,7 +146,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
             ->save()
         ;
 
-        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $status_code = $response->getStatusCode();
 
         $this->assertJson($response->getRawResponse());
@@ -173,7 +173,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $remote_site->addToIpWhitelist('127.0.0.1')->addToIpWhitelist('0.0.0.1')->save();
         $remote_site->removeFromIpWhitelist('127.0.0.1')->save();
 
-        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $status_code = $response->getStatusCode();
 
         $this->assertJson($response->getRawResponse());
@@ -200,7 +200,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $remote_site->requests_from_remote_sites_enabled = false;
         $remote_site->addToIpWhitelist('127.0.0.1')->addToIpWhitelist('0.0.0.1')->save();
 
-        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $status_code = $response->getStatusCode();
 
         $this->assertJson($response->getRawResponse());

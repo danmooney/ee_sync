@@ -32,7 +32,7 @@ class Test_Site_Url extends Syncee_Unit_Test_Case_Abstract
         $this->_site_collection = Syncee_Site_Group::findByPk(1)->getSiteCollection();
 
         $current_local_site     = $this->_current_local_site = $this->_site_collection->filterByCondition('isLocal', true);
-        $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
+        $_SERVER['HTTP_HOST']   = $current_local_site->site_host;
     }
 
     public function testSiteUrlSchemeChangePasses()

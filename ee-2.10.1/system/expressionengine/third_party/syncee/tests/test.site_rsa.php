@@ -42,7 +42,7 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
 
         $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
         $current_local_site     = $this->_site_collection->filterByCondition('isLocal', true);
-        $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
+        $_SERVER['HTTP_HOST']   = $current_local_site->site_host;
 
         $this->_request       = new Syncee_Request();
     }
@@ -71,7 +71,7 @@ class Test_Site_Rsa extends Syncee_Unit_Test_Case_Abstract
         $request       = $this->_request;
         $remote_site   = $this->_remote_site;
 
-        $response      = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $response      = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $decoded_data  = $response->getResponseDataDecoded();
 
         $this->assertIsA($decoded_data, 'array', 'Data is properly decrypted and is an array: %s');

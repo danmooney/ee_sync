@@ -44,7 +44,7 @@ class Test_Comparison_Channel_Field extends Syncee_Unit_Test_Case_Abstract
 
         $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
         $current_local_site     = $this->_site_collection->filterByCondition('isLocal', true);
-        $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
+        $_SERVER['HTTP_HOST']   = $current_local_site->site_host;
     }
 
     public function testTwoSitesWithCompletelySimilarChannelFieldsGivesEmptyComparisonLibrary()

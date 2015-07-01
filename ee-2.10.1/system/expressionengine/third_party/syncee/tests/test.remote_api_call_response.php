@@ -37,7 +37,7 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
 
         $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
         $current_local_site     = $this->_site_collection->filterByCondition('isLocal', true);
-        $_SERVER['HTTP_HOST']   = parse_url($current_local_site->site_url, PHP_URL_HOST);
+        $_SERVER['HTTP_HOST']   = $current_local_site->site_host;
         $this->_request         = new Syncee_Request();
     }
 
@@ -45,7 +45,7 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
     {
         $remote_site      = $this->_remote_site;
         $request          = $this->_request;
-        $response         = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $response         = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $decoded_response = $response->getResponseDecoded();
 
         $this->assertTrue(isset($decoded_response['data']) && $decoded_response['data'], 'Data in response exists and is non-empty: %s');
@@ -66,10 +66,16 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
         $request   = $this->_request;
 
         $this->expectError('Decryption error');
-        $response  = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel());
+        $response = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
 
         $this->assertEqual($response->getStatusCode(), 500, 'Response code is 500: %s');
 
         $this->fail('Need to assert bad public key message returned in ' . __METHOD__);
     }
+
+    public function testWrongActionIdOnRemoteSiteReturnsSomethingOrOther()
+    {
+        // TODO
+    }
+
 }
