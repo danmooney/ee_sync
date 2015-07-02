@@ -57,4 +57,44 @@ class Syncee_Helper
     {
         return ee()->localize->human_time(strtotime($utc_datetime . ' UTC'));
     }
+
+    public static function redirect($url, array $vars = array(), Syncee_Mcp_Abstract $mcp, $flash_message = true)
+    {
+        if (is_string($flash_message)) {
+            Syncee_Helper_Flashdata::setFlashData($flash_message);
+        } elseif (is_bool($flash_message) && $_SERVER['REQUEST_METHOD'] === 'POST' && !AJAX_REQUEST) {
+            $called_method          = $mcp->getCalledMethod();
+            $called_method_exploded = explode('_', Syncee_Helper::convertCamelCaseToUnderscore($called_method));
+            $action                 = array_shift($called_method_exploded);
+
+            array_pop($called_method_exploded); // pop off 'POST'
+
+            $called_method_words    = ucwords(implode(' ', $called_method_exploded));
+
+            switch ($action) {
+                case 'new':
+                    $verb = 'created';
+                    break;
+                case 'edit':
+                    $verb = 'updated';
+                    break;
+                case 'delete':
+                    $verb = 'deleted';
+                    break;
+                default:
+                    $verb = 'saved';
+                    break;
+            }
+
+            if (true === $flash_message) {
+                $flash_message = $called_method_words . ' ' . $verb;
+            } else {
+                $flash_message = $called_method_words . ' ' . $verb;
+            }
+
+            Syncee_Helper_Flashdata::setFlashData($flash_message);
+        }
+
+        ee()->functions->redirect(static::createModuleCpUrl($url, $vars));
+    }
 }
