@@ -22,18 +22,28 @@ class Syncee_View
 {
     public static function render($template_filename, array $vars = array(), Syncee_Mcp_Abstract $mcp)
     {
+        static::setPageTitle(static::getPageTitleByMcp($mcp));
+
         extract($vars);
 
+        $flash_message      = Syncee_Helper_Flashdata::getFlashMessage();
+        $flash_message_type = Syncee_Helper_Flashdata::getFlashMessageType();
+
+        // render shared files
         ob_start();
         include SYNCEE_PATH_VIEWS . '/_shared/menu.php';
         include SYNCEE_PATH_VIEWS . '/_shared/version.php';
         $menu_html = ob_get_clean();
 
-        static::setPageTitle(static::getPageTitleByMcp($mcp));
+        ob_start();
+        include SYNCEE_PATH_VIEWS . '/_shared/flash_message.php';
+        $flash_message_html = ob_get_clean();
+
 
         return sprintf(
-            '<div id="syncee">%s<div id="syncee-page">%s</div></div>',
+            '<div id="syncee">%s<div id="syncee-page">%s %s</div></div>',
             $menu_html,
+            $flash_message_html,
             ee()->load->view(
                 Syncee_Helper::convertCamelCaseToUnderscore($template_filename),
                 array_merge(
@@ -82,20 +92,20 @@ class Syncee_View
 
     public static function addStylesheets()
     {
-        $module_theme_path = self::_getThemePath();
+        $module_theme_path = static::_getThemePath();
 
         foreach (glob($module_theme_path . '/css/*') as $stylesheet_pathname) {
-            $stylesheet_url = self::_getThemeUrl() . '/css/' . basename($stylesheet_pathname);
+            $stylesheet_url = static::_getThemeUrl() . '/css/' . basename($stylesheet_pathname);
             ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $stylesheet_url . '">');
         }
     }
 
     public static function addScripts()
     {
-        $module_theme_path = self::_getThemePath();
+        $module_theme_path = static::_getThemePath();
 
         foreach (glob($module_theme_path . '/js/*') as $script_pathname) {
-            $script_url = self::_getThemeUrl() . '/js/' . basename($script_pathname);
+            $script_url = static::_getThemeUrl() . '/js/' . basename($script_pathname);
             ee()->cp->add_to_foot('<script src="' . $script_url . '"></script>');
         }
     }
