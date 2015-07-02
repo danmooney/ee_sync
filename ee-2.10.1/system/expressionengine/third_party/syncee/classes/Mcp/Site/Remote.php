@@ -48,9 +48,10 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
             // TODO
         }
 
-        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('editRemoteSite', array(
+
+        Syncee_Helper::redirect('editRemoteSite', array(
             'site_id' => $syncee_site->getPrimaryKeyValues(true)
-        )));
+        ), $this);
     }
 
     public function editRemoteSite()
@@ -90,9 +91,9 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
             // TODO
         }
 
-        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('editRemoteSite', array(
+        Syncee_Helper::redirect('editRemoteSite', array(
             'site_id' => $site_id
-        )));
+        ), $this);
     }
 
     public function newRemoteSiteToSiteGroup()
@@ -153,6 +154,6 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
             // TODO
         }
 
-        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('viewRemoteSiteList'));
+        Syncee_Helper::redirect('viewRemoteSiteList', array(), $this);
     }
 }

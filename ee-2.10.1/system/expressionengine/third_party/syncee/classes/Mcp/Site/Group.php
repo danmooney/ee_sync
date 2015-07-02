@@ -31,8 +31,15 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
     public function viewSiteGroup()
     {
-        return Syncee_View::render(__FUNCTION__, array(
+        $site_group_id     = ee()->input->get('site_group_id');
+        $syncee_site_group = Syncee_Site_Group::findByPk($site_group_id);
 
+        if ($syncee_site_group->isEmptyRow()) {
+            // TODO
+        }
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'syncee_site_group' => $syncee_site_group
         ), $this);
     }
 
@@ -91,9 +98,9 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
         $site_group_id = $syncee_site_group->getPrimaryKeyValues(true);
 
-        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('viewSiteGroup', array(
+        Syncee_Helper::redirect('editSiteGroup', array(
             'site_group_id' => $site_group_id
-        )));
+        ), $this);
     }
 
     public function deleteSiteGroup()
@@ -121,7 +128,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
             // TODO
         }
 
-        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('viewSiteGroupList'));
+        Syncee_Helper::redirect('viewSiteGroupList', array(), $this);
     }
 
     public function synchronizeSiteGroup()

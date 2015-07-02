@@ -60,8 +60,8 @@ class Syncee_Mcp_Site_Local extends Syncee_Mcp_Abstract
             // TODO
         }
 
-        ee()->functions->redirect(Syncee_Helper::createModuleCpUrl('editLocalSite', array(
+        Syncee_Helper::redirect('editLocalSite', array(
             'site_id' => $site_id
-        )));
+        ), $this);
     }
 }
