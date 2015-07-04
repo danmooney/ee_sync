@@ -58,6 +58,26 @@ class Syncee_Helper
         return ee()->localize->human_time(strtotime($utc_datetime . ' UTC'));
     }
 
+    public static function getClassNameFromPathname($pathname, $only_concrete_classes = true)
+    {
+        $contents = file_get_contents($pathname);
+
+        // this helper primarily involves fetching conrete classes; return if class is abstract and we indeed only seek concrete class definitions
+        if (stripos($contents, 'abstract class') !== false && $only_concrete_classes) {
+            return false;
+        }
+
+        preg_match('#class ([a-z_]+)#i', $contents, $matches);
+
+        if (!isset($matches[1])) {
+            return false;
+        }
+
+        $class_name = $matches[1];
+
+        return $class_name;
+    }
+
     public static function redirect($url, array $vars = array(), Syncee_Mcp_Abstract $mcp, $flash_message = true)
     {
         if (is_string($flash_message)) {
