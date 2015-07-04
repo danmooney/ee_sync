@@ -45,203 +45,28 @@ class Syncee_Upd
             ee()->db->insert('actions', $action_data);
         }
 
-        // Add table syncee_setting
-        ee()->dbforge->drop_table('syncee_setting');
+        // recursively iterate through Syncee_Upd_* classes to install tables
+        $dir_iterator = new RecursiveDirectoryIterator(SYNCEE_PATH . '/classes/Upd', RecursiveDirectoryIterator::SKIP_DOTS);
 
-        $settings_table_fields = array(
-			'setting_key' => array(
-				'type'           => 'VARCHAR',
-				'constraint'     => 50,
-                'null'           => false
-			),
-            'setting_value' => array(
-                'type'           => 'VARCHAR',
-                'constraint'     => 1000,
-                'null'           => true
-            ),
-        );
+        /**
+         * @var $upd_obj Syncee_Upd_Abstract
+         */
+        foreach (new RecursiveIteratorIterator($dir_iterator) as $file) {
+            if (!$file->isFile() || !$file->isReadable()) {
+                continue;
+            }
 
-        ee()->dbforge->add_field($settings_table_fields);
-        ee()->dbforge->add_key('setting_key', true);
-        ee()->dbforge->create_table('syncee_setting', true);
+            $class_name = Syncee_Helper::getClassNameFromPathname($file->getPathname());
 
-        // Add table syncee_site_group
-        $site_group_table_fields = array(
-            'site_group_id' => array(
-                'type'           => 'INT',
-                'unsigned'       => true,
-                'null'           => false,
-                'auto_increment' => true
-            ),
-            'title' => array(
-                'type'       => 'VARCHAR',
-                'constraint' => 255,
-                'null'       => false,
-            ),
-            'create_datetime' => array(
-                'type'  => 'DATETIME',
-                'null'  => false,
-            ),
-            'last_sync_datetime' => array(
-                'type'  => 'DATETIME',
-                'null'  => true
-            ),
-        );
+            if (!$class_name) {
+                continue;
+            }
 
-        ee()->dbforge->drop_table('syncee_site_group');
-        ee()->dbforge->add_field($site_group_table_fields);
-        ee()->dbforge->add_key('site_group_id', true);
-        ee()->dbforge->create_table('syncee_site_group', true);
 
-        // Add table syncee_site
-        $sites_table_fields = array(
-            'site_id' => array(
-                'type'           => 'INT',
-                'unsigned'       => true,
-                'null'           => false,
-                'auto_increment' => true
-            ),
-            'site_url' => array(
-                'type'       => 'VARCHAR',
-                'constraint' => 255,
-                'null'       => false,
-            ),
-            'site_host' => array(
-                'type'       => 'VARCHAR',
-                'constraint' => 255,
-                'null'       => false,
-            ),
-            'ee_site_id' => array(
-                'type'     => 'INT',
-                'unsigned' => true,
-                'null'     => false
-            ),
-            // Just an easy way for a user to refer to it (should probably only be used for remote sites)
-            'title' => array(
-                'type'       => 'VARCHAR',
-                'constraint' => 255,
-                'null'       => true,
-            ),
-            'is_local' => array(
-                'type'       => 'TINYINT',
-                'constraint' => 1,
-                'null'       => false,
-            ),
-            'use_https' => array(
-                'type'       => 'TINYINT',
-                'constraint' => 1,
-                'null'       => false,
-            ),
-            'ip_whitelist' => array(
-                'type'           => 'VARCHAR',
-                'constraint'     => 1000,
-                'null'           => true
-            ),
-            'public_key' => array(
-                'type'     => 'text',
-                'null'     => false
-            ),
-            'private_key' => array(
-                'type'     => 'text',
-                'null'     => false  // private key has to be on both target and source sites... there's just no way to do it otherwise
-            ),
-            // remote request action id for Syncee_Mcp::actionHandleRemoteDataApiCall
-            'action_id' => array(
-                'type'     => 'INT',
-                'unsigned' => true,
-                'null'     => false
-            ),
-            // for local sites
-            'requests_from_remote_sites_enabled' => array(
-                'type'       => 'TINYINT',
-                'constraint' => 1,
-                'null'       => true,
-            ),
-            'create_datetime' => array(
-                'type'  => 'DATETIME',
-                'null'  => false,
-            ),
-        );
+            $upd_obj = new $class_name();
 
-        ee()->dbforge->drop_table('syncee_site');
-
-        ee()->dbforge->add_field($sites_table_fields);
-        ee()->dbforge->add_key('site_id', true);
-        ee()->dbforge->create_table('syncee_site');
-
-        // Add table syncee_site_group_site_map
-        $site_group_map_fields = array(
-            'site_group_id' => array(
-                'type'     => 'INT',
-                'unsigned' => true,
-                'null'     => false
-            ),
-            'site_id' => array(
-                'type'     => 'INT',
-                'unsigned' => true,
-                'null'     => false
-            ),
-        );
-
-        ee()->dbforge->drop_table('syncee_site_group_site_map');
-        ee()->dbforge->add_field($site_group_map_fields);
-        ee()->dbforge->add_key(array('site_group_id', 'site_id'), true);
-        ee()->dbforge->create_table('syncee_site_group_site_map', true);
-
-        // Add table syncee_site_request_log
-        $site_request_log_fields = array(
-            'request_id' => array(
-                'type'           => 'INT',
-                'unsigned'       => true,
-                'null'           => false,
-                'auto_increment' => true
-            ),
-            'site_id' => array(
-                'type'          => 'INT',
-                'unsigned'      => true,
-                'null'          => false,
-            ),
-            'entity' => array(
-                'type'       => 'VARCHAR',
-                'constraint' => 100,
-                'null'       => false,
-            ),
-            // status code
-            'code' => array(
-                'type' => 'INT',
-                'null' => false
-            ),
-            'version' => array(
-                'type'       => 'VARCHAR',
-                'constraint' => 25,
-                'null'       => true
-            ),
-            'message' => array(
-                'type'       => 'VARCHAR',
-                'constraint' => 255,
-                'null'       => true,
-            ),
-            'errors' => array(
-                'type'       => 'VARCHAR',
-                'constraint' => 1000,
-                'null'       => true
-            ),
-            'raw_response' => array(
-                'type'  => 'LONGTEXT',
-                'null'  => true,
-            ),
-            'create_datetime' => array(
-                'type'  => 'DATETIME',
-                'null'  => false,
-            ),
-        );
-
-        ee()->dbforge->drop_table('syncee_site_request_log');
-        ee()->dbforge->add_field($site_request_log_fields);
-        ee()->dbforge->add_key('request_id', true);
-        ee()->dbforge->add_key('site_id', false);
-        ee()->dbforge->add_key('entity', false);
-        ee()->dbforge->create_table('syncee_site_request_log', true);
+            $upd_obj->install();
+        }
 
         return true;
     }
@@ -276,10 +101,28 @@ class Syncee_Upd
             ->delete('actions')
         ;
 
-        ee()->dbforge->drop_table('syncee_setting');
-        ee()->dbforge->drop_table('syncee_site');
-        ee()->dbforge->drop_table('syncee_site_group_site_map');
-        ee()->dbforge->drop_table('syncee_site_request_log');
+        // recursively iterate through Syncee_Upd_* classes to uninstall tables
+        $dir_iterator = new RecursiveDirectoryIterator(SYNCEE_PATH . '/classes/Upd', RecursiveDirectoryIterator::SKIP_DOTS);
+
+        /**
+         * @var $upd_obj Syncee_Upd_Abstract
+         */
+        foreach (new RecursiveIteratorIterator($dir_iterator) as $file) {
+            if (!$file->isFile() || !$file->isReadable()) {
+                continue;
+            }
+
+            $class_name = Syncee_Helper::getClassNameFromPathname($file->getPathname());
+
+            if (!$class_name) {
+                continue;
+            }
+
+
+            $upd_obj = new $class_name();
+
+            $upd_obj->uninstall();
+        }
 
         return true;
     }
