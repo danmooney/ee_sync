@@ -18,18 +18,11 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Upd_Abstract implements Syncee_Upd_Interface
+interface Syncee_Upd_Interface
 {
-    protected $_fields = array();
+    public function install();
 
-    public function uninstall()
-    {
-        ee()->dbforge->drop_table($this->getTableName());
-    }
+    public function uninstall();
 
-    public function getTableName()
-    {
-        $class_name = strtolower(get_class($this));
-        return str_replace('upd_', '', $class_name);
-    }
+    public function getTableName();
 }
