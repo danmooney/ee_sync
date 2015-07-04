@@ -63,8 +63,7 @@
 }
 
 #syncee a.btn-secondary.not-active:hover,
-#syncee-page a.btn-secondary:hover
-{
+#syncee-page a.btn-secondary:hover {
     background: #3E4C54;
 }
 
@@ -89,7 +88,6 @@
     width: 45%;
     float: left;
 }
-
 
 #syncee-page table {
     border-collapse: collapse;
@@ -149,4 +147,67 @@
 
 .remote-site-settings-payload-container > div#remote_site_settings_payload pre {
     margin: 0;
+}
+
+#syncee-page .flash-message-container {
+    margin-bottom: 15px;
+    border: 1px solid #CCC;
+    background: #FFF;
+    background-size: 100%;
+    padding: 10px;
+    position: relative;
+}
+
+#syncee-page .flash-message-container > div {
+    display: inline-block;
+    height: 100%;
+}
+
+#syncee-page .flash-message-type {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+}
+
+#syncee-page .flash-message-type table {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 0;
+}
+
+#syncee-page .flash-message-type table td {
+    background-repeat: no-repeat;
+    padding: 0 10px 0 35px;
+    width: 100%;
+    height: 100%;
+    vertical-align: middle;
+    border: 0;
+}
+
+#syncee-page .flash-message-type-success {
+    background: green;
+}
+
+#syncee-page .flash-message-type-error {
+    background: red;
+}
+
+#syncee-page .flash-message-type td {
+    background: 0;
+    color: #FFF;
+}
+
+#syncee-page .flash-message {
+    width: 81%;
+    margin-left: 200px;
+}
+
+#syncee-page .flash-message-container .btn-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
