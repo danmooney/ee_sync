@@ -61,21 +61,13 @@ class Syncee_Mcp
                 continue;
             }
 
-            $contents = file_get_contents($file->getPathname());
+            $class_name = Syncee_Helper::getClassNameFromPathname($file->getPathname());
 
-            // don't instantiate abstract classes
-            if (stripos($contents, 'abstract class') !== false) {
+            if (!$class_name) {
                 continue;
             }
 
-            preg_match('#class ([a-z_]+)#i', $contents, $matches);
-
-            if (!isset($matches[1])) {
-                continue;
-            }
-
-            $class_name = $matches[1];
-            $mcp_obj    = new $class_name();
+            $mcp_obj = new $class_name();
 
             if (method_exists($mcp_obj, $method)) {
                 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
