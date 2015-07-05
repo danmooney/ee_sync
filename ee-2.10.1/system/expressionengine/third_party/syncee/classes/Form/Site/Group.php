@@ -32,6 +32,12 @@ class Syncee_Form_Site_Group extends Syncee_Form_Abstract
             'label' => 'Choose a Local Site',
             'required' => true,
         ),
+        'site_id' => array(
+            'type'  => 'dropdown',
+            'multi' => true,
+            'label' => 'Choose Remote Sites to Synchronize into Local Site',
+            'required' => true
+        ),
     );
 
     protected $_button_text_by_method = array(
@@ -44,6 +50,7 @@ class Syncee_Form_Site_Group extends Syncee_Form_Abstract
         $options     = array(
             '' => 'Select a Local Site'
         );
+
         $local_sites = Syncee_Site::getLocalSiteCollection();
 
         /**
@@ -52,9 +59,27 @@ class Syncee_Form_Site_Group extends Syncee_Form_Abstract
         foreach ($local_sites as $local_site) {
             $ee_site_row = $local_site->getCorrespondingLocalEeSiteRow();
 
-            $options[$ee_site_row->site_id] = $ee_site_row->site_label;
+            $options[$local_site->getPrimaryKeyValues(true)] = $ee_site_row->site_label;
         }
 
         $ee_site_id->setOptions($options);
+    }
+
+    public function elementSiteId(Syncee_Field_Dropdown $site_id)
+    {
+        $options     = array(
+            '' => 'Select a Remote Site'
+        );
+
+        $remote_sites = Syncee_Site::getRemoteSiteCollection();
+
+        /**
+         * @var $remote_site Syncee_Site
+         */
+        foreach ($remote_sites as $remote_site) {
+            $options[$remote_site->getPrimaryKeyValues(true)] = $remote_site->title;
+        }
+
+        $site_id->setOptions($options);
     }
 }
