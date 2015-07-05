@@ -35,6 +35,30 @@ class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract
 
     protected $_collection_model = 'Syncee_Site_Group_Collection';
 
+    /**
+     * @var Syncee_Site
+     */
+    public $local_site;
+
+    public function __construct(array $row = array(), $is_new = true)
+    {
+        parent::__construct($row, $is_new);
+        $this->getSiteCollection();
+
+        $this->local_site = $this->_site_collection->filterByCondition(array('is_local' => true), true);
+    }
+
+    public function toArray($table_data_only = true)
+    {
+        $row = parent::toArray($table_data_only);
+
+        if (!$table_data_only) {
+            $row = array_merge($row, $this->local_site->toArray());
+        }
+
+        return $row;
+    }
+
     public function getSiteCollection()
     {
         if (!isset($this->_site_collection)) {
