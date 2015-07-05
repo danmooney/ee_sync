@@ -20,7 +20,12 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Field_Dropdown extends Syncee_Field
 {
-    protected $_options = array();
+    /**
+     * @var bool
+     */
+    private $_multi;
+
+    private $_options = array();
 
     public function setOptions(array $options)
     {
@@ -32,6 +37,31 @@ class Syncee_Field_Dropdown extends Syncee_Field
         return $this->_options;
     }
 
+    public function setMulti($multi)
+    {
+        $this->_multi = $multi;
+    }
+
+    public function getMulti()
+    {
+        return $this->_multi;
+    }
+
+    public function isValid()
+    {
+        $errors = $this->_errors = array();
+
+        if ($this->getRequired()) {
+            if ((string) $this->getValue() === '') {
+                $this->_errors[] = Syncee_Field_Error::FIELD_ERROR_REQUIRED_BUT_EMPTY;
+            } elseif (!array_key_exists($this->getValue(), $this->_options)) {
+                $this->_errors[] = Syncee_Field_Error::FIELD_ERROR_OPTION_DOES_NOT_EXIST;
+            }
+        }
+
+        return empty($errors);
+    }
+
     public function __toString()
     {
         $field_html = '';
@@ -40,7 +70,13 @@ class Syncee_Field_Dropdown extends Syncee_Field
             $field_html .= form_label($label, $this->_name);
         }
 
-        $field_html .= form_dropdown($this->_name, $this->_options, $this->_value);
+        $extra_html = sprintf('id="%s"', $this->getName());
+
+        if ($this->getMulti()) {
+            $extra_html .= ' multiple ';
+        }
+
+        $field_html .= form_dropdown($this->_name, $this->_options, $this->_value, $extra_html);
 
         // add disabled attribute to 1st (placeholder) option
         $field_html  = preg_replace('#<option value=""#', '<option value="" disabled ', $field_html, 1);
