@@ -38,6 +38,8 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     protected $_col_val_mapping = array();
 
+    protected $_non_col_val_mapping = array();
+
     protected $_primary_key_names = array();
 
     protected $_has_many_map;
@@ -144,33 +146,42 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         // TODO - this has to be reworked now that public properties representing columns have been removed
         $object_properties = get_object_vars($this);
 
+        // enumerate through row and assign
         foreach ($row as $key => $val) {
-            if (in_array($key, static::$_cols)) {
-                $this->$key = $val;
-            } else {
-                // assign values in row to nested objects if properties are defined
-                foreach ($object_properties as $object_key => $possible_nested_object) {
-                    if (is_object($possible_nested_object)) {
-                        $nested_object                   = $possible_nested_object;
-                        $nested_object_object_properties = get_object_vars($nested_object);
+            $this->$key = $val;
 
-                        if (in_array($key, array_keys($nested_object_object_properties))) {
-                            $this->$object_key->$key = $val;
-                            $this->_col_val_mapping[$key] =& $this->$object_key->$key;
+            // assign values in row to nested objects if properties are defined
+            foreach ($object_properties as $object_key => $possible_nested_object) {
+                if (is_object($possible_nested_object)) {
+                    $nested_object                   = $possible_nested_object;
+                    $nested_object_object_properties = get_object_vars($nested_object);
+
+                    if (array_key_exists($key, $nested_object_object_properties)) {
+                        $this->$object_key->$key = $val;
+
+                        if (in_array($key, static::$_cols)) {
+                            $this->_col_val_mapping[$key]     =& $this->$object_key->$key;
+                        } else {
+                            $this->_non_col_val_mapping[$key] =& $this->$object_key->$key;
                         }
                     }
                 }
             }
         }
 
+        // enumerate through object properties of $this and assign
         foreach ($object_properties as $object_key => $possible_nested_object) {
             if (is_object($possible_nested_object)) {
                 $nested_object                   = $possible_nested_object;
                 $nested_object_object_properties = get_object_vars($nested_object);
 
                 foreach (static::$_cols as $col) {
-                    if (in_array($col, array_keys($nested_object_object_properties))) {
-                        $this->$object_key->$col =& $this->_col_val_mapping[$col];
+                    if (array_key_exists($col, $nested_object_object_properties)) {
+                        if (in_array($col, static::$_cols)) {
+                            $this->$object_key->$col =& $this->_col_val_mapping[$col];
+                        } else {
+                            $this->$object_key->$col =& $this->_non_col_val_mapping[$col];
+                        }
                     }
                 }
             }
@@ -278,9 +289,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             $compound_key_values_missing_in_map_model = false;
 
             foreach ($map_model->getPrimaryKeyNames() as $primary_key_name) {
-                if (isset($this->_col_val_mapping[$primary_key_name])) {
-                    $primary_key_value = $this->_col_val_mapping[$primary_key_name];
-                } elseif (isset($this->$primary_key_name)) {
+                if (strlen($this->$primary_key_name)) {
                     $primary_key_value = $this->$primary_key_name;
                 } else {
                     $compound_key_values_missing_in_map_model = true;
@@ -325,9 +334,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             $compound_key_values_missing_in_map_model = false;
 
             foreach ($map_model->getPrimaryKeyNames() as $primary_key_name) {
-                if (isset($this->_col_val_mapping[$primary_key_name])) {
-                    $primary_key_value = $this->_col_val_mapping[$primary_key_name];
-                } elseif (isset($this->$primary_key_name)) {
+                if (strlen($this->$primary_key_name)) {
                     $primary_key_value = $this->$primary_key_name;
                 } else {
                     $compound_key_values_missing_in_map_model = true;
@@ -356,6 +363,10 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             }
         }
 
+        if (!$table_data_only) {
+            $row = array_merge($row, $this->_non_col_val_mapping);
+        }
+
         return $row;
     }
 
@@ -375,7 +386,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
     public function __set($property, $value)
     {
         if (!in_array($property, static::$_cols)) {
-            $this->$property = $value;
+            $this->_non_col_val_mapping[$property] = $value;
         } else {
             $this->_col_val_mapping[$property] = $value;
             $this->_is_empty_row               = false;
@@ -386,13 +397,15 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
     public function __get($property)
     {
-        if (!in_array($property, static::$_cols) && !isset($this->$property)) {
-            trigger_error('Undefined property: ' . get_called_class() . '::' . $property, E_USER_NOTICE);
-            return null;
-        }
+//        if (!in_array($property, static::$_cols) && !array_key_exists($property, $this->_non_col_val_mapping) && !isset($this->$property)) {
+//            trigger_error('Undefined property: ' . get_called_class() . '::' . $property, E_USER_NOTICE);
+//            return null;
+//        }
 
         if (array_key_exists($property, $this->_col_val_mapping)) {
             return $this->_col_val_mapping[$property];
+        } elseif (array_key_exists($property, $this->_non_col_val_mapping)) {
+            return $this->_non_col_val_mapping[$property];
         } elseif (isset($this->$property)) {
             return $this->$property;
         } else {
