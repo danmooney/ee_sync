@@ -64,11 +64,17 @@ class Syncee_Field_Dropdown extends Syncee_Field
 
     public function __toString()
     {
-        $field_html = '';
+        $field_html  = '';
+
+        $field_html .= '<tr>';
+        $field_html .= '<td>';
 
         if ($label = $this->getLabel()) {
             $field_html .= form_label($label, $this->_name);
         }
+
+        $field_html .= '</td>';
+        $field_html .= '<td>';
 
         $extra_html = sprintf('id="%s"', $this->getName());
 
@@ -80,6 +86,9 @@ class Syncee_Field_Dropdown extends Syncee_Field
 
         // add disabled attribute to 1st (placeholder) option
         $field_html  = preg_replace('#<option value=""#', '<option value="" disabled ', $field_html, 1);
+
+        $field_html .= '</td>';
+        $field_html .= '</tr>';
 
         return $field_html;
     }
