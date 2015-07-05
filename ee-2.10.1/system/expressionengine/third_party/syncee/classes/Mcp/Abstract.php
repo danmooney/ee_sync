@@ -20,7 +20,15 @@ if (!defined('SYNCEE_PATH')) {
 
 abstract class Syncee_Mcp_Abstract
 {
+    /**
+     * @var string
+     */
     protected $_called_method;
+
+    /**
+     * @var Syncee_Form_Abstract
+     */
+    protected $_form;
 
     public function setCalledMethod($called_method)
     {
