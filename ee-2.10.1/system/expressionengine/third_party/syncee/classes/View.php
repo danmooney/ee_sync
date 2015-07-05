@@ -22,7 +22,7 @@ class Syncee_View
 {
     public static function render($template_filename, array $vars = array(), Syncee_Mcp_Abstract $mcp)
     {
-        static::setPageTitle(static::getPageTitleByMcp($mcp));
+        static::setPageTitle(static::_getPageTitleByMcpAndVars($mcp, $vars));
 
         extract($vars);
 
@@ -68,7 +68,7 @@ class Syncee_View
         }
     }
 
-    public static function getPageTitleByMcp(Syncee_Mcp_Abstract $mcp)
+    private static function _getPageTitleByMcpAndVars(Syncee_Mcp_Abstract $mcp, array $vars)
     {
         $view_method          = $mcp->getCalledMethod();
 
@@ -82,12 +82,29 @@ class Syncee_View
             array_shift($view_method_exploded);
         }
 
+        if ('edit' === $view_method_exploded[0]) {
+            $view_method_exploded[0] = 'update';
+
+            foreach ($vars as $key => $val) {
+                if ($val instanceof Syncee_ActiveRecord_Abstract && strlen($val->title)) {
+                    $subject = $val->title;
+                    break;
+                }
+            }
+        }
+
         if ('list' === $view_method_exploded[count($view_method_exploded) - 1]) {
             array_pop($view_method_exploded);
             $view_method_exploded[count($view_method_exploded) - 1] .= 's';
         }
 
-        return ucwords(implode(' ', $view_method_exploded));
+        $page_title = ucwords(implode(' ', $view_method_exploded));
+
+        if (isset($subject)) {
+            $page_title .= sprintf(': <strong>%s</strong>', $subject);
+        }
+
+        return $page_title;
     }
 
     public static function addStylesheets()
