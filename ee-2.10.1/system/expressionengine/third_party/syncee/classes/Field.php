@@ -111,13 +111,32 @@ class Syncee_Field
         return $this->_errors;
     }
 
+    public function setInstructions($instructions)
+    {
+        $this->_instructions = $instructions;
+    }
+
+    public function getInstructions()
+    {
+        return $this->_instructions;
+    }
+
     public function __toString()
     {
-        $field_html = '';
+        $field_html  = '';
+        $field_html .= '<tr>';
+        $field_html .= '<td>';
 
         if ($label = $this->getLabel()) {
             $field_html .= form_label($label, $this->_name);
         }
+
+        if ($instructions = $this->getInstructions()) {
+            $field_html .= sprintf('<p class="field-instructions">%s</p>', $instructions);
+        }
+
+        $field_html .= '</td>';
+        $field_html .= '<td>';
 
         $field_type = $this->_type;
 
@@ -131,6 +150,8 @@ class Syncee_Field
 
         $field_html .= $field_type_function_name($this->_name, $this->_value, $id_html);
 
+        $field_html .= '</td>';
+        $field_html .= '</tr>';
         return $field_html;
     }
 }

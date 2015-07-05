@@ -142,6 +142,10 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
         // override EE's over-opinionated action attribute override
         $form_html  = preg_replace('#action=".*"\s#', sprintf('action="%s" ', $this->_action), $form_html);
 
+        $form_html .= '<table class="form-table">';
+        $form_html .= '<tbody>';
+
+
         /**
          * @var $field Syncee_Field
          */
@@ -149,6 +153,8 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
             $form_html .= $field;
         }
 
+        $form_html  .= '</tbody>';
+        $form_html  .= '</table>';
 
         // add submit button
 
@@ -160,6 +166,7 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
             : 'Save'
         ;
 
+
         $form_button = form_button('', $button_label, 'class="btn"');
 
         // turn button into submit button so we can apply styles to it and such
@@ -168,7 +175,6 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
         $form_html  .= $form_button;
 
         $form_html  .= form_close();
-
         return $form_html;
     }
 }
