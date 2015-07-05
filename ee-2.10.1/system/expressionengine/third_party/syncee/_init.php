@@ -52,13 +52,13 @@ $module_autoloader = function ($class_name) {
     if ($class_name_begins_with_module_name) {
         switch ($lowercase_class_name) {
             case $module_name . '':
-                require_once SYNCEE_PATH . '/mod.' . strtolower($module_name) . '.php';
+                $pathname_to_class_file = SYNCEE_PATH . '/mod.' . strtolower($module_name) . '.php';
                 break;
             case $module_name . '_upd':
-                require_once SYNCEE_PATH . '/upd.' . strtolower($module_name) . '.php';
+                $pathname_to_class_file = SYNCEE_PATH . '/upd.' . strtolower($module_name) . '.php';
                 break;
             case $module_name . '_mcp':
-                require_once SYNCEE_PATH . '/mcp.' . strtolower($module_name) . '.php';
+                $pathname_to_class_file = SYNCEE_PATH . '/mcp.' . strtolower($module_name) . '.php';
                 break;
             default:
                 // remove '_free' from module name if free version
@@ -78,9 +78,14 @@ $module_autoloader = function ($class_name) {
                     return $val;
                 });
 
-                $relative_path_to_class_file          = implode('/', $relative_path_to_class_file_exploded);
-                require_once SYNCEE_PATH . '/classes/' . $relative_path_to_class_file . '.php';
+                $relative_path_to_class_file = implode('/', $relative_path_to_class_file_exploded);
+                $pathname_to_class_file      = SYNCEE_PATH . '/classes/' . $relative_path_to_class_file . '.php';
+
                 break;
+        }
+
+        if (is_readable($pathname_to_class_file)) {
+            require_once $pathname_to_class_file;
         }
     }
 
