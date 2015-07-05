@@ -20,7 +20,7 @@ if (!defined('SYNCEE_PATH')) {
 
 interface Syncee_Form_Interface
 {
-    public function __construct(Syncee_ActiveRecord_Abstract $row, Syncee_Mcp_Abstract $mcp);
+    public function __construct(Syncee_ActiveRecord_Abstract $row = null, Syncee_Mcp_Abstract $mcp);
 
     /**
      * @return bool
