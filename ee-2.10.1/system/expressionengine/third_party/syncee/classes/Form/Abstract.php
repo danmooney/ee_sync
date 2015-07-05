@@ -35,11 +35,11 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
      */
     protected $_mcp;
 
-    public function __construct(Syncee_ActiveRecord_Abstract $row, Syncee_Mcp_Abstract $mcp)
+    public function __construct(Syncee_ActiveRecord_Abstract $row = null, Syncee_Mcp_Abstract $mcp)
     {
-        $this->_mcp    = $mcp;
+        $this->_mcp = $mcp;
 
-        $data          = $row->toArray(false);
+        $data          = $row ? $row->toArray(false) : array();
         $this->_values = array_intersect_key($data, $this->_fields);
 
         foreach ($this->_fields as $name => $field) {
@@ -100,22 +100,39 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
         ;
     }
 
+    public function getValues()
+    {
+        $values = array();
+
+        /**
+         * @var $field Syncee_Field
+         */
+        foreach ($this->_fields as $field) {
+            $values[$field->getName()] = $field->getValue();
+        }
+
+        return $values;
+    }
+
+    public function getErrors()
+    {
+        return $this->_errors;
+    }
+
     public function isValid()
     {
-        $errors = array();
+        $errors = $this->_errors = array();
 
         /**
          * @var $field Syncee_Field
          */
         foreach ($this->_fields as $field) {
             if (!$field->isValid()) {
-
+                $errors[$field->getName()] = $field->getErrors();
             }
         }
 
-        $this->_errors = $errors;
-
-        return count($errors);
+        return empty($errors);
     }
 
     public function __toString()
