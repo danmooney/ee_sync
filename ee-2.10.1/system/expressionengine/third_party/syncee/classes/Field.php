@@ -20,13 +20,15 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Field
 {
+    protected $_errors = array();
+
     protected $_label;
 
     protected $_instructions;
 
     protected $_name;
 
-    protected $_type;
+    protected $_type = 'input';
 
     protected $_value;
 
@@ -73,9 +75,40 @@ class Syncee_Field
         return $this->_value;
     }
 
+    public function setType($type)
+    {
+        $this->_type = $type;
+    }
+
+    public function getType()
+    {
+        return $this->_type;
+    }
+
     public function isValid()
     {
+        $errors = $this->_errors = array();
 
+        if ($this->getRequired() && (string) $this->getValue() === '') {
+            $errors[] = Syncee_Field_Error::FIELD_ERROR_REQUIRED_BUT_EMPTY;
+        }
+
+        return empty($errors);
+    }
+
+    public function setRequired($required)
+    {
+        $this->_required = $required;
+    }
+
+    public function getRequired()
+    {
+        return $this->_required;
+    }
+
+    public function getErrors()
+    {
+        return $this->_errors;
     }
 
     public function __toString()
@@ -86,7 +119,7 @@ class Syncee_Field
             $field_html .= form_label($label, $this->_name);
         }
 
-        $field_type = $this->_type ?: 'text';
+        $field_type = $this->_type;
 
         $field_type_function_name = 'form_' . $field_type;
 
@@ -94,7 +127,9 @@ class Syncee_Field
             $field_type_function_name = 'form_input';
         }
 
-        $field_html .= $field_type_function_name($this->_name, $this->_value);
+        $id_html = sprintf('id="%s"', $this->getName());
+
+        $field_html .= $field_type_function_name($this->_name, $this->_value, $id_html);
 
         return $field_html;
     }
