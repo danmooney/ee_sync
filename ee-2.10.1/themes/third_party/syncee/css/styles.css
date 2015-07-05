@@ -112,6 +112,12 @@
     padding: 8px;
 }
 
+#syncee-page table.collection-table,
+#syncee-page table.form-table
+{
+    width: 100%;
+}
+
 #syncee-page .btn {
     background: red;
     color: #FFF;
@@ -214,4 +220,13 @@
     position: absolute;
     top: 10px;
     right: 10px;
+}
+
+#syncee-page table.form-table label {
+    font-size: 13px;
+}
+
+#syncee-page table.form-table .field-instructions {
+    margin: 10px 0 5px 5px;
+    color: #8E8E8E;
 }
