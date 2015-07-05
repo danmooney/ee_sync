@@ -33,6 +33,14 @@ class Syncee_Helper
         return implode('_', $ret);
     }
 
+    public static function convertUnderscoreToCamelCase($underscore_str)
+    {
+        $underscore_str_exploded             = explode('_', $underscore_str);
+        $capitalized_underscore_str_exploded = array_map('ucfirst', $underscore_str_exploded);
+
+        return lcfirst(implode('', $capitalized_underscore_str_exploded));
+    }
+
     public static function createModuleCpUrl($method = '', array $additional_query_params = array())
     {
         $base = BASE;
