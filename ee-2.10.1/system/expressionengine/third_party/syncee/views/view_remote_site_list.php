@@ -14,7 +14,7 @@ require_once dirname(__FILE__) . '/../_init.php';
     <a class="btn" href="<?= Syncee_Helper::createModuleCpUrl('newRemoteSite') ?>">New Remote Site</a><br><br>
 <?php
     if (count($syncee_remote_sites)): ?>
-        <table>
+        <table class="collection-table">
             <thead>
                 <tr>
                     <th>Label</th>
@@ -36,7 +36,7 @@ require_once dirname(__FILE__) . '/../_init.php';
             ?>
             <tr>
                 <?php /* <td><a href="<?= Syncee_Helper::createModuleCpUrl('viewSiteGroup', $primary_key_value_map) ?>"><?= $syncee_remote_site->title ?></a></td> */ ?>
-                <td><?= $syncee_remote_site->title ?: '<i>(None)</i>' ?></td>
+                <td><a href="<?= Syncee_Helper::createModuleCpUrl('editRemoteSite', $primary_key_value_map) ?>"><?= $syncee_remote_site->title ?: '<i>(None)</i>' ?></a></td>
                 <td align="center"><a href="<?= $syncee_remote_site->getSiteUrl() ?>" target="_blank"><?= $syncee_remote_site->getSiteUrl() ?></a></td>
                 <td align="right"><?= $syncee_remote_site->ee_site_id ?></td>
                 <td align="right"><?= $syncee_remote_site->action_id ?></td>
