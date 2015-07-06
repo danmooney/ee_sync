@@ -73,6 +73,10 @@ class Syncee_Field_Dropdown extends Syncee_Field
             $field_html .= form_label($label, $this->_name);
         }
 
+        if ($instructions = $this->getInstructions()) {
+            $field_html .= sprintf('<p class="field-instructions">%s</p>', $instructions);
+        }
+
         $field_html .= '</td>';
         $field_html .= '<td>';
 
