@@ -18,23 +18,27 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Form_Site_Remote_New extends Syncee_Form_Abstract
+class Syncee_Form_Site_Remote extends Syncee_Form_Abstract
 {
     protected $_fields = array(
         'title' => array(
             'label' => 'Label',
-            'instructions' => '',
+            'instructions' => 'Give this remote site a name so you can identify it',
             'required' => true,
         ),
-        'remote_site_settings_payload' => array(
-            'label'        => 'Settings Payload',
-            'instructions' => 'Copy the settings payload from a local site on another Syncee installation and paste them into here.',
-            'type'         => 'textarea',
-            'required'     => true
+        'use_https' => array(
+            'label'        => 'Use HTTPS?',
+            'instructions' => 'Should this remote site be called over HTTPS?',
+            'type'         => 'dropdown',
+            'required'     => true,
+            'options'      => array(
+                0 => 'No',
+                1 => 'Yes'
+            ),
         ),
     );
 
     protected $_button_text_by_method = array(
-        'new' => 'Save New Remote Site'
+        'edit' => 'Update Remote Site Settings'
     );
 }
