@@ -85,7 +85,7 @@
 }
 
 .site-settings-container {
-    width: 45%;
+    width: 52%;
     float: left;
 }
 
@@ -116,6 +116,12 @@
 #syncee-page table.form-table
 {
     width: 100%;
+}
+
+#syncee-page table.collection-table tr:nth-child(odd) td,
+#syncee-page table.form-table tr:nth-child(odd) td
+{
+    background-color: #F9F9F9;
 }
 
 #syncee-page .btn {
@@ -229,4 +235,13 @@
 #syncee-page table.form-table .field-instructions {
     margin: 10px 0 5px 5px;
     color: #8E8E8E;
+}
+
+#syncee-page table.form-table td:first-child {
+    vertical-align: top;
+    width: 40%;
+}
+
+#syncee-page table.form-table select[multiple] option {
+    padding: 3px;
 }
