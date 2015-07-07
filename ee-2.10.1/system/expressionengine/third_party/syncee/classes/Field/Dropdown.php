@@ -86,7 +86,7 @@ class Syncee_Field_Dropdown extends Syncee_Field
             $extra_html .= ' multiple ';
         }
 
-        $field_html .= form_dropdown($this->_name, $this->_options, $this->_value, $extra_html);
+        $field_html .= form_dropdown($this->_name . ($this->getMulti() ? '[]' : ''), $this->_options, $this->_value, $extra_html);
 
         // add disabled attribute to 1st (placeholder) option
         $field_html  = preg_replace('#<option value=""#', '<option value="" disabled ', $field_html, 1);
