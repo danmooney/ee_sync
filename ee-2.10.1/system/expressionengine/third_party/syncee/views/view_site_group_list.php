@@ -57,14 +57,22 @@ require_once dirname(__FILE__) . '/../_init.php';
                         /**
                          * @var $remote_site Syncee_Site
                          */
-                        $remote_site_collection = $syncee_site_group->getSiteCollection()->filterByCondition(array('is_remote' => true));
+                        $remote_site_collection = $syncee_site_group->getSiteCollection()->filterByCondition(array('is_local' => false));
 
                         if (!count($remote_site_collection)):
                             echo '<i>(No Remote Sites Assigned)</i>';
                         else:
+                            $remote_site_html = array();
+
                             foreach ($remote_site_collection as $remote_site):
-                                echo $remote_site->title, '<br>';
+                                $remote_site_html[] = sprintf(
+                                    '<a href="%s">%s</a>',
+                                    Syncee_Helper::createModuleCpUrl('editRemoteSite', array('site_id' => $remote_site->getPrimaryKeyValues(true))),
+                                    $remote_site->title
+                                );
                             endforeach;
+
+                            echo implode('<br>', $remote_site_html);
                         endif;
                     ?>
                 </td>
