@@ -312,6 +312,10 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             $where[$primary_key] = $this->$primary_key;
         }
 
+        $where = array_filter($where, function ($where_value) {
+            return $where_value !== null;
+        });
+
         $success = ee()->db->delete(static::TABLE_NAME, $where);
 
         if ($success) {
