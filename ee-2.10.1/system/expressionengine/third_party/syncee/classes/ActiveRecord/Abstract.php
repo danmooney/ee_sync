@@ -133,8 +133,10 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             }
         }
 
-        $row = (array) ee()->db->get()->row();
-        return new static($row, false);
+        $row    = (array) ee()->db->get()->row();
+        $is_new = empty($row);
+
+        return new static($row, $is_new);
     }
 
     public function __construct(array $row = array(), $is_new = true)
@@ -143,6 +145,21 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             static::$_cols = ee()->db->list_fields(static::TABLE_NAME);
         }
 
+        $this->assign($row);
+
+        if (empty($row)) {
+            $this->_is_empty_row = true;
+        }
+
+        $this->_is_new = $is_new;
+    }
+
+    /**
+     * Assign data to active record model via enumeration
+     * @param array $row
+     */
+    public function assign(array $row)
+    {
         // TODO - this has to be reworked now that public properties representing columns have been removed
         $object_properties = get_object_vars($this);
 
@@ -186,12 +203,6 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
                 }
             }
         }
-
-        if (empty($row)) {
-            $this->_is_empty_row = true;
-        }
-
-        $this->_is_new = $is_new;
     }
 
     public function isEmptyRow()
@@ -234,9 +245,12 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         return $this->_belongs_to;
     }
 
+    /**
+     * @return Syncee_ActiveRecord_Abstract
+     */
     public function getHasManyMap()
     {
-        return $this->_has_many_map;
+        return new $this->_has_many_map($this->toArray(false));
     }
 
     public function save()
@@ -263,7 +277,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
                 if ($insert_id) {
                     $insert_id = (array) $insert_id;
                     foreach ($this->_primary_key_names as $idx => $primary_key_name) {
-                        $this->_col_val_mapping[$primary_key_name] = $insert_id[$idx];
+                        $this->$primary_key_name = $insert_id[$idx];
                     }
                 }
 
@@ -274,35 +288,14 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             $where = array();
 
             foreach ($this->_primary_key_names as $primary_key) {
-                $where[$primary_key] = $this->_col_val_mapping[$primary_key];
+                $where[$primary_key] = $this->$primary_key;
             }
 
             $success = ee()->db->update(static::TABLE_NAME, $row, $where);
         }
 
-        /**
-         * Save map model if it exists
-         * @var $map_model Syncee_ActiveRecord_Abstract
-         */
-        if ($has_many_map = $this->_has_many_map) {
-            $map_model                                = new $has_many_map();
-            $compound_key_values_missing_in_map_model = false;
 
-            foreach ($map_model->getPrimaryKeyNames() as $primary_key_name) {
-                if (strlen($this->$primary_key_name)) {
-                    $primary_key_value = $this->$primary_key_name;
-                } else {
-                    $compound_key_values_missing_in_map_model = true;
-                    break;
-                }
-
-                $map_model->$primary_key_name = $primary_key_value;
-            }
-
-            if (!$compound_key_values_missing_in_map_model) {
-                $map_model->save();
-            }
-        }
+        $this->_handleManyMapReferences(__FUNCTION__);
 
         return $success;
     }
@@ -316,7 +309,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         $where = array();
 
         foreach ($this->_primary_key_names as $primary_key) {
-            $where[$primary_key] = $this->_col_val_mapping[$primary_key];
+            $where[$primary_key] = $this->$primary_key;
         }
 
         $success = ee()->db->delete(static::TABLE_NAME, $where);
@@ -325,29 +318,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             $this->_is_new = true;
         }
 
-        /**
-         * Delete map model if it exists
-         * @var $map_model Syncee_ActiveRecord_Abstract
-         */
-        if ($has_many_map = $this->_has_many_map) {
-            $map_model                                = new $has_many_map();
-            $compound_key_values_missing_in_map_model = false;
-
-            foreach ($map_model->getPrimaryKeyNames() as $primary_key_name) {
-                if (strlen($this->$primary_key_name)) {
-                    $primary_key_value = $this->$primary_key_name;
-                } else {
-                    $compound_key_values_missing_in_map_model = true;
-                    break;
-                }
-
-                $map_model->$primary_key_name = $primary_key_value;
-            }
-
-            if (!$compound_key_values_missing_in_map_model) {
-                $map_model->delete();
-            }
-        }
+        $this->_handleManyMapReferences(__FUNCTION__);
 
         return $success;
     }
@@ -410,6 +381,74 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             return $this->$property;
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Perform action on map model if it exists
+     * @param string $action
+     */
+    protected function _handleManyMapReferences($action)
+    {
+        if (!($has_many_map = $this->_has_many_map)) {
+            return;
+        }
+
+        /**
+         * @var $map_model Syncee_ActiveRecord_Abstract
+         */
+        $map_model                                  = new $has_many_map(array(), false);
+        $compound_key_values_missing_in_map_model   = false;
+        $compound_key_value_array                   = null;
+
+        // determine if there is a compound key value that is an array
+        foreach ($map_model->getPrimaryKeyNames() as $primary_key_name) {
+            if (is_array($this->$primary_key_name)) {
+                $compound_key_value_array = $this->$primary_key_name;
+                break;
+            }
+        }
+
+        $one_of_the_compound_key_values_is_an_array = is_array($compound_key_value_array);
+
+        if ($one_of_the_compound_key_values_is_an_array) {
+            foreach ($compound_key_value_array as $compound_key_value_array_idx => $primary_key_value) {
+                $map_model = new $has_many_map(array(), false);
+
+                foreach ($map_model->getPrimaryKeyNames() as $primary_key_name) {
+                    if (is_array($this->$primary_key_name)) {
+                        $map_model->$primary_key_name = $compound_key_value_array[$compound_key_value_array_idx];
+                    } else {
+                        $map_model->$primary_key_name = $this->$primary_key_name;
+                    }
+                }
+
+                // if saving, then delete and insert // TODO - let's update... just query the row in the DB before determining whether it's new or not
+                if ($action === 'save') {
+                    $map_model->delete();
+                }
+
+                $map_model->$action();
+            }
+        } else {
+            foreach ($map_model->getPrimaryKeyNames() as $primary_key_name) {
+                if (strlen($this->$primary_key_name)) {
+                    $primary_key_value = $this->$primary_key_name;
+                } else {
+                    $compound_key_values_missing_in_map_model = true;
+                    continue;
+                }
+
+                $map_model->$primary_key_name = $primary_key_value;
+            }
+
+            if (!$compound_key_values_missing_in_map_model || $action === 'delete') {
+                if ($action === 'save') {
+                    $map_model->delete();
+                }
+
+                $map_model->$action();
+            }
         }
     }
 }
