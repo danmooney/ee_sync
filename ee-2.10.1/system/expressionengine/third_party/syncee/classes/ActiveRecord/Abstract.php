@@ -112,8 +112,9 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         ee()->db->select('*')->from(static::TABLE_NAME);
 
         if (count($primary_keys_on_row) === 1) {
-            $primary_key_value = (string) $primary_key_value;
-            ee()->db->where(reset($primary_keys_on_row), $primary_key_value);
+            $primary_key       = reset($primary_keys_on_row);
+            $primary_key_value = is_array($primary_key_value) ? reset($primary_key_value) : $primary_key_value;
+            ee()->db->where($primary_key, $primary_key_value);
         } else {
             $primary_key_value = (array) $primary_key_value;
             foreach ($primary_key_value as $key => $value) {
@@ -253,6 +254,27 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         return new $this->_has_many_map($this->toArray(false));
     }
 
+    public function isNew()
+    {
+        $primary_key_values = array();
+
+        foreach ($this->_primary_key_names as $primary_key_name) {
+            $primary_key_values[$primary_key_name] = $this->$primary_key_name;
+        }
+
+        $primary_key_values = array_filter($primary_key_values, function ($primary_key_value) {
+            return $primary_key_value !== null;
+        });
+
+        if (count($primary_key_values) !== count($this->_primary_key_names)) {
+            return false;
+        }
+
+        $row = static::findByPk($primary_key_values);
+
+        return $row->isEmptyRow();
+    }
+
     public function save()
     {
         $row = $this->toArray(true);
@@ -267,7 +289,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             }
         }
 
-        if ($this->_is_new) {
+        if ($this->isNew()) {
             $success = ee()->db->insert(static::TABLE_NAME, $row);
             if ($success) {
                 // save primary key on this object
@@ -427,11 +449,6 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
                     }
                 }
 
-                // if saving, then delete and insert // TODO - let's update... just query the row in the DB before determining whether it's new or not
-                if ($action === 'save') {
-                    $map_model->delete();
-                }
-
                 $map_model->$action();
             }
         } else {
@@ -447,10 +464,6 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             }
 
             if (!$compound_key_values_missing_in_map_model || $action === 'delete') {
-                if ($action === 'save') {
-                    $map_model->delete();
-                }
-
                 $map_model->$action();
             }
         }
