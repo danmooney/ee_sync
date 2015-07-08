@@ -49,12 +49,15 @@ class Syncee_Field_Dropdown extends Syncee_Field
 
     public function isValid()
     {
-        $errors = $this->_errors = array();
+        $this->_errors =  array();
+        $errors        =& $this->_errors;
+
+        $value  = array_filter((array) $this->getValue(), 'strlen');
 
         if ($this->getRequired()) {
-            if ((string) $this->getValue() === '') {
+            if (!$value) {
                 $this->_errors[] = Syncee_Field_Error::FIELD_ERROR_REQUIRED_BUT_EMPTY;
-            } elseif (!array_key_exists($this->getValue(), $this->_options)) {
+            } elseif (count(array_diff($value, array_keys($this->_options)))) {
                 $this->_errors[] = Syncee_Field_Error::FIELD_ERROR_OPTION_DOES_NOT_EXIST;
             }
         }

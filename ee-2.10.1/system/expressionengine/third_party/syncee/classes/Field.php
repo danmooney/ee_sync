@@ -87,7 +87,8 @@ class Syncee_Field
 
     public function isValid()
     {
-        $errors = $this->_errors = array();
+        $this->_errors =  array();
+        $errors        =& $this->_errors;
 
         if ($this->getRequired() && (string) $this->getValue() === '') {
             $errors[] = Syncee_Field_Error::FIELD_ERROR_REQUIRED_BUT_EMPTY;

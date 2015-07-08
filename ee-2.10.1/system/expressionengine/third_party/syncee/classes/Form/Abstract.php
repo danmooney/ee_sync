@@ -114,6 +114,14 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
         return $values;
     }
 
+    public function getValue($key)
+    {
+        return isset($this->_fields[$key])
+            ? $this->_fields[$key]->getValue()
+            : null
+        ;
+    }
+
     public function getErrors()
     {
         return $this->_errors;
@@ -121,7 +129,8 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
 
     public function isValid()
     {
-        $errors = $this->_errors = array();
+        $this->_errors =  array();
+        $errors        =& $this->_errors;
 
         /**
          * @var $field Syncee_Field
