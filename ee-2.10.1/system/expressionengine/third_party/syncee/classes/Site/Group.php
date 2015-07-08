@@ -40,12 +40,27 @@ class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract
      */
     public $local_site;
 
+    /**
+     * @var Syncee_Site_Collection
+     */
+    public $remote_sites;
+
     public function __construct(array $row = array(), $is_new = true)
     {
         parent::__construct($row, $is_new);
         $this->getSiteCollection();
 
-        $this->local_site = $this->_site_collection->filterByCondition(array('is_local' => true), true);
+        if (isset($row['local_site_id'])) {
+            $this->local_site   = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('site_id' => $row['local_site_id']), true);
+        } else {
+            $this->local_site   = $this->_site_collection->filterByCondition(array('is_local' => true), true);
+        }
+
+        if (isset($row['remote_site_id'])) {
+            $this->remote_sites = Syncee_Site::getRemoteSiteCollection()->filterByCondition(array('site_id' => $row['remote_site_id']));
+        } else {
+            $this->remote_sites = $this->_site_collection->filterByCondition(array('is_local' => false));
+        }
     }
 
     public function toArray($table_data_only = true)
