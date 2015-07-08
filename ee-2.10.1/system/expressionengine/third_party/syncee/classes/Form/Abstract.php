@@ -20,11 +20,26 @@ if (!defined('SYNCEE_PATH')) {
 
 abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
 {
+    private static $_request_blacklist = array(
+        'D',
+        'C',
+        'M',
+        'module',
+        'method',
+    );
+
     protected $_action;
+
+    /**
+     * @var Syncee_ActiveRecord_Abstract
+     */
+    protected $_row;
 
     protected $_fields = array();
 
     protected $_values = array();
+
+    protected $_meta_values = array();
 
     protected $_errors = array();
 
@@ -37,10 +52,12 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
 
     public function __construct(Syncee_ActiveRecord_Abstract $row = null, Syncee_Mcp_Abstract $mcp)
     {
-        $this->_mcp = $mcp;
+        $this->_mcp    = $mcp;
+        $this->_row    = $row ?: new Syncee_ActiveRecord_Empty();
 
-        $data          = $row ? $row->toArray(false) : array();
-        $this->_values = array_intersect_key($data, $this->_fields);
+        $data               = $row ? $row->toArray(false) : array();
+        $this->_values      = array_intersect_key($data, $this->_fields);
+        $this->_meta_values = array_diff_key($data, $this->_fields);
 
         foreach ($this->_fields as $name => $field) {
             $value = isset($this->_values[$name])
@@ -111,15 +128,24 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
             $values[$field->getName()] = $field->getValue();
         }
 
+        foreach ($this->_meta_values as $meta_key => $meta_value) {
+            $values[$meta_key] = $meta_value;
+        }
+
         return $values;
     }
 
     public function getValue($key)
     {
-        return isset($this->_fields[$key])
-            ? $this->_fields[$key]->getValue()
-            : null
-        ;
+        $value = null;
+
+        if (isset($this->_fields[$key])) {
+            $value = $this->_fields[$key]->getValue();
+        } elseif (isset($this->_meta_values[$key])) {
+            $value = $this->_meta_values[$key];
+        }
+
+        return $value;
     }
 
     public function getErrors()
@@ -165,8 +191,18 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
         $form_html  .= '</tbody>';
         $form_html  .= '</table>';
 
-        // add submit button
 
+        // add hidden input fields from GET
+        foreach ($_GET as $key => $val) {
+            if (in_array($key, self::$_request_blacklist)) {
+                continue;
+            }
+
+            $form_html .= form_hidden($key, $val);
+        }
+
+
+        // add submit button
         $mcp_method      = $this->_mcp->getCalledMethod();
         $method_exploded = explode('_', Syncee_Helper::convertCamelCaseToUnderscore($mcp_method));
         $method_verb     = $method_exploded[0];
@@ -174,7 +210,6 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
             ? $this->_button_text_by_method[$method_verb]
             : 'Save'
         ;
-
 
         $form_button = form_button('', $button_label, 'class="btn"');
 
