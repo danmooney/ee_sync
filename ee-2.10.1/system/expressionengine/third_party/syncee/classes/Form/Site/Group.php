@@ -27,12 +27,12 @@ class Syncee_Form_Site_Group extends Syncee_Form_Abstract
             'instructions' => '',
             'required' => true,
         ),
-        'ee_site_id' => array(
+        'local_site_id' => array(
             'type' => 'dropdown',
             'label' => 'Choose a Local Site',
             'required' => true,
         ),
-        'site_id' => array(
+        'remote_site_id' => array(
             'type'  => 'dropdown',
             'multi' => true,
             'label' => 'Choose Remote Sites to Synchronize into Local Site',
@@ -45,8 +45,9 @@ class Syncee_Form_Site_Group extends Syncee_Form_Abstract
         'edit' => 'Update Site Group',
     );
 
-    public function elementEeSiteId(Syncee_Field_Dropdown $ee_site_id)
+    public function elementLocalSiteId(Syncee_Field_Dropdown $local_site_id_field)
     {
+        // set options
         $options     = array(
             '' => 'Select a Local Site'
         );
@@ -62,11 +63,19 @@ class Syncee_Form_Site_Group extends Syncee_Form_Abstract
             $options[$local_site->getPrimaryKeyValues(true)] = $ee_site_row->site_label;
         }
 
-        $ee_site_id->setOptions($options);
+
+        $local_site_id_field->setOptions($options);
+
+        // set value
+        if (is_object($this->_row->local_site)) {
+            $local_site_id = $this->_row->local_site->getPrimaryKeyValues(true);
+            $local_site_id_field->setValue($local_site_id);
+        }
     }
 
-    public function elementSiteId(Syncee_Field_Dropdown $site_id)
+    public function elementRemoteSiteId(Syncee_Field_Dropdown $remote_site_ids_field)
     {
+        // set options
         $options     = array(
             '' => 'Select a Remote Site'
         );
@@ -80,6 +89,17 @@ class Syncee_Form_Site_Group extends Syncee_Form_Abstract
             $options[$remote_site->getPrimaryKeyValues(true)] = $remote_site->title;
         }
 
-        $site_id->setOptions($options);
+        $remote_site_ids_field->setOptions($options);
+
+        // set value(s) (is multi)
+        if (is_object($this->_row->remote_sites)) {
+            $remote_sites    = $this->_row->remote_sites;
+            $remote_site_ids = array();
+            foreach ($remote_sites as $remote_site) {
+                $remote_site_ids[] = $remote_site->getPrimaryKeyValues(true);
+            }
+
+            $remote_site_ids_field->setValue($remote_site_ids);
+        }
     }
 }
