@@ -122,6 +122,10 @@ class Syncee_View
         $module_theme_path = static::_getThemePath();
 
         foreach (glob($module_theme_path . '/js/*') as $script_pathname) {
+            if (is_dir($script_pathname)) {
+                continue;
+            }
+
             $script_url = static::_getThemeUrl() . '/js/' . basename($script_pathname);
             ee()->cp->add_to_foot('<script src="' . $script_url . '"></script>');
         }
