@@ -77,7 +77,7 @@ class Syncee_Form_Site_Group extends Syncee_Form_Abstract
     {
         // set options
         $options     = array(
-            '' => 'Select a Remote Site'
+            '' => 'Select Remote Sites'
         );
 
         $remote_sites = Syncee_Site::getRemoteSiteCollection();
