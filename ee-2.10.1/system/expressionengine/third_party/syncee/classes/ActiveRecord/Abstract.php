@@ -254,12 +254,23 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         return new $this->_has_many_map($this->toArray(false));
     }
 
+    // TODO - perhaps assign $this->_is_new to the return value???
     public function isNew()
     {
-        $primary_key_values = array();
+        $primary_key_values        = array();
+        $missing_primary_key_value = false;
 
         foreach ($this->_primary_key_names as $primary_key_name) {
+            if (!array_key_exists($primary_key_name, $this->_col_val_mapping)) {
+                $missing_primary_key_value = true;
+                break;
+            }
+
             $primary_key_values[$primary_key_name] = $this->$primary_key_name;
+        }
+
+        if ($missing_primary_key_value) {
+            return true;
         }
 
         $primary_key_values = array_filter($primary_key_values, function ($primary_key_value) {
