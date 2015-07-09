@@ -8,7 +8,7 @@
 require_once dirname(__FILE__) . '/../_init.php';
 
 $local_site                   = $syncee_site_group->local_site;
-$remote_site_collection       = $syncee_site_group->getSiteCollection()->filterByCondition(array('is_local' => false));
+$remote_site_collection       = $syncee_site_group->remote_sites;
 
 $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
 
