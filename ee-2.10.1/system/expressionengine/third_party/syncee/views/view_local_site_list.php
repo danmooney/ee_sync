@@ -14,7 +14,6 @@ require_once dirname(__FILE__) . '/../_init.php';
             <th>Label</th>
             <th>EE Site ID</th>
             <th>Allows calls from remote sites?</th>
-            <?php /* <th>Call over HTTPS?</th> */ ?>
             <th>IP Whitelist</th>
             <th>Syncee Site ID</th>
             <th>Edit</th>
