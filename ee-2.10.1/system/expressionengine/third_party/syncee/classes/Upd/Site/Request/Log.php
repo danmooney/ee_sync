@@ -32,7 +32,7 @@ class Syncee_Upd_Site_Request_Log extends Syncee_Upd_Abstract
             'unsigned'      => true,
             'null'          => false,
         ),
-        'entity' => array(
+        'entity_class_name' => array(
             'type'       => 'VARCHAR',
             'constraint' => 100,
             'null'       => false,
