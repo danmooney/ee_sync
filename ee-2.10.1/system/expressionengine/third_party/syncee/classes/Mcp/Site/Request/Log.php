@@ -22,10 +22,26 @@ class Syncee_Mcp_Site_Request_Log extends Syncee_Mcp_Abstract
 {
     public function viewRequestLogList()
     {
-        $request_log_collection = Syncee_Site_Request_Log::findAll();
+        $paginator              = new Syncee_Paginator($_GET);
+        $request_log_collection = Syncee_Site_Request_Log::findAll($paginator);
 
         return Syncee_View::render(__FUNCTION__, array(
-            'syncee_request_log_collection' => $request_log_collection
+            'paginator'              => $paginator,
+            'request_log_collection' => $request_log_collection
+        ), $this);
+    }
+
+    public function viewRequestLog()
+    {
+        $request_log_id = ee()->input->get('request_log_id');
+        $request_log    = Syncee_Site_Request_Log::findByPk($request_log_id);
+
+        if ($request_log->isEmptyRow()) {
+            // TODO
+        }
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'request_log' => $request_log
         ), $this);
     }
 }
