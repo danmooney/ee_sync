@@ -105,7 +105,7 @@ class Syncee_Response
 
     public function getRawResponse()
     {
-        return $this->_raw_response;
+        return $this->_raw_response ?: null;
     }
 
     public function getResponseDecoded($key = null)
