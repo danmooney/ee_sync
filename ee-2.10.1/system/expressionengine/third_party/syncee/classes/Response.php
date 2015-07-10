@@ -54,21 +54,23 @@ class Syncee_Response
 
     /**
      * Execute the request and store/parse the response
-     * @param Syncee_Request $request
+     * @param Syncee_Request_Interface|Syncee_Request $request
      * @param Syncee_Site $site
      * @param Syncee_Request_Remote_Entity_Interface|null $entity
      * @throws Syncee_Exception
      */
-    public function __construct(Syncee_Request $request, Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity = null)
+    public function __construct(Syncee_Request_Interface $request, Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity = null)
     {
-        $this->_site         = $site;
-        $this->_entity       = $entity;
+        $this->_site   = $site;
+        $this->_entity = $entity;
 
-        $curl_handle         = $request->getCurlHandle();
-        $this->_raw_response = $response = $request->execute();
-        $this->_status_code  = (int) $curl_handle->http_status_code;
+        if ($request->requestHasAlreadyBeenMade()) {
+            $response = (string) $request;
+        } else {
+            $response = $this->_executeRequest($request);
+        }
 
-        $decoded_response    = json_decode($response, true);
+        $decoded_response = json_decode($response, true);
 
         if (is_array($decoded_response)) {
             $this->_errors = isset($decoded_response['errors']) ? $decoded_response['errors'] : array();
@@ -149,6 +151,15 @@ class Syncee_Response
     public function __toString()
     {
         return $this->_raw_response;
+    }
+
+    private function _executeRequest(Syncee_Request $request)
+    {
+        $curl_handle         = $request->getCurlHandle();
+        $this->_raw_response = $response = $request->execute();
+        $this->_status_code  = (int) $curl_handle->http_status_code;
+
+        return $response;
     }
 
     private function _decryptResponseData(Syncee_Site $site, $data)

@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Request
+class Syncee_Request implements Syncee_Request_Interface
 {
     /**
      * @var Syncee_Helper_Curl
@@ -29,6 +29,11 @@ class Syncee_Request
      * @var Syncee_Response
      */
     private $_response;
+
+    public function requestHasAlreadyBeenMade()
+    {
+        return false;
+    }
 
     public function getCurlHandle()
     {
@@ -51,13 +56,15 @@ class Syncee_Request
         $this->_response = $response = new Syncee_Response($this, $site, $entity);
 
         if ($log) {
-            $log->site_id      = $site->getPrimaryKeyValues(true);
-            $log->entity       = get_class($entity);
-            $log->code         = $response->getStatusCode();
-            $log->version      = $response->getResponseDecoded('version');
-            $log->message      = $response->getMessage();
-            $log->errors       = $response->getErrors();
-            $log->raw_response = $response->getRawResponse();
+            $log->assign(array(
+                'site_id'           => $site->getPrimaryKeyValues(true),
+                'entity_class_name' => get_class($entity),
+                'code'              => $response->getStatusCode(),
+                'version'           => $response->getResponseDecoded('version'),
+                'message'           => $response->getMessage(),
+                'errors'            => $response->getErrors(),
+                'raw_response'      => $response->getRawResponse(),
+            ));
 
             $log->save();
         }

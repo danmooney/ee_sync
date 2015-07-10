@@ -18,7 +18,10 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract
+/**
+ * Class Syncee_Site_Request_Log
+ */
+class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Syncee_Request_Interface
 {
     const TABLE_NAME = 'syncee_site_request_log';
 
@@ -31,10 +34,62 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract
      */
     public $site;
 
+    /**
+     * @var Syncee_Request_Remote_Entity_Abstract
+     */
+    public $request_entity;
+
     public function __construct(array $row = array(), $is_new = true)
     {
         parent::__construct($row, $is_new);
 
-        $this->site = Syncee_Site::findByPk($this->site_id);
+        $this->site           = Syncee_Site::findByPk($this->site_id);
+
+        $this->request_entity = class_exists($this->entity_class_name)
+            ? new $this->entity_class_name()
+            : new Syncee_Request_Remote_Entity_Empty()
+        ;
+    }
+
+    public function requestHasAlreadyBeenMade()
+    {
+        return true;
+    }
+
+    public function isSuccess()
+    {
+        $response     = new Syncee_Response($this, $this->site, $this->request_entity);
+        $decoded_data = $response->getResponseDataDecoded();
+
+        $success = (
+            intval($this->code) === 200 &&
+            empty($this->errors) &&
+            is_array($decoded_data)
+        );
+
+        return $success;
+    }
+
+//    public function getDecryptedResponseData()
+//    {
+//        if (!is_string($this->raw_response)) {
+//            return false;
+//        }
+//
+//        $raw_response = $this->raw_response;
+//
+//        if (!($response_decoded = json_decode($raw_response, true))) {
+//            return false;
+//        }
+//
+//        if (!isset($response_decoded['data'])) {
+//            return false;
+//        }
+//    }
+
+
+    public function __toString()
+    {
+        return (string) $this->raw_response;
     }
 }
