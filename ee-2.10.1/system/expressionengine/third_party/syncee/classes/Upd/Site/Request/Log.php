@@ -21,7 +21,7 @@ if (!defined('SYNCEE_PATH')) {
 class Syncee_Upd_Site_Request_Log extends Syncee_Upd_Abstract
 {
     protected $_fields = array(
-        'request_id' => array(
+        'request_log_id' => array(
             'type'           => 'INT',
             'unsigned'       => true,
             'null'           => false,
