@@ -17,7 +17,8 @@ require_once dirname(__FILE__) . '/../_init.php';
                 <tr>
                     <th>Syncee Request ID</th>
                     <th>Site</th>
-                    <th>Entity Call Type</th>
+                    <th>Request Entity Type</th>
+                    <th>Success?</th>
                     <th>Respnse status code</th>
                     <th>Response Syncee version</th>
                     <th>Response Message</th>
@@ -39,9 +40,10 @@ require_once dirname(__FILE__) . '/../_init.php';
                             <?= $request_log->site->title ?>
                         </a>
                     </td>
-                    <td><?= $request_log->entity ?></td>
-                    <td><?= $request_log->code ?></td>
-                    <td><?= $request_log->version ?: '<i>(N/A)</i>' ?></td>
+                    <td align="center"><?= $request_log->request_entity->getName() ?: 'Ping' ?></td>
+                    <td align="center"><?= $request_log->isSuccess() ? 'Yes' : 'No' ?></td>
+                    <td align="right"><?= $request_log->code ?></td>
+                    <td align="right"><?= $request_log->version ?: '<i>(N/A)</i>' ?></td>
                     <td><?= $request_log->message ?: '<i>(N/A)</i>' ?></td>
                     <td><?= $request_log->errors  ?: '<i>(N/A)</i>' ?></td>
                     <td align="center"><?= Syncee_Helper::convertUTCDateToLocalizedHumanDatetime($request_log->create_datetime) ?></td>
