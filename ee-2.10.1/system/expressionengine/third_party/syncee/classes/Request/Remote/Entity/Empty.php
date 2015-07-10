@@ -24,6 +24,11 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Request_Remote_Entity_Empty extends Syncee_Request_Remote_Entity_Abstract
 {
+    public function getName()
+    {
+        return '';
+    }
+
     public function getCollection()
     {
         return new Syncee_Collection_Empty();
