@@ -47,9 +47,10 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
     protected $_belongs_to;
 
     /**
+     * @param $paginator Syncee_Paginator
      * @return Syncee_Collection_Abstract
      */
-    public static function findAll()
+    public static function findAll(Syncee_Paginator $paginator = null)
     {
         $rows             = ee()->db->select('*')->from(static::TABLE_NAME)->get()->result_array();
         $empty_row        = new static();
@@ -58,7 +59,12 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         return new $collection_model($rows);
     }
 
-    public static function findAllByCondition(array $conditions)
+    /**
+     * @param array $conditions
+     * @param Syncee_Paginator $paginator
+     * @return Syncee_Collection_Abstract
+     */
+    public static function findAllByCondition(array $conditions, Syncee_Paginator $paginator = null)
     {
         ee()->db->select(static::TABLE_NAME . '.*')->from(static::TABLE_NAME);
 
@@ -286,7 +292,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         return $row->isEmptyRow();
     }
 
-    public function save()
+    public function save($handle_many_map_references = false) // TODO - use parameter
     {
         $row = $this->toArray(true);
 
@@ -333,7 +339,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         return $success;
     }
 
-    public function delete()
+    public function delete($handle_many_map_references = false) // TODO - use parameter
     {
         if ($this->_is_new) {
             return false;
