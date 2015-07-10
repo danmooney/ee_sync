@@ -1,0 +1,55 @@
+<?php
+/**
+ * @var $paginator Syncee_Paginator
+ * @var $request_log_collection Syncee_Site_Request_Log_Collection
+ * @var $request_log Syncee_Site_Request_Log
+ */
+require_once dirname(__FILE__) . '/../_init.php';
+
+?>
+<?php
+    if (!count($request_log_collection)): ?>
+        <p>There aren't any requests to display.</p>
+<?php
+    else: ?>
+        <table class="collection-table">
+            <thead>
+                <tr>
+                    <th>Syncee Request ID</th>
+                    <th>Site</th>
+                    <th>Entity Call Type</th>
+                    <th>Respnse status code</th>
+                    <th>Response Syncee version</th>
+                    <th>Response Message</th>
+                    <th>Response Errors</th>
+                    <th>Date of Request</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+        <?php
+            foreach ($request_log_collection as $request_log):
+                $primary_key_value_map      = array($request_log->getPrimaryKeyNames(true) => $request_log->getPrimaryKeyValues(true));
+                $site_primary_key_value_map = array($request_log->site->getPrimaryKeyNames(true) => $request_log->site->getPrimaryKeyValues(true))
+                ?>
+                <tr>
+                    <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('viewRequestLog', $primary_key_value_map) ?>"><?= $request_log->getPrimaryKeyValues(true) ?></a></td>
+                    <td align="center">
+                        <a href="<?= Syncee_Helper::createModuleCpUrl($request_log->site->isLocal() ? 'editLocalSite' : 'editRemoteSite', $site_primary_key_value_map) ?>">
+                            <?= $request_log->site->title ?>
+                        </a>
+                    </td>
+                    <td><?= $request_log->entity ?></td>
+                    <td><?= $request_log->code ?></td>
+                    <td><?= $request_log->version ?: '<i>(N/A)</i>' ?></td>
+                    <td><?= $request_log->message ?: '<i>(N/A)</i>' ?></td>
+                    <td><?= $request_log->errors  ?: '<i>(N/A)</i>' ?></td>
+                    <td align="center"><?= Syncee_Helper::convertUTCDateToLocalizedHumanDatetime($request_log->create_datetime) ?></td>
+                    <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('deleteRequestLog', $primary_key_value_map) ?>">Delete</a></td>
+                </tr>
+        <?php
+            endforeach ?>
+            </tbody>
+        </table>
+<?php
+    endif;
