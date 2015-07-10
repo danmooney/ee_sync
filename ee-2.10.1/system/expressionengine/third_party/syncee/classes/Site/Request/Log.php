@@ -23,4 +23,18 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract
     const TABLE_NAME = 'syncee_site_request_log';
 
     protected $_collection_model = 'Syncee_Site_Request_Log_Collection';
+
+    protected $_primary_key_names = array('request_log_id');
+
+    /**
+     * @var Syncee_Site
+     */
+    public $site;
+
+    public function __construct(array $row = array(), $is_new = true)
+    {
+        parent::__construct($row, $is_new);
+
+        $this->site = Syncee_Site::findByPk($this->site_id);
+    }
 }
