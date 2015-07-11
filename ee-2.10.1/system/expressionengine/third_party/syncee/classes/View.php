@@ -112,6 +112,10 @@ class Syncee_View
         $module_theme_path = static::_getThemePath();
 
         foreach (glob($module_theme_path . '/css/*') as $stylesheet_pathname) {
+            if (pathinfo($stylesheet_pathname, PATHINFO_EXTENSION) !== 'css') {
+                continue;
+            }
+
             $stylesheet_url = static::_getThemeUrl() . '/css/' . basename($stylesheet_pathname);
             ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $stylesheet_url . '">');
         }
