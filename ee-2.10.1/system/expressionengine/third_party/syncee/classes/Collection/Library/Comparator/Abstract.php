@@ -34,7 +34,7 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
          */
         foreach ($this->_collections as $collection) {
 
-            $is_current_local_site = $collection->getSite()->isCurrentLocal();
+            $is_current_local_site = $collection->getSite()->isLocal();
 
             if ($is_current_local_site) {
                 $current_local_site_collection = $collection;

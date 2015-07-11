@@ -52,10 +52,10 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
             $this->assertTrue($site->isRemote());
         }
 
-        $local_site = $this->_site_collection->filterByCondition('isCurrentLocal', true);
+        $local_site = $this->_site_collection->filterByCondition('isLocal', true);
 
         $this->assertFalse($local_site->isEmptyRow());
-        $this->assertTrue($local_site->isCurrentLocal());
+        $this->assertTrue($local_site->isLocal());
     }
 
     public function testRemoteApiCallPassesWithoutAnyWhitelist()
