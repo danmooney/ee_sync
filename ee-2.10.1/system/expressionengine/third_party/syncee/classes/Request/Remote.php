@@ -77,7 +77,7 @@ class Syncee_Request_Remote
             if (!$requested_site->requests_from_remote_sites_enabled) {
                 $message = 'Request forbidden from all IPs with master override.';
             } else {
-                $message = 'Request forbidden from this IP.';
+                $message = 'Request forbidden from your IP' . (isset($_SERVER['REMOTE_ADDR']) ? ': ' . $_SERVER['REMOTE_ADDR'] : '.');
             }
         } elseif ($requested_site->isEmptyRow()) {
             $code    = 404;
@@ -116,9 +116,8 @@ class Syncee_Request_Remote
 
         if (SYNCEE_TEST_MODE) {
             $meta['public_key']           = $site->rsa->getPublicKey();
-            $meta['private_key_filename'] = md5($site->rsa->getPublicKey());
             $meta['private_key']          = $site->rsa->getPrivateKey();
-
+            $meta['url']                  = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             $crypt = $site->rsa->getCrypt();
             $crypt->loadKey($site->rsa->getPrivateKey());
 
