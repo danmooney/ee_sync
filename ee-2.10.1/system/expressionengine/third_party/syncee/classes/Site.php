@@ -22,13 +22,17 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
 
+    private static $_ee_site_id;
+
+    private $_default_ip_whitelist_separator = "\n";
+
     protected static $_cols;
 
     protected $_primary_key_names = array('site_id');
 
     protected $_collection_model = 'Syncee_Site_Collection';
 
-    protected $_has_many_map = 'Syncee_Site_Group_Map';
+    protected $_has_many_map = 'Syncee_Site_Group_Map'; // TODO - make array to also employ Syncee_Site_Request_Log as well!
 
     /**
      * @var Syncee_Site_Rsa
@@ -71,24 +75,16 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
     }
 
     /**
-     * Is this instance of Syncee_Site the current website?
-     * Checks based on site_url
      * @return bool
      */
-    public function isCurrentLocal()
-    {
-        return (
-            $this->is_local && $this->getPrimaryKeyValues(true) // TODO
-//            strpos('http://'  . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], $this->site_url) === 0 ||
-//            strpos('https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], $this->site_url) === 0
-        );
-    }
-
     public function isLocal()
     {
         return $this->is_local;
     }
 
+    /**
+     * @return bool
+     */
     public function isRemote()
     {
         return !$this->is_local;
@@ -105,15 +101,16 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 
     public function addToIpWhitelist($ip)
     {
-        $ip_whitelist_exploded = array_filter(explode('|', $this->ip_whitelist));
+        $ip_whitelist_exploded = $this->getIpWhitelistExploded();
 
         if (in_array($ip, $ip_whitelist_exploded)) {
             return $this;
         }
 
-        $ip_whitelist_exploded[]  = $ip;
-        $this->ip_whitelist = implode('|', $ip_whitelist_exploded);
+        $ip_whitelist_exploded[] = $ip;
+        $this->ip_whitelist      = implode($this->_getIpWhitelistNewlineCharacter(), $ip_whitelist_exploded);
 
+        // if ip whitelist is empty, set to null
         if (!$this->ip_whitelist) {
             $this->ip_whitelist = null;
         }
@@ -123,7 +120,7 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 
     public function removeFromIpWhitelist($ip)
     {
-        $ip_whitelist_exploded = array_filter(explode('|', $this->ip_whitelist));
+        $ip_whitelist_exploded = $this->getIpWhitelistExploded();
 
         if (!in_array($ip, $ip_whitelist_exploded)) {
             return $this;
@@ -131,8 +128,9 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 
         unset($ip_whitelist_exploded[array_search($ip, $ip_whitelist_exploded)]);
 
-        $this->ip_whitelist = implode('|', $ip_whitelist_exploded);
+        $this->ip_whitelist = implode($this->_getIpWhitelistNewlineCharacter(), $ip_whitelist_exploded);
 
+        // if ip whitelist is empty, set to null
         if (!$this->ip_whitelist) {
             $this->ip_whitelist = null;
         }
@@ -147,7 +145,7 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
             return true;
         }
 
-        $ip_whitelist_exploded = array_filter(explode('|', $this->ip_whitelist));
+        $ip_whitelist_exploded = $this->getIpWhitelistExploded();
 
         return in_array($ip, $ip_whitelist_exploded) && $this->requests_from_remote_sites_enabled;
     }
@@ -185,19 +183,56 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 
     public function save()
     {
-        if ($this->_is_new) {
+        if ($this->isNew()) {
             $this->public_key  = $this->rsa->getPublicKey();
-            $this->action_id   = ee()->db->select('action_id')->from('actions')->where('method', 'actionHandleRemoteDataApiCall')->get()->row('action_id');
 
             $this->private_key = $this->rsa->getPrivateKey();
 
-            // if requests_from_remote_sites_enabled isn't set, set it to default false
-            if ($this->isLocal() && null === $this->requests_from_remote_sites_enabled) {
-                $this->requests_from_remote_sites_enabled = false;
+            if ($this->isLocal()) {
+                // set action id on the row
+                if (null === $this->action_id) {
+                    $this->action_id = ee()->db->select('action_id')->from('actions')->where('method', 'actionHandleRemoteDataApiCall')->get()->row('action_id');
+                }
+
+                // if requests_from_remote_sites_enabled isn't set, set it to default false
+                if (null === $this->requests_from_remote_sites_enabled) {
+                    $this->requests_from_remote_sites_enabled = false;
+                }
             }
         }
 
+        // make sure ip whitelist is formatted properly
+        if ($newline_character = $this->_getIpWhitelistNewlineCharacter()) {
+            $ip_whitelist = array_map(function ($ip) {
+                return trim($ip);
+            }, explode($newline_character, $this->ip_whitelist));
+
+            $this->ip_whitelist = implode($newline_character, $ip_whitelist);
+        }
+
         return parent::save();
+    }
+
+    /**
+     * @return array
+     */
+    public function getIpWhitelistExploded()
+    {
+        return array_filter(explode($this->_getIpWhitelistNewlineCharacter(), $this->ip_whitelist));
+    }
+
+    /**
+     * Override Syncee_ActiveRecord_Abstract::__set in order to dynamically get title
+     * @param $property
+     * @return mixed
+     */
+    public function __get($property)
+    {
+        if ($property === 'title' && $this->isLocal()) {
+            return $this->getCorrespondingLocalEeSiteRow()->site_label;
+        }
+
+        return parent::__get($property);
     }
 
     /**
@@ -215,5 +250,15 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
         }
 
         return $return_value;
+    }
+
+    private function _getIpWhitelistNewlineCharacter()
+    {
+        preg_match("#\r\n|[\r\n]#", $this->ip_whitelist, $matches);
+
+        return isset($matches[0])
+            ? $matches[0]
+            : $this->_default_ip_whitelist_separator
+        ;
     }
 }
