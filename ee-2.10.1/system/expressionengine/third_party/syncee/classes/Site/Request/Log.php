@@ -64,29 +64,12 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
         $success = (
             intval($this->code) === 200 &&
             empty($this->errors) &&
+            $this->version === Syncee_Upd::VERSION &&
             is_array($decoded_data)
         );
 
         return $success;
     }
-
-//    public function getDecryptedResponseData()
-//    {
-//        if (!is_string($this->raw_response)) {
-//            return false;
-//        }
-//
-//        $raw_response = $this->raw_response;
-//
-//        if (!($response_decoded = json_decode($raw_response, true))) {
-//            return false;
-//        }
-//
-//        if (!isset($response_decoded['data'])) {
-//            return false;
-//        }
-//    }
-
 
     public function __toString()
     {
