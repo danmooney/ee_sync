@@ -21,27 +21,30 @@ if (!defined('SYNCEE_PATH')) {
 class Syncee_Request_Remote
 {
     /**
-     * @var int
-     */
-    private $_ee_site_id;
-
-    /**
      * @var Syncee_Site
      */
     private $_site;
+
+    /**
+     * @var Syncee_Request_Remote_Entity_Interface
+     */
+    private $_entity;
 
     private $_json_mime_type = 'text/javascript';
 
     /**
      * Handle the request and send JSON response
+     * @param Syncee_Site $site
      * @param Syncee_Request_Remote_Entity_Interface $entity
      */
-    public function __construct(Syncee_Request_Remote_Entity_Interface $entity = null)
+    public function __construct(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity = null)
     {
-        $this->_ee_site_id = $ee_site_id = $entity->getEeSiteId();
+        $ee_site_id          = $entity->getRequestedEeSiteId();
+        $this->_site         = $site;
+        $this->_entity       = $entity;
 
-        $errors  = array();
-        $message = '';
+        $errors       = array();
+        $message      = '';
 
         if (!$entity || !$ee_site_id) {
             if (!$entity) {
@@ -57,29 +60,25 @@ class Syncee_Request_Remote
             $code = 200;
         }
 
-        /**
-         * @var $requested_site Syncee_Site
-         */
-        $requested_site    = $this->_site = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => $ee_site_id), true);
-        $public_key        = $requested_site->rsa->getPublicKey(false);
+        $public_key = $site->rsa->getPublicKey(false);
 
         if (!$public_key) {
             $code    = 500;
 
-            if ($requested_site->isEmptyRow()) {
+            if ($site->isEmptyRow()) {
                 $message = 'Could not find data for the requested site.  Make sure you have pasted the source site data into the target site.';
             } else {
                 $message = 'Could not find public key for the requesting site.';
             }
-        } elseif (!$requested_site->allowsRemoteRequestFromIp(ee()->input->ip_address())) {
+        } elseif (!$site->allowsRemoteRequestFromIp(ee()->input->ip_address())) {
             $code    = 403;
 
-            if (!$requested_site->requests_from_remote_sites_enabled) {
+            if (!$site->requests_from_remote_sites_enabled) {
                 $message = 'Request forbidden from all IPs with master override.';
             } else {
                 $message = 'Request forbidden from your IP' . (isset($_SERVER['REMOTE_ADDR']) ? ': ' . $_SERVER['REMOTE_ADDR'] : '.');
             }
-        } elseif ($requested_site->isEmptyRow()) {
+        } elseif ($site->isEmptyRow()) {
             $code    = 404;
             $message = 'Unable to find local site object to instantiate.';
         }
@@ -90,8 +89,8 @@ class Syncee_Request_Remote
 
         $collection = $entity->getCollection();
 
-        $requested_site->rsa->getCrypt()->loadKey($requested_site->rsa->getPublicKey());
-        $data = base64_encode($requested_site->rsa->getCrypt()->encrypt(json_encode($collection->toArray(false))));
+        $site->rsa->getCrypt()->loadKey($site->rsa->getPublicKey());
+        $data = base64_encode($site->rsa->getCrypt()->encrypt(json_encode($collection->toArray(false))));
 
         if (!$data) {
             $code = 500;
