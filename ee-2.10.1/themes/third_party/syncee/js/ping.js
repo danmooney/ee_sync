@@ -21,12 +21,20 @@ $(function ($) {
             dataType: 'json',
             url: $anchor.attr('href'),
             success: function (data) {
-                $remoteSitePayloadContents.html('<pre>' + JSON.stringify(data, null, 4) + '</pre>');
+
             },
             error: function () {
 
             },
-            complete: function () {
+            complete: function (response) {
+                var responseText = response.responseText || '(Empty Response)'
+                ;
+
+                try {
+                    responseText = JSON.stringify(JSON.parse(responseText), null, 4);
+                } catch (e) {}
+
+                $remoteSitePayloadContents.text(responseText).wrap('<pre></pre>');
                 isCurrentlyPinging = false;
             }
         });

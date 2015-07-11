@@ -52,6 +52,6 @@ $site_primary_key_value_map = array($request_log->site->getPrimaryKeyNames(true)
 <div class="remote-site-settings-payload-container">
     <h2>Raw Response from Request</h2><br>
     <div id="remote_site_settings_payload">
-        <div id="remote_site_settings_payload_contents"><pre><?= Syncee_Helper::prettyPrintJson($request_log->raw_response) ?></pre></div>
+        <div id="remote_site_settings_payload_contents"><pre><?= $request_log->raw_response ? Syncee_Helper::prettyPrintJson($request_log->raw_response) : '(Empty Response)' ?></pre></div>
     </div>
 </div>
