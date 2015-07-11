@@ -26,7 +26,7 @@ class Syncee_Request_Remote_Entity_Empty extends Syncee_Request_Remote_Entity_Ab
 {
     public function getName()
     {
-        return '';
+        return 'ping';
     }
 
     public function getCollection()
