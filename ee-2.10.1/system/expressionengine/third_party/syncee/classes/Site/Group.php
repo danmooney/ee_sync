@@ -31,7 +31,7 @@ class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract
 
     protected $_primary_key_names = array('site_group_id');
 
-    protected $_has_many_map = 'Syncee_Site_Group_Map';
+    protected $_has_many_maps = array('Syncee_Site_Group_Map');
 
     protected $_collection_model = 'Syncee_Site_Group_Collection';
 

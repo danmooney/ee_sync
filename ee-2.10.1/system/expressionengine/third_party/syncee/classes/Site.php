@@ -22,8 +22,6 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
 
-    private static $_ee_site_id;
-
     private $_default_ip_whitelist_separator = "\n";
 
     protected static $_cols;
@@ -32,7 +30,10 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 
     protected $_collection_model = 'Syncee_Site_Collection';
 
-    protected $_has_many_map = 'Syncee_Site_Group_Map'; // TODO - make array to also employ Syncee_Site_Request_Log as well!
+    protected $_has_many_maps = array(
+        'Syncee_Site_Group_Map',
+        'Syncee_Site_Request_Log'
+    );
 
     /**
      * @var Syncee_Site_Rsa
