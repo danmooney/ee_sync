@@ -38,7 +38,10 @@ class Syncee_Mcp_Site_Local extends Syncee_Mcp_Abstract
             // TODO
         }
 
+        $form = new Syncee_Form_Site_Local($syncee_site, $this);
+
         return Syncee_View::render(__FUNCTION__, array(
+            'form'              => $form,
             'syncee_local_site' => $syncee_site
         ), $this);
     }
