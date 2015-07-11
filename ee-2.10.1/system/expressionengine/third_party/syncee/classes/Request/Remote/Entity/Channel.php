@@ -31,7 +31,7 @@ class Syncee_Request_Remote_Entity_Channel extends Syncee_Request_Remote_Entity_
         $rows = array();
 
         foreach ($channels->result_array() as $channel) {
-            if (intval($channel['site_id']) !== $this->_ee_site_id) {
+            if ($channel['site_id'] !== $this->getRequestedEeSiteId()) {
                 continue;
             }
 

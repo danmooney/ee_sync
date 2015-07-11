@@ -36,12 +36,12 @@ interface Syncee_Request_Remote_Entity_Interface
     /**
      * @param $ee_site_id
      */
-    public function setEeSiteId($ee_site_id);
+    public function setRequestedEeSiteId($ee_site_id);
 
     /**
      * @return int
      */
-    public function getEeSiteId();
+    public function getRequestedEeSiteId();
 
     /**
      * @return string

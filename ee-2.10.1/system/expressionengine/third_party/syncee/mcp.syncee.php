@@ -98,12 +98,15 @@ class Syncee_Mcp
         $entity_class_name = Syncee_Upd::MODULE_NAME . '_' . $entity_str;
 
         /**
+         * @var $site Syncee_Site
          * @var $entity Syncee_Request_Remote_Entity_Interface
          */
-        $entity = new $entity_class_name();
-        $entity->setEeSiteId($ee_site_id);
+        $site   = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => $ee_site_id), true);
 
-        new Syncee_Request_Remote($entity);
+        $entity = new $entity_class_name();
+        $entity->setRequestedEeSiteId($ee_site_id);
+
+        new Syncee_Request_Remote($site, $entity);
     }
 
     private function _runLocalSiteCleanup()

@@ -20,7 +20,7 @@ if (!defined('SYNCEE_PATH')) {
 
 abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_Remote_Entity_Interface
 {
-    protected $_ee_site_id;
+    protected $_requested_ee_site_id;
 
     protected $_collection_class_name;
 
@@ -30,14 +30,14 @@ abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_R
         return strtolower($class_exploded[count($class_exploded) - 1]);
     }
 
-    public function setEeSiteId($ee_site_id)
+    public function setRequestedEeSiteId($ee_site_id)
     {
-        $this->_ee_site_id = intval($ee_site_id);
+        $this->_requested_ee_site_id = (string) intval($ee_site_id);
     }
 
-    public function getEeSiteId()
+    public function getRequestedEeSiteId()
     {
-        return $this->_ee_site_id;
+        return $this->_requested_ee_site_id;
     }
 
     public function getCollectionClassName()
