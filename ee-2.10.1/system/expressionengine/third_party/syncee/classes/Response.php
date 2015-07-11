@@ -76,7 +76,11 @@ class Syncee_Response
             $this->_errors = isset($decoded_response['errors']) ? $decoded_response['errors'] : array();
 
             if (isset($decoded_response['data']) && is_string($decoded_response['data'])) {
-                $decoded_response['data'] = $this->_decryptResponseData($site, $decoded_response['data']);
+                if (is_array(json_decode($decoded_response['data'], true))) {
+                    $decoded_response['data'] = json_decode($decoded_response['data'], true);
+                } else {
+                    $decoded_response['data'] = $this->_decryptResponseData($site, $decoded_response['data']);
+                }
 
                 if (!$decoded_response['data']) {
                     $this->_errors[] = 'Unable to decode response data with private key.';
