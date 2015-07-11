@@ -32,7 +32,7 @@ class Syncee_Form_Site_Local extends Syncee_Form_Abstract
         ),
         'ip_whitelist' => array(
             'label' => 'IP Whitelist', // TODO - Add multiple inputs for this field (and lookup how to validate/convert CIDR ranges)
-            'instructions' => 'If left empty with master override set to \'Yes\', any remote site can make requests to this local site and view its encrypted responses.)<br>Enter one IP per line.  CIDR notation will not be converted to IP ranges.',
+            'instructions' => 'Instructions: Enter one IP per line.  CIDR notation will not be converted to IP ranges.<br><br>If left empty with master override set to \'Yes\', any remote site can make requests to this local site and view its encrypted responses.',
             'type'  => 'textarea',
         ),
     );
