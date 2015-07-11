@@ -41,7 +41,7 @@ class Syncee_View
 
 
         return sprintf(
-            '<div id="syncee">%s<div id="syncee-page">%s %s</div></div>',
+            '<div id="syncee">%s<div id="syncee-page">%s %s<div style="clear:both;"></div></div></div>',
             $menu_html,
             $flash_message_html,
             ee()->load->view(
