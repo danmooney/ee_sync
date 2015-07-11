@@ -128,65 +128,72 @@ class Syncee_Helper
 
     public static function prettyPrintJson($json)
     {
-        $result          = '';
-        $level           = 0;
-        $in_quotes       = false;
-        $in_escape       = false;
-        $ends_line_level = null;
-        $json_length     = strlen($json);
+        if (defined('JSON_PRETTY_PRINT')) {
+            $result = json_encode(json_decode($json, true), JSON_PRETTY_PRINT);
+        } else {
+            $result          = '';
+            $level           = 0;
+            $in_quotes       = false;
+            $in_escape       = false;
+            $ends_line_level = null;
+            $json_length     = strlen($json);
 
-        for ($i = 0; $i < $json_length; $i += 1) {
-            $char = $json[$i];
-            $new_line_level = null;
-            $post = '';
-            if ($ends_line_level !== null) {
-                $new_line_level = $ends_line_level;
-                $ends_line_level = null;
-            }
-            if ($in_escape) {
-                $in_escape = false;
-            } else if ($char === '"') {
-                $in_quotes = !$in_quotes;
-            } else if (!$in_quotes) {
-                switch ($char) {
-                    case '}':
-                    case ']':
-                        $level--;
-                        $ends_line_level = null;
-                        $new_line_level = $level;
-                        break;
-
-                    case '{':
-                    case '[':
-                        $level++;
-                    case ',':
-                        $ends_line_level = $level;
-                        break;
-
-                    case ':':
-                        $post = " ";
-                        break;
-
-                    case ' ':
-                    case "\t":
-                    case "\n":
-                    case "\r":
-                        $char = '';
-                        $ends_line_level = $new_line_level;
-                        $new_line_level = null;
-                        break;
+            for ($i = 0; $i < $json_length; $i += 1) {
+                $char = $json[$i];
+                $new_line_level = null;
+                $post = '';
+                if ($ends_line_level !== null) {
+                    $new_line_level = $ends_line_level;
+                    $ends_line_level = null;
                 }
-            } else if ($char === '\\') {
-                $in_escape = true;
-            }
+                if ($in_escape) {
+                    $in_escape = false;
+                } else if ($char === '"') {
+                    $in_quotes = !$in_quotes;
+                } else if (!$in_quotes) {
+                    switch ($char) {
+                        case '}':
+                        case ']':
+                            $level--;
+                            $ends_line_level = null;
+                            $new_line_level = $level;
+                            break;
 
-            if ($new_line_level !== null) {
-                $result .= "\n" . str_repeat("\t", $new_line_level);
-            }
+                        case '{':
+                        case '[':
+                            $level++;
+                        case ',':
+                            $ends_line_level = $level;
+                            break;
 
-            $result .= $char . $post;
+                        case ':':
+                            $post = " ";
+                            break;
+
+                        case ' ':
+                        case "\t":
+                        case "\n":
+                        case "\r":
+                            $char = '';
+                            $ends_line_level = $new_line_level;
+                            $new_line_level = null;
+                            break;
+                    }
+                } else if ($char === '\\') {
+                    $in_escape = true;
+                }
+
+                if ($new_line_level !== null) {
+                    $result .= "\n" . str_repeat("\t", $new_line_level);
+                }
+
+                $result .= $char . $post;
+            }
         }
 
-        return $result;
+        return !trim($result) || in_array($result, array('null', 'false'))
+            ? htmlspecialchars($json)
+            : $result
+        ;
     }
 }
