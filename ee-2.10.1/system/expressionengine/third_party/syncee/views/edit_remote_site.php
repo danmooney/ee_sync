@@ -27,4 +27,3 @@ require_once dirname(__FILE__) . '/../_init.php';
         <a href="<?= Syncee_Helper::createModuleCpUrl('viewRequestLogList', array('site_id' => $syncee_remote_site->getPrimaryKeyValues(true))) ?>">View Ping Log for this Remote Site</a>
     </div>
 </div>
-<div class="clr"></div>

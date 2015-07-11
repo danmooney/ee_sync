@@ -33,7 +33,7 @@ require_once dirname(__FILE__) . '/../_init.php';
             <?php /* <td><?= $syncee_local_site->use_https ? 'Yes' : 'No' ?></td> */ ?>
             <td align="center">
                 <?php
-                    $ip_whitelist_exploded = array_filter(explode($syncee_local_site->getIpWhitelistNewlineCharacter(), $syncee_local_site->ip_whitelist));
+                    $ip_whitelist_exploded = $syncee_local_site->getIpWhitelistExploded();
                     $ip_whitelist_count    = count($ip_whitelist_exploded);
 
                     if ($ip_whitelist_count >= 5) {
