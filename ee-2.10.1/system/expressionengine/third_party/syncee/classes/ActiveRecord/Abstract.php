@@ -172,6 +172,10 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
 
         // enumerate through row and assign
         foreach ($row as $key => $val) {
+            if (@!is_scalar(unserialize($val))) {
+                $val = unserialize($val);
+            }
+
             $this->$key = $val;
 
             // assign values in row to nested objects if properties are defined
