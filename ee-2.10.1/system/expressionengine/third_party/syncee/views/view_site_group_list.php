@@ -32,14 +32,14 @@ require_once dirname(__FILE__) . '/../_init.php';
             <tbody>
     <?php
         foreach ($syncee_site_groups as $syncee_site_group):
-            $site_group_primary_key_value_map = array($syncee_site_group->getPrimaryKeyNames(true) => $syncee_site_group->getPrimaryKeyValues(true));
+            $site_group_primary_key_value_map = $syncee_site_group->getPrimaryKeyNamesValuesMap()
             ?>
             <tr>
                 <td><a href="<?= Syncee_Helper::createModuleCpUrl('editSiteGroup', $site_group_primary_key_value_map) ?>"><?= $syncee_site_group->title ?></a></td>
                 <td>
                     <?php
                     $local_syncee_site                       = $syncee_site_group->local_site;
-                    $local_syncee_site_primary_key_value_map = array($local_syncee_site->getPrimaryKeyNames(true) => $local_syncee_site->getPrimaryKeyValues(true));
+                    $local_syncee_site_primary_key_value_map = $local_syncee_site->getPrimaryKeyNamesValuesMap();
                     if ($local_syncee_site->isEmptyRow()) {
                         echo 'CONFLICT - NONE';
                     } else {

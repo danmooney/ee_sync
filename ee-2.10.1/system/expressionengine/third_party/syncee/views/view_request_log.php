@@ -6,8 +6,8 @@
  */
 require_once dirname(__FILE__) . '/../_init.php';
 
-$primary_key_value_map      = array($request_log->getPrimaryKeyNames(true) => $request_log->getPrimaryKeyValues(true));
-$site_primary_key_value_map = array($request_log->site->getPrimaryKeyNames(true) => $request_log->site->getPrimaryKeyValues(true))
+$primary_key_value_map      = $request_log->getPrimaryKeyNamesValuesMap();
+$site_primary_key_value_map = $request_log->site->getPrimaryKeyNamesValuesMap();
 ?>
 <div class="site-settings-container">
     <table class="entity-table">

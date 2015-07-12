@@ -22,7 +22,7 @@ require_once dirname(__FILE__) . '/../_init.php';
     <tbody>
 <?php
     foreach ($syncee_local_sites as $syncee_local_site):
-        $primary_key_value_map = array($syncee_local_site->getPrimaryKeyNames(true) => $syncee_local_site->getPrimaryKeyValues(true));
+        $primary_key_value_map = $syncee_local_site->getPrimaryKeyNamesValuesMap();
         $ee_site               = $syncee_local_site->getCorrespondingLocalEeSiteRow();
         ?>
         <tr>

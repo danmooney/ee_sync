@@ -31,7 +31,7 @@ require_once dirname(__FILE__) . '/../_init.php';
             <tbody>
     <?php
         foreach ($syncee_remote_sites as $syncee_remote_site):
-            $primary_key_value_map = array($syncee_remote_site->getPrimaryKeyNames(true) => $syncee_remote_site->getPrimaryKeyValues(true));
+            $primary_key_value_map = $syncee_remote_site->getPrimaryKeyNamesValuesMap();
             ?>
             <tr>
                 <?php /* <td><a href="<?= Syncee_Helper::createModuleCpUrl('viewSiteGroup', $primary_key_value_map) ?>"><?= $syncee_remote_site->title ?></a></td> */ ?>

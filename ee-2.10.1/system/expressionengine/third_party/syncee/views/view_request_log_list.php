@@ -18,7 +18,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                     <th>Syncee Request ID</th>
                     <th>Site</th>
                     <th>Request Entity Type</th>
-                    <th>Success?</th>
+                    <?php /* <th>Success?</th> */ ?>
                     <th>Respnse Status Code</th>
                     <th>Response Syncee Version</th>
                     <th>Response Message</th>
@@ -30,10 +30,10 @@ require_once dirname(__FILE__) . '/../_init.php';
             <tbody>
         <?php
             foreach ($request_log_collection as $request_log):
-                $primary_key_value_map      = array($request_log->getPrimaryKeyNames(true) => $request_log->getPrimaryKeyValues(true));
-                $site_primary_key_value_map = array($request_log->site->getPrimaryKeyNames(true) => $request_log->site->getPrimaryKeyValues(true))
+                $primary_key_value_map      = $request_log->getPrimaryKeyNamesValuesMap();
+                $site_primary_key_value_map = $request_log->site->getPrimaryKeyNamesValuesMap();
                 ?>
-                <tr>
+                <tr class="<?= $request_log->isSuccess() ? 'positive' : 'negative' ?>">
                     <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('viewRequestLog', $primary_key_value_map) ?>"><?= $request_log->getPrimaryKeyValues(true) ?></a></td>
                     <td align="center">
                         <a href="<?= Syncee_Helper::createModuleCpUrl($request_log->site->isLocal() ? 'editLocalSite' : 'editRemoteSite', $site_primary_key_value_map) ?>">
@@ -41,7 +41,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                         </a>
                     </td>
                     <td align="center"><?= $request_log->request_entity->getName() ?></td>
-                    <td align="center"><?= $request_log->isSuccess() ? 'Yes' : 'No' ?></td>
+                    <?php /* <td align="center"><?= $request_log->isSuccess() ? 'Yes' : 'No' ?></td> */ ?>
                     <td align="right"><?= $request_log->code ?></td>
                     <td align="right"><?= $request_log->version ?: '<i>(N/A)</i>' ?></td>
                     <td><?= $request_log->message ?: '<i>(N/A)</i>' ?></td>
