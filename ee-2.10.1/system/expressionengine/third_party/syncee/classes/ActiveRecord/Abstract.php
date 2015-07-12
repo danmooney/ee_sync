@@ -63,6 +63,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
      * @param array $conditions
      * @param Syncee_Paginator $paginator
      * @return Syncee_Collection_Abstract
+     * @throws Syncee_Exception
      */
     public static function findAllByCondition(array $conditions, Syncee_Paginator $paginator = null)
     {
@@ -75,12 +76,19 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
         $has_many_maps = $empty_row->getHasManyMaps();
 
         foreach ($conditions as $column => $value) {
+            $condition_able_to_be_employed = false;
+
             if (is_numeric($column)) {
                 ee()->db->where($value);
+                $condition_able_to_be_employed = true;
             } else {
                 if (!in_array($column, static::$_cols) && count($has_many_maps)) {
                     foreach ($has_many_maps as $has_many_map) {
                         $empty_map_row = new $has_many_map();
+
+                        if (!$empty_map_row->hasColumn($column)) {
+                            continue;
+                        }
 
                         $empty_row_table_name     = $empty_row::TABLE_NAME;
                         $empty_map_row_table_name = $empty_map_row::TABLE_NAME;
@@ -89,10 +97,18 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
                             $empty_map_row_table_name,
                             "{$empty_row_table_name}.{$empty_row->getPrimaryKeyNames(true)} = {$empty_map_row_table_name}.{$empty_row->getPrimaryKeyNames(true)}"
                         );
+
+                        $condition_able_to_be_employed = true;
                     }
+                } else {
+                    $condition_able_to_be_employed = true;
                 }
 
                 ee()->db->where($column, $value);
+            }
+
+            if (!$condition_able_to_be_employed) {
+                throw new Syncee_Exception("Column $column was not able to be used in " . __METHOD__);
             }
         }
 
@@ -216,6 +232,11 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
                 }
             }
         }
+    }
+
+    public function hasColumn($column)
+    {
+        return in_array($column, static::$_cols);
     }
 
     public function isEmptyRow()
