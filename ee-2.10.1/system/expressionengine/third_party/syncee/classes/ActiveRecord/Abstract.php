@@ -52,9 +52,16 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
      */
     public static function findAll(Syncee_Paginator $paginator = null)
     {
-        $rows             = ee()->db->select('*')->from(static::TABLE_NAME)->get()->result_array();
+        ee()->db->select('*')->from(static::TABLE_NAME);
+
+        if ($paginator) {
+            $paginator->modifyQueryOnDriver(ee()->db);
+        }
+
         $empty_row        = new static();
         $collection_model = $empty_row->getCollectionModel();
+
+        $rows = ee()->db->get()->result_array();
 
         return new $collection_model($rows);
     }
@@ -110,6 +117,10 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
             if (!$condition_able_to_be_employed) {
                 throw new Syncee_Exception("Column $column was not able to be used in " . __METHOD__);
             }
+        }
+
+        if ($paginator) {
+            $paginator->modifyQueryOnDriver(ee()->db);
         }
 
         $rows             = ee()->db->get()->result_array();
