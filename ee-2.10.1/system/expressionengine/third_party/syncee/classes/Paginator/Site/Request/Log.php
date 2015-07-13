@@ -20,5 +20,7 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Paginator_Site_Request_Log extends Syncee_Paginator
 {
+    protected $_order_by = 'request_log_id';
 
+    protected $_order_dir = 'desc';
 }
