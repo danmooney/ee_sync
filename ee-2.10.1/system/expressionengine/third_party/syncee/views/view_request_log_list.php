@@ -54,4 +54,5 @@ require_once dirname(__FILE__) . '/../_init.php';
             </tbody>
         </table>
 <?php
+    include '_shared/pagination.php';
     endif;
