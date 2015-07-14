@@ -50,6 +50,11 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
      */
     protected $_mcp;
 
+    public static function getRequestBlacklist()
+    {
+        return static::$_request_blacklist;
+    }
+
     public function __construct(Syncee_ActiveRecord_Abstract $row = null, Syncee_Mcp_Abstract $mcp)
     {
         $this->_mcp    = $mcp;
