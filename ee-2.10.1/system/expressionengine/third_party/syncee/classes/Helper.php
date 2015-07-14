@@ -46,6 +46,9 @@ class Syncee_Helper
         $base = BASE;
         $path = str_replace('&amp;', '&', $base) . '&C=addons_modules&M=show_module_cp&module=' . strtolower(Syncee_Upd::MODULE_NAME);
 
+        // remove all query params that are in request blacklist
+        $additional_query_params = array_diff_key($additional_query_params, array_flip(Syncee_Form_Abstract::getRequestBlacklist()));
+
         if ($method) {
             $path .= '&method=' . $method;
         }
