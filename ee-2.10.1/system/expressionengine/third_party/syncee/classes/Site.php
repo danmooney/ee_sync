@@ -18,6 +18,10 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
+/**
+ * Class Syncee_Site
+ * @property Syncee_Site_Request_Log $last_request_log
+ */
 class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
@@ -70,8 +74,7 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 
     public function __construct(array $row = array(), $is_new = true)
     {
-        $this->rsa = new Syncee_Site_Rsa();
-
+        $this->rsa              = new Syncee_Site_Rsa();
         parent::__construct($row, $is_new);
     }
 
@@ -231,6 +234,20 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
     {
         if ($property === 'title' && $this->isLocal()) {
             return $this->getCorrespondingLocalEeSiteRow()->site_label;
+        } elseif ($property === 'last_request_log') {
+            if (!isset($this->last_request_log)) {
+                $request_log_collection = Syncee_Site_Request_Log::findAllByCondition(
+                    $this->getPrimaryKeyNamesValuesMap(),
+                    new Syncee_Paginator_Site_Request_Log_Last()
+                );
+
+                $this->last_request_log = isset($request_log_collection[0])
+                    ? $request_log_collection[0]
+                    : new Syncee_Site_Request_Log()
+                ;
+            }
+
+            return $this->_non_col_val_mapping['last_request_log'];
         }
 
         return parent::__get($property);
