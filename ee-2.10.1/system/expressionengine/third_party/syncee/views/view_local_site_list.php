@@ -15,6 +15,7 @@ require_once dirname(__FILE__) . '/../_init.php';
             <th>EE Site ID</th>
             <th>Allows calls from remote sites?</th>
             <th>IP Whitelist</th>
+            <th>Last Call Status Result</th>
             <th>Syncee Site ID</th>
             <th>Edit</th>
         </tr>
@@ -24,13 +25,21 @@ require_once dirname(__FILE__) . '/../_init.php';
     foreach ($syncee_local_sites as $syncee_local_site):
         $primary_key_value_map = $syncee_local_site->getPrimaryKeyNamesValuesMap();
         $ee_site               = $syncee_local_site->getCorrespondingLocalEeSiteRow();
+        $last_request_log      = $syncee_local_site->last_request_log;
+
+        if ($last_request_log->isEmptyRow()) {
+            $last_request_log_status = '<i>(N/A)</i>';
+        } else {
+            $last_request_log_status = $last_request_log->isSuccess()
+                ? 'SUCCESS'
+                : 'ERROR'
+            ;
+        }
         ?>
         <tr>
-            <?php /*<td><a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $primary_key_value_map) ?>"><?= $ee_site->site_label ?></a></td> */ ?>
             <td><a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $primary_key_value_map) ?>"><?= $ee_site->site_label ?></a></td>
             <td align="right"><?= $syncee_local_site->ee_site_id ?></td>
             <td align="center"><?= $syncee_local_site->requests_from_remote_sites_enabled ? 'Yes' : 'No' ?></td>
-            <?php /* <td><?= $syncee_local_site->use_https ? 'Yes' : 'No' ?></td> */ ?>
             <td align="center">
                 <?php
                     $ip_whitelist_exploded = $syncee_local_site->getIpWhitelistExploded();
@@ -45,6 +54,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                     }
                 ?>
             </td>
+            <td align="center"><?= $last_request_log_status ?></td>
             <td align="right"><?= $syncee_local_site->getPrimaryKeyValues(true) ?></td>
             <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $primary_key_value_map) ?>">Edit</a></td>
         </tr>
