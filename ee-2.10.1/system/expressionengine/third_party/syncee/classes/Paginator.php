@@ -30,7 +30,7 @@ class Syncee_Paginator
 
     protected $_total_rows;
 
-    public function __construct(array $params)
+    public function __construct(array $params = array())
     {
         foreach ($params as $key => $val) {
             $protected_member_name = '_' . $key;
