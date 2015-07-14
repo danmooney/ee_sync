@@ -97,6 +97,10 @@ class Syncee_Paginator
 
     public function getOffsetByPageNumber($page_number = null)
     {
+        if (!$page_number) {
+            $page_number = $this->getCurrentPageNumber();
+        }
+
         return ($this->_count_per_page * ($page_number - 1));
     }
 
