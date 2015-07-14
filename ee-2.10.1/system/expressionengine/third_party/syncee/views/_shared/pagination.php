@@ -10,6 +10,36 @@ if ($paginator->getTotalPages() === 1) {
 ?>
 <div class="pagination">
 <?php
+    $should_output_first_button = $paginator->getCurrentPageNumber() > 1;
+    $should_output_prev_button  = $should_output_first_button;
+
+    if ($should_output_first_button):
+        echo sprintf(
+            '<a href="%s">&laquo;</a>',
+            Syncee_Helper::createModuleCpUrl(
+                $mcp->getCalledMethod(),
+                array_merge($_GET, array('offset' => 0))
+            )
+        );
+    endif;
+
+    if ($should_output_prev_button):
+        echo sprintf(
+            '<a href="%s">&lsaquo;</a>',
+            Syncee_Helper::createModuleCpUrl(
+                $mcp->getCalledMethod(),
+                array_merge(
+                    $_GET,
+                    array(
+                        'offset' => $paginator->getOffsetByPageNumber(
+                            $paginator->getCurrentPageNumber() - 1
+                        )
+                    )
+                )
+            )
+        );
+    endif;
+
     for ($i = 1; $i <= $paginator->getTotalPages(); $i += 1):
         $pagination_link = Syncee_Helper::createModuleCpUrl($mcp->getCalledMethod(), array_merge($_GET, array('offset' => $paginator->getOffsetByPageNumber($i)))) ?>
     <?php
@@ -20,5 +50,43 @@ if ($paginator->getTotalPages() === 1) {
             <?= $i ?>
     <?php
         endif;
-    endfor ?>
+    endfor;
+
+    $should_output_next_button = $paginator->getCurrentPageNumber() < $paginator->getTotalPages();
+    $should_output_last_button = $should_output_next_button;
+
+    if ($should_output_next_button):
+        echo sprintf(
+            '<a href="%s">&rsaquo;</a>',
+            Syncee_Helper::createModuleCpUrl(
+                $mcp->getCalledMethod(),
+                array_merge(
+                    $_GET,
+                    array(
+                        'offset' => $paginator->getOffsetByPageNumber(
+                            $paginator->getCurrentPageNumber() + 1
+                        )
+                    )
+                )
+            )
+        );
+    endif;
+
+    if ($should_output_last_button):
+        echo sprintf(
+            '<a href="%s">&raquo;</a>',
+            Syncee_Helper::createModuleCpUrl(
+                $mcp->getCalledMethod(),
+                array_merge(
+                    $_GET,
+                    array(
+                        'offset' => $paginator->getOffsetByPageNumber(
+                            $paginator->getTotalPages()
+                        )
+                    )
+                )
+            )
+        );
+    endif;
+?>
 </div>
