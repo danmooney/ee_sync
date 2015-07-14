@@ -19,7 +19,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                     <th>Site</th>
                     <th>Request Entity Type</th>
                     <?php /* <th>Success?</th> */ ?>
-                    <th>Respnse Status Code</th>
+                    <th>Response Status Code</th>
                     <th>Response Syncee Version</th>
                     <th>Response Message</th>
                     <th>Response Errors</th>
