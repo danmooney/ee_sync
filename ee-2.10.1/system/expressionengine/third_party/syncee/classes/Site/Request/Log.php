@@ -39,6 +39,12 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
      */
     public $request_entity;
 
+    /**
+     * @var Syncee_Site_Request_Log_Diagnosis
+     */
+    public $diagnosis;
+
+
     public function __construct(array $row = array(), $is_new = true)
     {
         parent::__construct($row, $is_new);
@@ -49,6 +55,8 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
             ? new $this->entity_class_name()
             : new Syncee_Request_Remote_Entity_Empty()
         ;
+
+        $this->diagnosis = new Syncee_Site_Request_Log_Diagnosis($this);
     }
 
     public function requestHasAlreadyBeenMade()
