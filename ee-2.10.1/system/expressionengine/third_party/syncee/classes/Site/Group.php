@@ -77,9 +77,13 @@ class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract
     public function getSiteCollection()
     {
         if (!isset($this->_site_collection)) {
-            $this->_site_collection = Syncee_Site::findAllByCondition(array(
-                'site_group_id' => $this->site_group_id
-            ));
+            if (!$this->_is_new) {
+                $this->_site_collection = Syncee_Site::findAllByCondition(array(
+                    'site_group_id' => $this->site_group_id
+                ));
+            } else {
+                $this->_site_collection = new Syncee_Site_Collection();
+            }
         }
 
         return $this->_site_collection;
