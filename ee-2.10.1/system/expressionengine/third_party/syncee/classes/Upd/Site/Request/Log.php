@@ -42,6 +42,11 @@ class Syncee_Upd_Site_Request_Log extends Syncee_Upd_Abstract
             'type' => 'INT',
             'null' => false
         ),
+        'content_type' => array(
+            'type'       => 'VARCHAR',
+            'constraint' => 100,
+            'null'       => true
+        ),
         'version' => array(
             'type'       => 'VARCHAR',
             'constraint' => 25,
