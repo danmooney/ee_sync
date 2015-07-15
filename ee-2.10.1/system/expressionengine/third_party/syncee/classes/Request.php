@@ -60,6 +60,7 @@ class Syncee_Request implements Syncee_Request_Interface
                 'site_id'           => $site->getPrimaryKeyValues(true),
                 'entity_class_name' => get_class($entity),
                 'code'              => $response->getStatusCode(),
+                'content_type'      => $response->getContentType(),
                 'version'           => $response->getResponseDecoded('version'),
                 'message'           => $response->getMessage(),
                 'errors'            => $response->getErrors(),

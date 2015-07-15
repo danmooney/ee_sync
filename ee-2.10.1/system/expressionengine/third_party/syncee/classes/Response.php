@@ -48,6 +48,11 @@ class Syncee_Response
     private $_status_code;
 
     /**
+     * @var string
+     */
+    private $_content_type;
+
+    /**
      * @var Syncee_Site
      */
     private $_site;
@@ -103,6 +108,11 @@ class Syncee_Response
     public function getStatusCode()
     {
         return $this->_status_code;
+    }
+
+    public function getContentType()
+    {
+        return $this->_content_type;
     }
 
     public function getErrors()
@@ -168,6 +178,10 @@ class Syncee_Response
         $curl_handle         = $request->getCurlHandle();
         $this->_raw_response = $response = $request->execute();
         $this->_status_code  = (int) $curl_handle->http_status_code;
+        $this->_content_type = isset($curl_handle->response_headers, $curl_handle->response_headers['Content-Type'])
+            ? $curl_handle->response_headers['Content-Type']
+            : null
+        ;
 
         if ($curl_handle->curl_error_code) {
             $this->_errors[$curl_handle->curl_error_code] = $curl_handle->curl_error_message;
