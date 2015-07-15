@@ -36,12 +36,19 @@ require_once dirname(__FILE__) . '/../_init.php';
             $last_request_log      = $syncee_remote_site->last_request_log;
 
             if ($last_request_log->isEmptyRow()) {
-                $last_request_log_status = '<i>(N/A)</i>';
+                $last_request_log_status = '(N/A)';
+                $last_request_link_html = sprintf('<i>%s</i>', $last_request_log_status);
             } else {
                 $last_request_log_status = $last_request_log->isSuccess()
                     ? 'SUCCESS'
                     : 'ERROR'
                 ;
+
+                $last_request_link_html = sprintf(
+                    '<a href="%s">%s</a>',
+                    Syncee_Helper::createModuleCpUrl('viewRequestLog', $last_request_log->getPrimaryKeyNamesValuesMap()), // TODO - implement
+                    $last_request_log_status
+                );
             }
 
             ?>
@@ -51,7 +58,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                 <td align="right"><?= $syncee_remote_site->ee_site_id ?></td>
                 <td align="right"><?= $syncee_remote_site->action_id ?></td>
                 <td align="center"><?= $syncee_remote_site->use_https ? 'Yes' : 'No' ?></td>
-                <td align="center"><?= $last_request_log_status ?></td>
+                <td align="center"><?= $last_request_link_html ?></td>
                 <td align="center"><?= Syncee_Helper::convertUTCDateToLocalizedHumanDatetime($syncee_remote_site->create_datetime) ?></td>
                 <td align="right"><?= $syncee_remote_site->getPrimaryKeyValues(true) ?></td>
                 <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('editRemoteSite', $primary_key_value_map) ?>">Edit</a></td>

@@ -28,12 +28,19 @@ require_once dirname(__FILE__) . '/../_init.php';
         $last_request_log      = $syncee_local_site->last_request_log;
 
         if ($last_request_log->isEmptyRow()) {
-            $last_request_log_status = '<i>(N/A)</i>';
+            $last_request_log_status = '(N/A)';
+            $last_request_link_html = sprintf('<i>%s</i>', $last_request_log_status);
         } else {
             $last_request_log_status = $last_request_log->isSuccess()
                 ? 'SUCCESS'
                 : 'ERROR'
             ;
+
+            $last_request_link_html = sprintf(
+                '<a href="%s">%s</a>',
+                Syncee_Helper::createModuleCpUrl('viewRequestLog', $last_request_log->getPrimaryKeyNamesValuesMap()), // TODO - implement
+                $last_request_log_status
+            );
         }
         ?>
         <tr>
@@ -54,7 +61,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                     }
                 ?>
             </td>
-            <td align="center"><?= $last_request_log_status ?></td>
+            <td align="center"><?= $last_request_link_html ?></td>
             <td align="right"><?= $syncee_local_site->getPrimaryKeyValues(true) ?></td>
             <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $primary_key_value_map) ?>">Edit</a></td>
         </tr>
