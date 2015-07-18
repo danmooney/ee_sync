@@ -97,6 +97,14 @@
 
 }
 
+#syncee-page table tr.positive td {
+    background: #E1FFE1 !important;
+}
+
+#syncee-page table tr.negative td {
+    background: #FFE4E4 !important;
+}
+
 #syncee-page table tr > * {
     border: 1px solid gray;
 }
