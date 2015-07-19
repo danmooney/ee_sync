@@ -13,7 +13,7 @@ require_once dirname(__FILE__) . '/../_init.php';
 </div>
 <div class="remote-site-settings-payload-container">
     <div style="float: right;">
-        <a href="<?= Syncee_Helper::createModuleCpUrl('pingRemoteSite', array('site_id' => $syncee_remote_site->getPrimaryKeyValues(true))) ?>" class="btn-secondary btn-ping-site">Ping Site</a>
+        <a href="<?= Syncee_Helper::createModuleCpUrl('pingRemoteSite', $syncee_remote_site->getPrimaryKeyNamesValuesMap()) ?>" class="btn-secondary btn-ping-site">Ping Site</a>
     </div>
     <div class="clr"></div>
     <br>
@@ -24,6 +24,6 @@ require_once dirname(__FILE__) . '/../_init.php';
     </div>
     <br>
     <div style="float: right;">
-        <a href="<?= Syncee_Helper::createModuleCpUrl('viewRequestLogList', array('site_id' => $syncee_remote_site->getPrimaryKeyValues(true))) ?>">View Ping Log for this Remote Site</a>
+        <a href="<?= Syncee_Helper::createModuleCpUrl('viewRequestLogList', $syncee_remote_site->getPrimaryKeyNamesValuesMap()) ?>">View Ping Logs for this Remote Site</a>
     </div>
 </div>
