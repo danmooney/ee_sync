@@ -14,78 +14,56 @@ require_once dirname(__FILE__) . '/../_init.php';
     endif ?>
     <a class="btn" href="<?= Syncee_Helper::createModuleCpUrl('newSiteGroup') ?>">New Site Group</a><br><br>
 <?php
-    if (count($syncee_site_groups)): ?>
-        <table class="collection-table">
-            <thead>
-                <tr>
-                    <th>Site Group Name</th>
-                    <th>Local Site</th>
-                    <th>Remote Sites</th>
-                    <th>Date Created</th>
-                    <th>Date Last Synchronized</th>
-                    <th>Syncee Site Group ID</th>
-                    <th>Synchronize</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-    <?php
-        foreach ($syncee_site_groups as $syncee_site_group):
-            $site_group_primary_key_value_map = $syncee_site_group->getPrimaryKeyNamesValuesMap()
-            ?>
-            <tr>
-                <td><a href="<?= Syncee_Helper::createModuleCpUrl('editSiteGroup', $site_group_primary_key_value_map) ?>"><?= $syncee_site_group->title ?></a></td>
-                <td>
-                    <?php
-                    $local_syncee_site                       = $syncee_site_group->local_site;
+    if (count($syncee_site_groups)):
+        echo new Syncee_Table(
+            new Syncee_Table_Column_Collection(array(
+                new Syncee_Table_Column('Site Group Name', 'title', true, 'left', new Syncee_Table_Column_Value_Formatter_Link('editSiteGroup')),
+                new Syncee_Table_Column('Local Site', function (Syncee_Site_Group $row) {
+                    $local_syncee_site                       = $row->local_site;
                     $local_syncee_site_primary_key_value_map = $local_syncee_site->getPrimaryKeyNamesValuesMap();
                     if ($local_syncee_site->isEmptyRow()) {
-                        echo 'CONFLICT - NONE';
+                        $html = 'CONFLICT - NONE';
                     } else {
                         $local_ee_site = $local_syncee_site->getCorrespondingLocalEeSiteRow();
-                        echo vsprintf('<a href="%s">%s</a>', array(
+                        $html = vsprintf('<a href="%s">%s</a>', array(
                             Syncee_Helper::createModuleCpUrl('editLocalSite', $local_syncee_site_primary_key_value_map),
                             $local_ee_site->site_label
                         ));
                     }
-                    ?>
-                </td>
-                <?php /* <td align="right"><?= count($syncee_site_group->getSiteCollection()->filterByCondition(array('is_local' => false))) ?></td> */ ?>
-                <td align="center">
-                    <?php
-                        /**
-                         * @var $remote_site Syncee_Site
-                         */
-                        $remote_site_collection = $syncee_site_group->getSiteCollection()->filterByCondition(array('is_local' => false));
 
-                        if (!count($remote_site_collection)):
-                            echo '<i>(No Remote Sites Assigned)</i>';
-                        else:
-                            $remote_site_html = array();
+                    return $html;
+                }, false, 'center'/*, new Syncee_Table_Column_Value_Formatter_Link('editLocalSite')*/),
+                new Syncee_Table_Column('Remote Sites', function (Syncee_Site_Group $row) {
+                    /**
+                     * @var $remote_site Syncee_Site
+                     */
+                    $remote_site_collection = $row->getSiteCollection()->filterByCondition(array('is_local' => false));
 
-                            foreach ($remote_site_collection as $remote_site):
-                                $remote_site_html[] = sprintf(
-                                    '<a href="%s">%s</a>',
-                                    Syncee_Helper::createModuleCpUrl('editRemoteSite', array('site_id' => $remote_site->getPrimaryKeyValues(true))),
-                                    $remote_site->title
-                                );
-                            endforeach;
+                    if (!count($remote_site_collection)) {
+                        $html = '<i>(No Remote Sites Assigned)</i>';
+                    } else {
+                        $remote_site_html = array();
 
-                            echo implode('<br>', $remote_site_html);
-                        endif;
-                    ?>
-                </td>
-                <td align="center"><?= Syncee_Helper::convertUTCDateToLocalizedHumanDatetime($syncee_site_group->create_datetime) ?></td>
-                <td align="center"><?= $syncee_site_group->last_sync_datetime ? Syncee_Helper::convertUTCDateToLocalizedHumanDatetime($syncee_site_group->create_datetime) : '<i>Never</i>' ?></td>
-                <td align="right"><?= $syncee_site_group->getPrimaryKeyValues(true) ?></td>
-                <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('viewSiteGroup', $site_group_primary_key_value_map) ?>">Synchronize with Remote Sites</a></td>
-                <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('editSiteGroup', $site_group_primary_key_value_map) ?>">Edit</a></td>
-                <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('deleteSiteGroup', $site_group_primary_key_value_map) ?>">Delete</a></td>
-            </tr>
-    <?php
-        endforeach ?>
-            </tbody>
-        </table>
-<?php
+                        foreach ($remote_site_collection as $remote_site) {
+                            $remote_site_html[] = sprintf(
+                                '<a href="%s">%s</a>',
+                                Syncee_Helper::createModuleCpUrl('editRemoteSite', array('site_id' => $remote_site->getPrimaryKeyValues(true))),
+                                $remote_site->title
+                            );
+                        }
+
+                        $html = implode('<br>', $remote_site_html);
+                    }
+
+                    return $html;
+                }),
+                new Syncee_Table_Column('Date Created', 'create_datetime', true, 'center', new Syncee_Table_Column_Value_Formatter_Datetime()),
+                new Syncee_Table_Column('Date Last Synchronized', 'last_sync_datetime', true, 'center', new Syncee_Table_Column_Value_Formatter_Datetime('<i>Never</i>')),
+                new Syncee_Table_Column('Syncee Site Group ID', 'site_group_id', true, 'center'),
+                new Syncee_Table_Column('Synchronize', 'Synchronize With Remote Sites', false, 'center', new Syncee_Table_Column_Value_Formatter_Link('viewSiteGroup')),
+                new Syncee_Table_Column('Edit', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('editSiteGroup')),
+                new Syncee_Table_Column('Delete', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('deleteSiteGroup')),
+            )),
+            $syncee_site_groups
+        );
     endif;

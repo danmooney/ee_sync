@@ -7,65 +7,48 @@
  */
 require_once dirname(__FILE__) . '/../_init.php';
 
-?>
-<table class="collection-table">
-    <thead>
-        <tr>
-            <th>Label</th>
-            <th>EE Site ID</th>
-            <th>Allows calls from remote sites?</th>
-            <th>IP Whitelist</th>
-            <th>Last Call Status Result</th>
-            <th>Syncee Site ID</th>
-            <th>Edit</th>
-        </tr>
-    </thead>
-    <tbody>
-<?php
-    foreach ($syncee_local_sites as $syncee_local_site):
-        $primary_key_value_map = $syncee_local_site->getPrimaryKeyNamesValuesMap();
-        $ee_site               = $syncee_local_site->getCorrespondingLocalEeSiteRow();
-        $last_request_log      = $syncee_local_site->last_request_log;
+echo new Syncee_Table(
+    new Syncee_Table_Column_Collection(array(
+        new Syncee_Table_Column('Label', 'title', true, 'left', new Syncee_Table_Column_Value_Formatter_Link('editLocalSite')),
+        new Syncee_Table_Column('EE Site ID', 'ee_site_id', true, 'right'),
+        new Syncee_Table_Column('Allows calls from remote sites?', 'requests_from_remote_sites_enabled', true, 'center', new Syncee_Table_Column_Value_Formatter_YesNo()),
+        new Syncee_Table_Column('IP Whitelist', function (Syncee_Site $row) {
+            $ip_whitelist_exploded = $row->getIpWhitelistExploded();
+            $ip_whitelist_count    = count($ip_whitelist_exploded);
 
-        if ($last_request_log->isEmptyRow()) {
-            $last_request_log_status = '(N/A)';
-            $last_request_link_html = sprintf('<i>%s</i>', $last_request_log_status);
-        } else {
-            $last_request_log_status = $last_request_log->isSuccess()
-                ? 'SUCCESS'
-                : 'ERROR'
-            ;
+            if ($ip_whitelist_count >= 5) {
+                $html = "$ip_whitelist_count IP addresses";
+            } elseif ($ip_whitelist_count) {
+                $html = implode('<br>', $ip_whitelist_exploded);
+            } else {
+                $html = '<i>(Empty)</i>';
+            }
 
-            $last_request_link_html = sprintf(
-                '<a href="%s">%s</a>',
-                Syncee_Helper::createModuleCpUrl('viewRequestLog', $last_request_log->getPrimaryKeyNamesValuesMap()), // TODO - implement
-                $last_request_log_status
-            );
-        }
-        ?>
-        <tr>
-            <td><a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $primary_key_value_map) ?>"><?= $ee_site->site_label ?></a></td>
-            <td align="right"><?= $syncee_local_site->ee_site_id ?></td>
-            <td align="center"><?= $syncee_local_site->requests_from_remote_sites_enabled ? 'Yes' : 'No' ?></td>
-            <td align="center">
-                <?php
-                    $ip_whitelist_exploded = $syncee_local_site->getIpWhitelistExploded();
-                    $ip_whitelist_count    = count($ip_whitelist_exploded);
+            return $html;
+        }),
+        new Syncee_Table_Column('Last Call Status Result', function (Syncee_Site $row) {
+            $last_request_log = $row->last_request_log;
 
-                    if ($ip_whitelist_count >= 5) {
-                        echo "$ip_whitelist_count IP addresses";
-                    } elseif ($ip_whitelist_count) {
-                        echo implode('<br>', $ip_whitelist_exploded);
-                    } else {
-                        echo '<i>(Empty)</i>';
-                    }
-                ?>
-            </td>
-            <td align="center"><?= $last_request_link_html ?></td>
-            <td align="right"><?= $syncee_local_site->getPrimaryKeyValues(true) ?></td>
-            <td align="center"><a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $primary_key_value_map) ?>">Edit</a></td>
-        </tr>
-<?php
-    endforeach ?>
-    </tbody>
-</table>
+            if ($last_request_log->isEmptyRow()) {
+                $last_request_log_status = '(N/A)';
+                $last_request_link_html = sprintf('<i>%s</i>', $last_request_log_status);
+            } else {
+                $last_request_log_status = $last_request_log->isSuccess()
+                    ? 'SUCCESS'
+                    : 'ERROR'
+                ;
+
+                $last_request_link_html = sprintf(
+                    '<a href="%s">%s</a>',
+                    Syncee_Helper::createModuleCpUrl('viewRequestLog', $last_request_log->getPrimaryKeyNamesValuesMap()), // TODO - implement
+                    $last_request_log_status
+                );
+            }
+
+            return $last_request_link_html;
+        }, true, 'center'),
+        new Syncee_Table_Column('Syncee Site ID', 'site_id'),
+        new Syncee_Table_Column('Edit', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('editLocalSite')),
+    )),
+    $syncee_local_sites
+);
