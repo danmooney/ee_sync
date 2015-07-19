@@ -84,18 +84,18 @@ class Syncee_View
 
         if ('edit' === $view_method_exploded[0]) {
             $view_method_exploded[0] = 'update';
+        }
 
+        if ('list' === $view_method_exploded[count($view_method_exploded) - 1]) {
+            array_pop($view_method_exploded);
+            $view_method_exploded[count($view_method_exploded) - 1] .= 's';
+        } else {
             foreach ($vars as $key => $val) {
                 if ($val instanceof Syncee_ActiveRecord_Abstract && strlen($val->title)) {
                     $subject = $val->title;
                     break;
                 }
             }
-        }
-
-        if ('list' === $view_method_exploded[count($view_method_exploded) - 1]) {
-            array_pop($view_method_exploded);
-            $view_method_exploded[count($view_method_exploded) - 1] .= 's';
         }
 
         $page_title = ucwords(implode(' ', $view_method_exploded));
