@@ -2,6 +2,7 @@
 /**
  * @var $syncee_remote_sites Syncee_Site_Collection
  * @var $syncee_remote_site Syncee_Site
+ * @var $paginator Syncee_Paginator
  */
 require_once dirname(__FILE__) . '/../_init.php';
 
@@ -17,7 +18,7 @@ require_once dirname(__FILE__) . '/../_init.php';
         echo new Syncee_Table(
             new Syncee_Table_Column_Collection(array(
                 new Syncee_Table_Column('Label', 'title', true, 'left', new Syncee_Table_Column_Value_Formatter_Link('editRemoteSite')),
-                new Syncee_Table_Column('URL', 'site_url', true),
+                new Syncee_Table_Column('URL', 'site_url', true, 'left'),
                 new Syncee_Table_Column('EE Site ID', 'ee_site_id', true, 'right'),
                 new Syncee_Table_Column('EE Action ID', 'action_id', true, 'right'),
                 new Syncee_Table_Column('Call over HTTPS?', 'use_https', true, 'center', new Syncee_Table_Column_Value_Formatter_YesNo()),
@@ -43,10 +44,12 @@ require_once dirname(__FILE__) . '/../_init.php';
                     return $last_request_link_html;
                 }, true, 'center'),
                 new Syncee_Table_Column('Date Created', 'create_datetime', true, 'center', new Syncee_Table_Column_Value_Formatter_Datetime()),
-                new Syncee_Table_Column('Syncee Site ID', 'site_id', false, 'right'),
+                new Syncee_Table_Column('Syncee Site ID', 'site_id', true, 'right'),
                 new Syncee_Table_Column('Edit', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('editRemoteSite')),
                 new Syncee_Table_Column('Delete', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('deleteRemoteSite')),
             )),
-            $syncee_remote_sites
+            $syncee_remote_sites,
+            null,
+            $paginator
         );
     endif;

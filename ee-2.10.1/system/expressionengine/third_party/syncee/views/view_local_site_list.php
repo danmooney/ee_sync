@@ -3,7 +3,7 @@
  * @var $ee_sites array
  * @var $syncee_local_sites Syncee_Site_Collection
  * @var $syncee_local_site Syncee_Site
- *
+ * @var $paginator Syncee_Paginator
  */
 require_once dirname(__FILE__) . '/../_init.php';
 
@@ -50,5 +50,7 @@ echo new Syncee_Table(
         new Syncee_Table_Column('Syncee Site ID', 'site_id', true, 'right'),
         new Syncee_Table_Column('Edit', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('editLocalSite')),
     )),
-    $syncee_local_sites
+    $syncee_local_sites,
+    null,
+    $paginator
 );

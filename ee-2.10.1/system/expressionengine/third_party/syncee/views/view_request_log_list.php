@@ -3,6 +3,7 @@
  * @var $paginator Syncee_Paginator
  * @var $request_log_collection Syncee_Site_Request_Log_Collection
  * @var $request_log Syncee_Site_Request_Log
+ * @var $paginator Syncee_Paginator
  */
 require_once dirname(__FILE__) . '/../_init.php';
 
@@ -35,7 +36,7 @@ require_once dirname(__FILE__) . '/../_init.php';
             $request_log_collection,
             new Syncee_Table_Row_Formatter_PositiveNegative(function (Syncee_Site_Request_Log $request_log) {
                 return $request_log->isSuccess();
-            })
+            }),
+            $paginator
         );
-        include '_shared/pagination.php';
     endif;
