@@ -20,9 +20,11 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Paginator
 {
-    protected $_order_by;
+    protected static $_order_dirs = array('asc', 'desc');
 
     protected $_order_dir = 'asc';
+
+    protected $_order_by;
 
     protected $_count_per_page = 20;
 
@@ -30,7 +32,14 @@ class Syncee_Paginator
 
     protected $_total_rows;
 
-    public function __construct(array $params = array())
+    protected $_params = array();
+
+    /**
+     * @var Syncee_Mcp_Abstract
+     */
+    protected $_mcp;
+
+    public function __construct(array $params = array(), Syncee_Mcp_Abstract $mcp)
     {
         foreach ($params as $key => $val) {
             $protected_member_name = '_' . $key;
@@ -38,6 +47,35 @@ class Syncee_Paginator
                 $this->$protected_member_name = $val;
             }
         }
+
+        $this->_params = $params;
+        $this->_mcp    = $mcp;
+    }
+
+    public function getParams()
+    {
+        return $this->_params;
+    }
+
+    public function getMcp()
+    {
+        return $this->_mcp;
+    }
+
+    public function getOrderDir()
+    {
+        return $this->_order_dir;
+    }
+
+    public function getOppositeOrderDir()
+    {
+        $opposite_order_dir_arr = array_diff(static::$_order_dirs, (array) $this->_order_dir);
+        return reset($opposite_order_dir_arr);
+    }
+
+    public function getOrderBy()
+    {
+        return $this->_order_by;
     }
 
     /**
@@ -60,6 +98,11 @@ class Syncee_Paginator
         if ($this->_offset && $this->_offsetIsLessThanTotalRows()) {
             $db->offset($this->_offset);
         }
+    }
+
+    public function getCountPerPage()
+    {
+        return $this->_count_per_page;
     }
 
     public function getCurrentPageNumber()
