@@ -22,8 +22,8 @@ class Syncee_Form_Site_Local extends Syncee_Form_Abstract
 {
     protected $_fields = array(
         'requests_from_remote_sites_enabled' => array(
-            'label' => 'MASTER OVERRIDE: Are remote sites allowed to call this local site?',
-            'instructions' => '',
+            'label' => 'MASTER OVERRIDE:',
+            'instructions' => 'Are remote sites allowed to call this local site?',
             'type' => 'dropdown',
             'options' => array(
                 0 => 'No',
