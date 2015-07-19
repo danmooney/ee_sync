@@ -18,7 +18,7 @@ if ($paginator->getTotalPages() === 1) {
             '<a href="%s">&laquo;</a>',
             Syncee_Helper::createModuleCpUrl(
                 $mcp->getCalledMethod(),
-                array_merge($_GET, array('offset' => 0))
+                array_merge($paginator->getParams(), array('offset' => 0))
             )
         );
     endif;
@@ -29,7 +29,7 @@ if ($paginator->getTotalPages() === 1) {
             Syncee_Helper::createModuleCpUrl(
                 $mcp->getCalledMethod(),
                 array_merge(
-                    $_GET,
+                    $paginator->getParams(),
                     array(
                         'offset' => $paginator->getOffsetByPageNumber(
                             $paginator->getCurrentPageNumber() - 1
@@ -41,7 +41,7 @@ if ($paginator->getTotalPages() === 1) {
     endif;
 
     for ($i = 1; $i <= $paginator->getTotalPages(); $i += 1):
-        $pagination_link = Syncee_Helper::createModuleCpUrl($mcp->getCalledMethod(), array_merge($_GET, array('offset' => $paginator->getOffsetByPageNumber($i)))) ?>
+        $pagination_link = Syncee_Helper::createModuleCpUrl($mcp->getCalledMethod(), array_merge($paginator->getParams(), array('offset' => $paginator->getOffsetByPageNumber($i)))) ?>
     <?php
         if ($i !== $paginator->getCurrentPageNumber()): ?>
             <a href="<?= $pagination_link ?>"><?= $i ?></a>
@@ -61,7 +61,7 @@ if ($paginator->getTotalPages() === 1) {
             Syncee_Helper::createModuleCpUrl(
                 $mcp->getCalledMethod(),
                 array_merge(
-                    $_GET,
+                    $paginator->getParams(),
                     array(
                         'offset' => $paginator->getOffsetByPageNumber(
                             $paginator->getCurrentPageNumber() + 1
@@ -78,7 +78,7 @@ if ($paginator->getTotalPages() === 1) {
             Syncee_Helper::createModuleCpUrl(
                 $mcp->getCalledMethod(),
                 array_merge(
-                    $_GET,
+                    $paginator->getParams(),
                     array(
                         'offset' => $paginator->getOffsetByPageNumber(
                             $paginator->getTotalPages()
