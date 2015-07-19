@@ -40,17 +40,22 @@ class Syncee_Table
      */
     private $_table_formatter;
 
+    /**
+     * @var Syncee_Paginator
+     */
+    private $_paginator;
 
     public function __construct(
         Syncee_Table_Column_Collection $column_collection,
         Syncee_Collection_Abstract $row_collection,
         Syncee_Table_Row_Formatter_Abstract $table_row_formatter = null,
-        Syncee_Table_Formatter_Abstract $table_formatter_collection = null)
+        Syncee_Paginator $paginator = null
+        /*Syncee_Table_Formatter_Abstract $table_formatter_collection = null*/)
     {
-        $this->_column_collection              = $column_collection;
-        $this->_row_collection                 = $row_collection;
+        $this->_column_collection   = $column_collection;
+        $this->_row_collection      = $row_collection;
         $this->_table_row_formatter = $table_row_formatter;
-        $this->_table_formatter     = $table_formatter_collection;
+        $this->_paginator           = $paginator;
     }
 
     public function __toString()
@@ -62,8 +67,36 @@ class Syncee_Table
          * @var $column Syncee_Table_Column
          */
         foreach ($this->_column_collection as $column) {
-            // TODO - ordering logic
-            $html .= sprintf('<th>%s</th>', $column->getLabel());
+            // ordering logic
+            if ($column->isOrderable() && ($paginator = $this->_paginator)) {
+                $new_order_dir = $paginator->getOrderBy() === $column->getColumnReferenceValue()
+                    ? $paginator->getOppositeOrderDir()
+                    : $paginator->getOrderDir()
+                ;
+
+                $order_href = Syncee_Helper::createModuleCpUrl($paginator->getMcp()->getCalledMethod(), array_merge(
+                    $paginator->getParams(),
+                    array(
+                        'offset'    => 0,
+                        'order_by'  => $column->getColumnReferenceValue(),
+                        'order_dir' => $new_order_dir,
+                        'limit'     => $paginator->getCountPerPage(),
+                    )
+                ));
+
+                $label = sprintf(
+                    '<a href="%s">%s</a>',
+                    $order_href,
+                    $column->getLabel()
+                );
+            } else {
+                $label = sprintf(
+                    '<span>%s</span>',
+                    $column->getLabel()
+                );
+            }
+
+            $html .= sprintf('<th>%s</th>', $label);
         }
 
         $html .= '</tr></thead>';
