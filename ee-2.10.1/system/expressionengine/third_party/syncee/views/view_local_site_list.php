@@ -47,7 +47,7 @@ echo new Syncee_Table(
 
             return $last_request_link_html;
         }, true, 'center'),
-        new Syncee_Table_Column('Syncee Site ID', 'site_id'),
+        new Syncee_Table_Column('Syncee Site ID', 'site_id', true, 'right'),
         new Syncee_Table_Column('Edit', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('editLocalSite')),
     )),
     $syncee_local_sites

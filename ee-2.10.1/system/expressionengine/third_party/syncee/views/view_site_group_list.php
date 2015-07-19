@@ -46,21 +46,21 @@ require_once dirname(__FILE__) . '/../_init.php';
 
                         foreach ($remote_site_collection as $remote_site) {
                             $remote_site_html[] = sprintf(
-                                '<a href="%s">%s</a>',
+                                '<li><a href="%s">%s</a></li>',
                                 Syncee_Helper::createModuleCpUrl('editRemoteSite', array('site_id' => $remote_site->getPrimaryKeyValues(true))),
                                 $remote_site->title
                             );
                         }
 
-                        $html = implode('<br>', $remote_site_html);
+                        $html = '<ul>' . implode('', $remote_site_html) . '</ul>';
                     }
 
                     return $html;
                 }),
                 new Syncee_Table_Column('Date Created', 'create_datetime', true, 'center', new Syncee_Table_Column_Value_Formatter_Datetime()),
                 new Syncee_Table_Column('Date Last Synchronized', 'last_sync_datetime', true, 'center', new Syncee_Table_Column_Value_Formatter_Datetime('<i>Never</i>')),
-                new Syncee_Table_Column('Syncee Site Group ID', 'site_group_id', true, 'center'),
-                new Syncee_Table_Column('Synchronize', 'Synchronize With Remote Sites', false, 'center', new Syncee_Table_Column_Value_Formatter_Link('viewSiteGroup')),
+                new Syncee_Table_Column('Syncee Site Group ID', 'site_group_id', true, 'right'),
+                new Syncee_Table_Column('Synchronize', 'Synchronize With Remote Sites', false, 'center', new Syncee_Table_Column_Value_Formatter_Link('synchronizeSiteGroup')),
                 new Syncee_Table_Column('Edit', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('editSiteGroup')),
                 new Syncee_Table_Column('Delete', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('deleteSiteGroup')),
             )),
