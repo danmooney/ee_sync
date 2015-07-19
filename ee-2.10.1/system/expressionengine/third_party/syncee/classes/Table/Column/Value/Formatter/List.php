@@ -22,6 +22,22 @@ class Syncee_Table_Column_Value_Formatter_List extends Syncee_Table_Column_Value
 {
     public function format($value, Syncee_ActiveRecord_Abstract $row)
     {
-        return implode('<br>', (array) $value);
+        $value = (array) $value;
+
+        $html = '';
+
+        if (!$value) {
+            return $html;
+        }
+
+        $html .= '<ul>';
+
+        foreach ($value as $val) {
+            $html .= sprintf('<li>%s</li>', $val);
+        }
+
+        $html .= '</ul>';
+
+        return $html;
     }
 }
