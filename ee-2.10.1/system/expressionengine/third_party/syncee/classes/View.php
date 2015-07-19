@@ -39,9 +39,25 @@ class Syncee_View
         include SYNCEE_PATH_VIEWS . '/_shared/flash_message.php';
         $flash_message_html = ob_get_clean();
 
+        $vars = array_merge(
+            $vars,
+            array(
+                'mcp' => $mcp
+            )
+        );
+
+        $has_paginator = isset($vars['paginator']) && $vars['paginator'] instanceof Syncee_Paginator;
+
+        $paginator_html = $has_paginator
+            ? ee()->load->view(
+                '_shared/pagination.php',
+                $vars,
+                true
+            ) : ''
+        ;
 
         return sprintf(
-            '<div id="syncee">%s<div id="syncee-page">%s %s<div style="clear:both;"></div></div></div>',
+            '<div id="syncee">%s<div id="syncee-page">%s %s<div style="clear:both;"></div>%s</div></div>',
             $menu_html,
             $flash_message_html,
             ee()->load->view(
@@ -53,7 +69,8 @@ class Syncee_View
                     )
                 ),
                 true
-            )
+            ),
+            $paginator_html
         );
     }
 
