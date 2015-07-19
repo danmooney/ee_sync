@@ -73,7 +73,7 @@ class Syncee_Table_Column implements Syncee_Entity_Interface
 
     public function isOrderable()
     {
-        return $this->_orderable;
+        return $this->_orderable && is_scalar($this->_column_reference_value);
     }
 
     public function getAlign()
