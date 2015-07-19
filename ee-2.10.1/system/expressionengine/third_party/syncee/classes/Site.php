@@ -45,19 +45,21 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
     public $rsa;
 
     /**
+     * @param Syncee_Paginator $paginator
      * @return Syncee_Site_Collection
      */
-    public static function getLocalSiteCollection()
+    public static function getLocalSiteCollection(Syncee_Paginator $paginator = null)
     {
-        return static::findAllByCondition(array('is_local' => true));
+        return static::findAllByCondition(array('is_local' => true), $paginator);
     }
 
     /**
+     * @param Syncee_Paginator $paginator
      * @return Syncee_Site_Collection
      */
-    public static function getRemoteSiteCollection()
+    public static function getRemoteSiteCollection(Syncee_Paginator $paginator = null)
     {
-        return static::findAllByCondition(array('is_local' => false));
+        return static::findAllByCondition(array('is_local' => false), $paginator);
     }
 
     public static function getByDecodingRemoteSiteSettingsPayload($remote_site_settings_payload)
@@ -238,7 +240,7 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
             if (!isset($this->last_request_log)) {
                 $request_log_collection = Syncee_Site_Request_Log::findAllByCondition(
                     $this->getPrimaryKeyNamesValuesMap(),
-                    new Syncee_Paginator_Site_Request_Log_Last()
+                    new Syncee_Paginator_Site_Request_Log_Last(array(), new Syncee_Mcp_Empty())
                 );
 
                 $this->last_request_log = isset($request_log_collection[0])
