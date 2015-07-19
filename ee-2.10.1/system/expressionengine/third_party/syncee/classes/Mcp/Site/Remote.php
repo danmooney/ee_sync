@@ -22,9 +22,11 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
 {
     public function viewRemoteSiteList()
     {
-        $syncee_remote_sites = Syncee_Site::getRemoteSiteCollection();
+        $paginator           = new Syncee_Paginator_Site_Remote($_GET, $this);
+        $syncee_remote_sites = Syncee_Site::getRemoteSiteCollection($paginator);
 
         return Syncee_View::render(__FUNCTION__, array(
+            'paginator'           => $paginator,
             'syncee_remote_sites' => $syncee_remote_sites
         ), $this);
     }
@@ -32,22 +34,27 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
     public function newRemoteSite()
     {
         unset($_GET['site_id']);
-        return $this->editRemoteSite();
+
+        $form = new Syncee_Form_Site_Remote_New(null, $this);
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'form' => $form
+        ), $this);
     }
 
     public function newRemoteSitePOST()
     {
-        $encoded_payload = ee()->input->post('remote_site_settings_payload');
+        $form = new Syncee_Form_Site_Remote_New(new Syncee_Site($_POST), $this);
+
+        if (!$form->isValid()) {
+            show_error('Form errors: <pre>' . print_r($form->getErrors(), true));
+        }
+
+        $encoded_payload = $form->getValue('remote_site_settings_payload');
         $syncee_site     = Syncee_Site::getByDecodingRemoteSiteSettingsPayload($encoded_payload);
 
-        if ($syncee_site->isEmptyRow()) {
-            // TODO
-        }
-
-        if (!$syncee_site->save()) {
-            // TODO
-        }
-
+        $syncee_site->assign($form->getValues());
+        $syncee_site->save();
 
         Syncee_Helper::redirect('editRemoteSite', array(
             'site_id' => $syncee_site->getPrimaryKeyValues(true)
@@ -69,30 +76,28 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
             }
         }
 
+        $form = new Syncee_Form_Site_Remote($syncee_site, $this);
+
         return Syncee_View::render(__FUNCTION__, array(
+            'form'               => $form,
             'syncee_remote_site' => $syncee_site
         ), $this);
     }
 
     public function editRemoteSitePOST()
     {
-        $site_id     = ee()->input->get('site_id');
-        $syncee_site = Syncee_Site::findByPk($site_id);
+        $form = new Syncee_Form_Site_Remote(new Syncee_Site($_POST), $this);
 
-        if (!$syncee_site->isRemote()) {
-            // TODO
+        if (!$form->isValid()) {
+            show_error('Form errors: <pre>' . print_r($form->getErrors(), true));
         }
 
-        foreach ($_POST as $key => $val) {
-            $syncee_site->$key = $val;
-        }
+        $syncee_site = new Syncee_Site($form->getValues());
 
-        if (!$syncee_site->save()) {
-            // TODO
-        }
+        $syncee_site->save();
 
         Syncee_Helper::redirect('editRemoteSite', array(
-            'site_id' => $site_id
+            'site_id' => $syncee_site->getPrimaryKeyValues(true)
         ), $this);
     }
 
@@ -106,6 +111,7 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
 
     }
 
+    // TODO - add to Syncee_Mcp_Site_Request_Log???
     public function pingRemoteSitePOST()
     {
         $site_id     = ee()->input->get('site_id');

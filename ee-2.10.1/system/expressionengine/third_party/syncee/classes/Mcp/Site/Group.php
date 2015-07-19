@@ -22,14 +22,16 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 {
     public function viewSiteGroupList()
     {
-        $syncee_site_groups = Syncee_Site_Group::findAll();
+        $paginator          = new Syncee_Paginator_Site_Group($_GET, $this);
+        $syncee_site_groups = Syncee_Site_Group::findAll($paginator);
 
         return Syncee_View::render(__FUNCTION__, array(
+            'paginator'          => $paginator,
             'syncee_site_groups' => $syncee_site_groups
         ), $this);
     }
 
-    public function viewSiteGroup()
+    public function synchronizeSiteGroup()
     {
         $site_group_id     = ee()->input->get('site_group_id');
         $syncee_site_group = Syncee_Site_Group::findByPk($site_group_id);
@@ -51,7 +53,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
     public function newSiteGroupPOST()
     {
-        $this->editSiteGroupPOST();
+        $this->editSiteGroupPOST('viewSiteGroupList');
     }
 
     public function editSiteGroup()
@@ -61,44 +63,49 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
         $syncee_site_group    = $site_group_id_passed ? Syncee_Site_Group::findByPk($site_group_id) : new Syncee_Site_Group();
 
         if ($syncee_site_group->isEmptyRow() && $site_group_id_passed) {
-            // TODO
+            show_error('Unable to find site group');
         }
 
+        $form     = new Syncee_Form_Site_Group($syncee_site_group, $this);
         $ee_sites = ee()->db->get('sites')->result_object();
 
         return Syncee_View::render(__FUNCTION__, array(
             'syncee_site_group' => $syncee_site_group,
-            'ee_sites'          => $ee_sites
+            'ee_sites'          => $ee_sites,
+            'form'              => $form
         ), $this);
     }
 
-    public function editSiteGroupPOST()
+    public function editSiteGroupPOST($redirect_method = 'editSiteGroup')
     {
-        $syncee_site_group        = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
-        $former_local_syncee_site = $syncee_site_group->getSiteCollection()->filterByCondition('isLocal', true);
-        $new_local_syncee_site    = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => ee()->input->post('ee_site_id')), true);
+        $form = new Syncee_Form_Site_Group(new Syncee_Site_Group($_POST), $this);
+
+        if (!$form->isValid()) {
+            show_error('Form errors: <pre>' . print_r($form->getErrors(), true));
+        }
+
+        $syncee_site_group = Syncee_Site_Group::findByPk($form->getValue('site_group_id')); // TODO - use $form->getValue('site_group_id')
+
+        $syncee_site_group->delete();
 
         // delete syncee group map with $former_local_syncee_site
-        if (!$syncee_site_group->isEmptyRow() && !$former_local_syncee_site->isEmptyRow()) {
-            Syncee_Site_Group_Map::findByPk(array(
-                'site_group_id' => $syncee_site_group->getPrimaryKeyValues(true),
-                'site_id'       => $former_local_syncee_site->getPrimaryKeyValues(true),
-            ))->delete();
-        }
+//        if (!$syncee_site_group->isEmptyRow()) {
+//            $syncee_site_group_map =
+//            Syncee_Site_Group_Map::findAllByCondition(array(
+//                'site_group_id' => $syncee_site_group->getPrimaryKeyValues(true),
+//            ))->delete();
+//        }
 
-        $syncee_site_group->site_id = $new_local_syncee_site->getPrimaryKeyValues(true);
+        $syncee_site_group = new Syncee_Site_Group($form->getValues());
 
-        foreach ($_POST as $key => $val) {
-            $syncee_site_group->$key = $val;
-        }
+        $site_ids                   = array_merge((array) $form->getValue('local_site_id'), $form->getValue('remote_site_id'));
+        $syncee_site_group->site_id = $site_ids;
 
-        if (!$syncee_site_group->save()) {
-            // TODO
-        }
+        $syncee_site_group->save();
 
         $site_group_id = $syncee_site_group->getPrimaryKeyValues(true);
 
-        Syncee_Helper::redirect('editSiteGroup', array(
+        Syncee_Helper::redirect($redirect_method, array(
             'site_group_id' => $site_group_id
         ), $this);
     }
@@ -129,11 +136,6 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
         }
 
         Syncee_Helper::redirect('viewSiteGroupList', array(), $this);
-    }
-
-    public function synchronizeSiteGroup()
-    {
-
     }
 
     public function viewSiteGroupSynchronizationLog()

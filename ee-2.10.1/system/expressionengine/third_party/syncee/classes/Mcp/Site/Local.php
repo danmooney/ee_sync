@@ -22,9 +22,11 @@ class Syncee_Mcp_Site_Local extends Syncee_Mcp_Abstract
 {
     public function viewLocalSiteList()
     {
-        $syncee_local_sites = Syncee_Site::getLocalSiteCollection();
+        $paginator          = new Syncee_Paginator_Site_Local($_GET, $this);
+        $syncee_local_sites = Syncee_Site::getLocalSiteCollection($paginator);
 
         return Syncee_View::render(__FUNCTION__, array(
+            'paginator'          => $paginator,
             'syncee_local_sites' => $syncee_local_sites
         ), $this);
     }
