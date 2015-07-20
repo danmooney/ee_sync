@@ -13,10 +13,7 @@ $remote_site_collection       = $syncee_site_group->remote_sites;
 $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
 
 ?>
-
-<h1><?= $syncee_site_group->title ?></h1>
-<br><br>
-<h3>Local Site: <a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', array('site_id' => $local_site->getPrimaryKeyValues(true))) ?>"><?= $local_site->getCorrespondingLocalEeSiteRow()->site_label ?></a></h3>
+<h3>Local Site: <a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $local_site->getPrimaryKeyNamesValuesMap()) ?>"><?= $local_site->title ?></a></h3>
 <br><br>
 <h3>Remote Sites</h3>
 <?php
@@ -26,9 +23,19 @@ $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
     elseif (!count($remote_site_collection)): ?>
         <p></p>
 <?php
-    else:
+    else: ?>
+        <ul>
+    <?php
         foreach ($remote_site_collection as $remote_site): ?>
-
+            <li>
+                <a href="<?= Syncee_Helper::createModuleCpUrl('editRemoteSite', $remote_site->getPrimaryKeyNamesValuesMap()) ?>"><?= $remote_site->title ?></a>
+            </li>
+    <?php
+        endforeach ?>
+        </ul>
 <?php
-        endforeach;
-    endif;
+    endif ?>
+<br><br>
+<p>Synchronize Channels</p>
+<p>Synchronize Channel Fields</p>
+<p>Synchronize Channel Data</p>

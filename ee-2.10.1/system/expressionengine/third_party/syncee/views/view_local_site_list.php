@@ -1,6 +1,5 @@
 <?php
 /**
- * @var $ee_sites array
  * @var $syncee_local_sites Syncee_Site_Collection
  * @var $syncee_local_site Syncee_Site
  * @var $paginator Syncee_Paginator

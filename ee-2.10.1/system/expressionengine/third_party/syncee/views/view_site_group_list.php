@@ -3,6 +3,7 @@
  * @var $syncee_site_groups Syncee_Site_Group_Collection
  * @var $syncee_site_group Syncee_Site_Group
  * @var $local_syncee_site Syncee_Site
+ * @var $paginator Syncee_Paginator
  */
 require_once dirname(__FILE__) . '/../_init.php';
 
@@ -64,6 +65,8 @@ require_once dirname(__FILE__) . '/../_init.php';
                 new Syncee_Table_Column('Edit', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('editSiteGroup')),
                 new Syncee_Table_Column('Delete', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('deleteSiteGroup')),
             )),
-            $syncee_site_groups
+            $syncee_site_groups,
+            null,
+            $paginator
         );
     endif;
