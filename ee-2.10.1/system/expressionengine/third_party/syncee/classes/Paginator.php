@@ -162,7 +162,7 @@ class Syncee_Paginator
 
     public function getTotalPages()
     {
-        return ceil($this->_total_rows / $this->_count_per_page);
+        return (int) ceil($this->_total_rows / $this->_count_per_page);
     }
 
     private function _offsetIsLessThanTotalRows()
