@@ -40,17 +40,19 @@ if ($paginator->getTotalPages() === 1) {
         );
     endif;
 
-    for ($i = 1; $i <= $paginator->getTotalPages(); $i += 1):
-        $pagination_link = Syncee_Helper::createModuleCpUrl($mcp->getCalledMethod(), array_merge($paginator->getParams(), array('offset' => $paginator->getOffsetByPageNumber($i)))) ?>
-    <?php
-        if ($i !== $paginator->getCurrentPageNumber()): ?>
-            <a href="<?= $pagination_link ?>"><?= $i ?></a>
-    <?php
-        else: ?>
-            <?= $i ?>
-    <?php
-        endif;
-    endfor;
+    if ($paginator->getTotalPages() > 1):
+        for ($i = 1; $i <= $paginator->getTotalPages(); $i += 1):
+            $pagination_link = Syncee_Helper::createModuleCpUrl($mcp->getCalledMethod(), array_merge($paginator->getParams(), array('offset' => $paginator->getOffsetByPageNumber($i)))) ?>
+        <?php
+            if ($i !== $paginator->getCurrentPageNumber()): ?>
+                <a href="<?= $pagination_link ?>"><?= $i ?></a>
+        <?php
+            else: ?>
+                <?= $i ?>
+        <?php
+            endif;
+        endfor;
+    endif;
 
     $should_output_next_button = $paginator->getCurrentPageNumber() < $paginator->getTotalPages();
     $should_output_last_button = $should_output_next_button;
