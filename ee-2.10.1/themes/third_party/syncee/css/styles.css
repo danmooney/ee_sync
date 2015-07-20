@@ -93,9 +93,25 @@
     border-collapse: collapse;
 }
 
-#syncee-page table tr {
-
+#syncee-page table tr td > a,
+#syncee-page table tr td > span,
+#syncee-page table tr td > ul,
+#syncee-page table.form-table tr td
+{
+    padding: 8px;
 }
+
+
+#syncee-page table tr th > * {
+    padding: 8px 23px;
+}
+
+#syncee-page table tr > * > a,
+#syncee-page table tr > *  > span
+{
+    display: block;
+}
+
 
 #syncee-page table tr.positive td {
     background: #E1FFE1 !important;
@@ -112,12 +128,12 @@
 #syncee-page table tr th {
     background: #1B1D36;
     color: #FFF;
-    padding: 8px 23px;
+    /*padding: 8px 23px;*/
 }
 
 #syncee-page table tr td {
     background: white;
-    padding: 8px;
+    /*padding: 8px;*/
 }
 
 #syncee-page table.collection-table,
