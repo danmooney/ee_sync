@@ -45,6 +45,22 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
         ), $this);
     }
 
+    // TODO - this has to be ajaxified (possibly with websockets to show progress to user)
+    public function synchronizeSiteGroupChannels()
+    {
+        $site_group_id     = ee()->input->get('site_group_id');
+        $syncee_site_group = Syncee_Site_Group::findByPk($site_group_id);
+
+        $channel_comparison_library = $syncee_site_group->getSiteCollection()->getChannelComparisonCollectionLibrary();
+        $request_log_collection     = $syncee_site_group->getSiteCollection()->getRequestLogCollection();
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'syncee_site_group'          => $syncee_site_group,
+            'channel_comparison_library' => $channel_comparison_library,
+            'request_log_collection'     => $request_log_collection
+        ), $this);
+    }
+
     public function newSiteGroup()
     {
         unset($_GET['site_group_id']);
