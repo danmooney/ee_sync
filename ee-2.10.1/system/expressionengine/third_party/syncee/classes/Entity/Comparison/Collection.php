@@ -96,4 +96,14 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
             : false
         ;
     }
+
+    public function getUniqueIdentifierKey()
+    {
+        return $this->getTarget()->getUniqueIdentifierKey();
+    }
+
+    public function getUniqueIdentifierValue()
+    {
+        return $this->getTarget()->getUniqueIdentifierValue() ?: $this->getSource()->getUniqueIdentifierValue();
+    }
 }
