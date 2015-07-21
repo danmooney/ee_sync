@@ -20,13 +20,27 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Site_Collection extends Syncee_Collection_Abstract
 {
+    /**
+     * @var Syncee_Site_Request_Log_Collection
+     */
+    private $_request_log_collection;
+
     protected $_row_model = 'Syncee_Site';
+
+    public function getRequestLogCollection()
+    {
+        return $this->_request_log_collection;
+    }
 
     /**
      * @return Syncee_Entity_Comparison_Collection_Library
      */
     public function getChannelComparisonCollectionLibrary()
     {
+        if (!$this->_request_log_collection) {
+            $this->_request_log_collection = new Syncee_Site_Request_Log_Collection();
+        }
+
         $site_channel_library = new Syncee_Entity_Channel_Collection_Library();
 
         // get channels/fields first
@@ -37,14 +51,16 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract
          * @var $collection Syncee_Entity_Channel_Collection
          */
         foreach ($this->_rows as $row) {
-            $request    = new Syncee_Request();
+            $request     = new Syncee_Request();
+            $request_log = new Syncee_Site_Request_Log();
+            $response    = $request->makeEntityCallToSite($row, $channel_remote_request_entity, $request_log);
 
-            $response   = $request->makeEntityCallToSite($row, $channel_remote_request_entity, new Syncee_Site_Request_Log());
-            $collection = $response->getResponseDataDecodedAsCollection();
-
+            $collection  = $response->getResponseDataDecodedAsCollection();
             $collection->setSite($row);
 
             $site_channel_library->appendToLibraryAsCollection($collection);
+
+            $this->_request_log_collection->appendToCollectionAsEntity($request_log);
         }
 
         $site_channel_comparison_library = $site_channel_library->compareCollections();
