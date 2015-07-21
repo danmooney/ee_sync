@@ -59,6 +59,7 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
                     $remote_entity = new $empty_entity();
                     $remote_entity->setSite($collection->getSite());
                 }
+
                 $comparison_collection = $entity_comparator->compareEntities($remote_entity, $local_entity);
 
                 $comparison_library->appendToLibraryAsCollection($comparison_collection);
@@ -73,13 +74,18 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
                     $local_entity->setSite($current_local_site_collection->getSite());
                 }
 
-                $comparison_collection = $entity_comparator->compareEntities($remote_entity, $local_entity);
+                $comparison_collection          = $entity_comparator->compareEntities($remote_entity, $local_entity);
 
-                // this should always return a collection!
+                // check for existent comparison collection and append missing entities to it if need be, without creating a new comparison collection that represents the comparison of the same two entities
                 $existent_comparison_collection = $comparison_library->getComparisonCollectionBySourceAndTarget($remote_entity, $local_entity);
-                foreach ($comparison_collection as $comparison) {
-                    if (!$existent_comparison_collection->entityAlreadyExistsInCollection($comparison)) {
-                        $existent_comparison_collection->appendToCollectionAsEntity($comparison);
+
+                if (!$existent_comparison_collection) {
+                    $comparison_library->appendToLibraryAsCollection($comparison_collection);
+                } else {
+                    foreach ($comparison_collection as $comparison) {
+                        if (!$existent_comparison_collection->entityAlreadyExistsInCollection($comparison)) {
+                            $existent_comparison_collection->appendToCollectionAsEntity($comparison);
+                        }
                     }
                 }
             }
