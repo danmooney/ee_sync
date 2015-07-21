@@ -1,5 +1,6 @@
 {
-    "require-dev": {
-        "phpseclib/phpseclib": "^0.3.10"
+    "require": {
+        "phpseclib/phpseclib": "^0.3.10",
+        "cboden/ratchet": "^0.3.3"
     }
 }
