@@ -26,6 +26,8 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
 
+    private static $_localhost_always_allowed = true;
+
     private $_default_ip_whitelist_separator = "\n";
 
     protected static $_cols;
@@ -72,6 +74,11 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
         }
 
         return new static($decoded_payload);
+    }
+
+    public static function setLocalhostAlwaysAllowed($localhost_always_allowed)
+    {
+        static::$_localhost_always_allowed = $localhost_always_allowed;
     }
 
     public function __construct(array $row = array(), $is_new = true)
@@ -148,6 +155,11 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
     {
         // if no ip whitelist and requests_from_remote_sites_enabled, then request is allowed
         if (!$this->ip_whitelist && $this->requests_from_remote_sites_enabled) {
+            return true;
+        }
+
+        // localhost needs to be open always because we use HTTP protocol on the local instance (this is something we may change in the future)
+        if ($this->_localhost_always_allowed && in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) {
             return true;
         }
 
