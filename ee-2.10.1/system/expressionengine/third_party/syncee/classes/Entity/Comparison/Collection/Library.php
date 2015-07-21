@@ -97,6 +97,7 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
     /**
      * @param $unique_identifier_value
      * @return bool|Syncee_Entity_Comparison_Collection
+     * @deprecated
      */
     public function getComparisonCollectionByUniqueIdentifierValue($unique_identifier_value)
     {
@@ -117,5 +118,23 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
             ? $collection
             : false
         ;
+    }
+
+    public function getComparisonLibraryByUniqueIdentifierKeyAndValue($unique_identifier_key, $unique_identifier_value)
+    {
+        $matching_collections = array();
+
+        /**
+         * @var $collection Syncee_Entity_Comparison_Collection
+         */
+        foreach ($this->_collections as $collection) {
+            if ($unique_identifier_key === $collection->getUniqueIdentifierKey() &&
+                $unique_identifier_value === $collection->getUniqueIdentifierValue()
+            ) {
+                $matching_collections[] = $collection;
+            }
+        }
+
+        return new $this($matching_collections);
     }
 }
