@@ -41,6 +41,8 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
         $this->_http_host_running_tests = $_SERVER['HTTP_HOST'];
         $this->_installFreshDatabases();
         $this->_switchToDatabaseBasedOnNumber();
+
+        Syncee_Site::setLocalhostAlwaysAllowed(false);
     }
 
     public function tearDown()
