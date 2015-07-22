@@ -20,6 +20,12 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Entity_Comparator implements Syncee_Entity_Comparator_Interface
 {
+    /**
+     * @param Syncee_Entity_Abstract $source
+     * @param Syncee_Entity_Abstract $target
+     * @return Syncee_Entity_Comparison_Collection
+     * @throws Syncee_Exception
+     */
     public function compareEntities(Syncee_Entity_Abstract $source, Syncee_Entity_Abstract $target)
     {
         $comparison_collection = new Syncee_Entity_Comparison_Collection();
