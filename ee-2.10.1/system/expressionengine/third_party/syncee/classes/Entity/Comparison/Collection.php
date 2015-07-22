@@ -20,9 +20,10 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract implements Syncee_Comparison_Result_Interface
 {
-    const RESULT_ENTITY_MISSING_IN_SOURCE           = 'RESULT_ENTITY_MISSING_IN_SOURCE';
-    const RESULT_ENTITY_MISSING_IN_TARGET           = 'RESULT_ENTITY_MISSING_IN_TARGET';
-    const RESULT_ENTITY_EXISTS_IN_SOURCE_AND_TARGET = 'RESULT_ENTITY_EXISTS_IN_SOURCE_AND_TARGET';
+    const RESULT_ENTITY_MISSING_IN_SOURCE_AND_TARGET = 'RESULT_ENTITY_MISSING_IN_SOURCE_AND_TARGET';
+    const RESULT_ENTITY_MISSING_IN_SOURCE            = 'RESULT_ENTITY_MISSING_IN_SOURCE';
+    const RESULT_ENTITY_MISSING_IN_TARGET            = 'RESULT_ENTITY_MISSING_IN_TARGET';
+    const RESULT_ENTITY_EXISTS_IN_SOURCE_AND_TARGET  = 'RESULT_ENTITY_EXISTS_IN_SOURCE_AND_TARGET';
 
     /**
      * @var Syncee_Entity_Abstract
@@ -35,6 +36,10 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
     private $_target;
 
     private $_comparison_result;
+
+    private $_unique_identifier_key;
+
+    private $_unique_identifier_value;
 
     protected $_row_model = 'Syncee_Entity_Comparison';
 
@@ -63,7 +68,9 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
     public function getComparisonResult()
     {
         if (!isset($this->_comparison_result)) {
-            if ($this->_source->isEmptyRow()) {
+            if ($this->_source->isEmptyRow() && $this->_target->isEmptyRow()) {
+                $this->_comparison_result = self::RESULT_ENTITY_MISSING_IN_SOURCE_AND_TARGET;
+            } elseif ($this->_source->isEmptyRow()) {
                 $this->_comparison_result = self::RESULT_ENTITY_MISSING_IN_SOURCE;
             } elseif ($this->_target->isEmptyRow()) {
                 $this->_comparison_result = self::RESULT_ENTITY_MISSING_IN_TARGET;
@@ -75,9 +82,19 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
         return $this->_comparison_result;
     }
 
+    public function setUniqueIdentifierKey($unique_identifier_key)
+    {
+
+    }
+
+    public function setUniqueIdentifierValue($unique_identifier_value)
+    {
+
+    }
+
     /**
      * @param $comparate_column_name
-     * @return bool|Syncee_Entity_Comparison
+     * @return Syncee_Entity_Comparison
      */
     public function getComparisonEntityByComparateColumnName($comparate_column_name)
     {
@@ -91,10 +108,18 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
             }
         }
 
-        return isset($comparison_entity)
-            ? $comparison_entity
-            : false
-        ;
+        if (!isset($comparison_entity)) {
+            $comparison_entity = new Syncee_Entity_Comparison($this->_source, $this->_target);
+
+            $comparison_entity
+                ->setComparateColumnName($comparate_column_name)
+                ->setComparateColumnExistsInSource(false)
+                ->setComparateColumnExistsInTarget(false)
+                ->getComparisonResult()
+            ;
+        }
+
+        return $comparison_entity;
     }
 
     public function getUniqueIdentifierKey()
