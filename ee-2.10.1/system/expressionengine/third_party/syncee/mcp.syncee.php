@@ -97,6 +97,10 @@ class Syncee_Mcp
         // add back module name that was removed for security reasons
         $entity_class_name = Syncee_Upd::MODULE_NAME . '_' . $entity_str;
 
+        if (SYNCEE_UNIT_TEST_MODE) {
+            Syncee_Site::setLocalhostAlwaysAllowed(false);
+        }
+
         /**
          * @var $site Syncee_Site
          * @var $entity Syncee_Request_Remote_Entity_Interface
