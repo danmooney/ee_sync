@@ -20,11 +20,13 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_Comparison_Result_Interface
 {
-    const RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE = 'RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE';
-    const RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET = 'RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET';
-    const RESULT_COMPARATE_VALUE_DIFFERS            = 'RESULT_COMPARATE_VALUE_DIFFERS';
+    const RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET = 'RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE';
+    const RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE            = 'RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE';
+    const RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET            = 'RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET';
+    const RESULT_COMPARATE_VALUE_DIFFERS                       = 'RESULT_COMPARATE_VALUE_DIFFERS';
 
     private $_comparison_results = array(
+        self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET,
         self::RESULT_COMPARATE_VALUE_DIFFERS
@@ -116,24 +118,30 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
 
     /**
      * @param bool $comparate_column_exists_in_source
+     * @return $this
      */
     public function setComparateColumnExistsInSource($comparate_column_exists_in_source)
     {
         $this->_comparate_column_exists_in_source = $comparate_column_exists_in_source;
+        return $this;
     }
 
     /**
      * @param bool $comparate_column_exists_in_target
+     * @return $this
      */
     public function setComparateColumnExistsInTarget($comparate_column_exists_in_target)
     {
         $this->_comparate_column_exists_in_target = $comparate_column_exists_in_target;
+        return $this;
     }
 
     public function getComparisonResult()
     {
         if (!isset($this->_comparison_result)) {
-            if (!$this->_comparate_column_exists_in_source) {
+            if (!$this->_comparate_column_exists_in_source && !$this->_comparate_column_exists_in_target) {
+                $this->_comparison_result = self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET;
+            } elseif (!$this->_comparate_column_exists_in_source) {
                 $this->_comparison_result = self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE;
             } elseif (!$this->_comparate_column_exists_in_target) {
                 $this->_comparison_result = self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET;
