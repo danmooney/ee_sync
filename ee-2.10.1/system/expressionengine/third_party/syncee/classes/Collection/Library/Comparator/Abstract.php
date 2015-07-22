@@ -26,6 +26,8 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
         $current_local_site_collection = null;
         $other_site_collections        = array();
 
+        $unique_identifier_values      = $this->getAllUniqueIdentifierValues();
+
         /**
          * @var $collection Syncee_Entity_Comparate_Collection_Abstract
          * @var $local_entity  Syncee_Entity_Abstract
@@ -52,10 +54,16 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
         $empty_entity_model_name = $current_local_site_collection->getRowModel();
         $empty_entity            = new $empty_entity_model_name();
 
-        // get comparisons for unique identifier keys that exist in target
-        foreach ($current_local_site_collection as $local_entity) {
+        foreach ($unique_identifier_values as $unique_identifier_value) {
             foreach ($other_site_collections as $site_identifier => $collection) {
-                if (!($remote_entity = $collection->getEntityByUniqueIdentifierValue($local_entity->getUniqueIdentifierValue()))) {
+                // if entity doesn't exist in local, then instantiate empty entity for comparison (to give result of RESULT_ENTITY_MISSING_IN_TARGET in Syncee_Entity_Comparison_Collection)
+                if (!($local_entity = $current_local_site_collection->getEntityByUniqueIdentifierValue($unique_identifier_value))) {
+                    $local_entity = new $empty_entity();
+                    $local_entity->setSite($current_local_site_collection->getSite());
+                }
+
+                // if entity doesn't exist in remote, then instantiate empty entity for comparison (to give result of RESULT_ENTITY_MISSING_IN_SOURCE in Syncee_Entity_Comparison_Collection)
+                if (!($remote_entity = $collection->getEntityByUniqueIdentifierValue($unique_identifier_value))) {
                     $remote_entity = new $empty_entity();
                     $remote_entity->setSite($collection->getSite());
                 }
@@ -63,31 +71,6 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
                 $comparison_collection = $entity_comparator->compareEntities($remote_entity, $local_entity);
 
                 $comparison_library->appendToLibraryAsCollection($comparison_collection);
-            }
-        }
-
-        // get comparisons for unique identifier values that exist in sources
-        foreach ($other_site_collections as $site_identifier => $collection) {
-            foreach ($collection as $remote_entity) {
-                if (!($local_entity = $current_local_site_collection->getEntityByUniqueIdentifierValue($remote_entity->getUniqueIdentifierValue()))) {
-                    $local_entity = new $empty_entity();
-                    $local_entity->setSite($current_local_site_collection->getSite());
-                }
-
-                $comparison_collection          = $entity_comparator->compareEntities($remote_entity, $local_entity);
-
-                // check for existent comparison collection and append missing entities to it if need be, without creating a new comparison collection that represents the comparison of the same two entities
-                $existent_comparison_collection = $comparison_library->getComparisonCollectionBySourceAndTarget($remote_entity, $local_entity);
-
-                if (!$existent_comparison_collection) {
-                    $comparison_library->appendToLibraryAsCollection($comparison_collection);
-                } else {
-                    foreach ($comparison_collection as $comparison) {
-                        if (!$existent_comparison_collection->entityAlreadyExistsInCollection($comparison)) {
-                            $existent_comparison_collection->appendToCollectionAsEntity($comparison);
-                        }
-                    }
-                }
             }
         }
 
