@@ -199,4 +199,13 @@ class Syncee_Helper
             : $result
         ;
     }
+
+    public static function ifNull($value, $null_replacement_value)
+    {
+        if ($value === null) {
+            $value = $null_replacement_value;
+        }
+
+        return $value;
+    }
 }
