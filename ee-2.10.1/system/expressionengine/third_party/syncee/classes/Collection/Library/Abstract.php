@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_Library_Interface, Countable, Iterator, ArrayAccess
+abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_Library_Interface, Syncee_Container_Interface, Countable, Iterator, ArrayAccess
 {
     protected $_position = 0;
     
@@ -73,6 +73,22 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
     public function sortByCallback(callable $sortFunc)
     {
         usort($this->_collections, $sortFunc);
+    }
+
+    public function getAllUniqueIdentifierValues()
+    {
+        $unique_identifier_values = array();
+
+        /**
+         * @var $collection Syncee_Collection_Abstract
+         */
+        foreach ($this->_collections as $collection) {
+            $unique_identifier_values = array_merge($unique_identifier_values, $collection->getAllUniqueIdentifierValues());
+        }
+
+        $unique_identifier_values = array_unique($unique_identifier_values);
+
+        return $unique_identifier_values;
     }
 
     public function count()
