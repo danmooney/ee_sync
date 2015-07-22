@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface, Countable, Iterator, ArrayAccess
+abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface, Syncee_Container_Interface, Countable, Iterator, ArrayAccess
 {
     protected $_position = 0;
 
@@ -90,6 +90,26 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
             ? $found_entity
             : false
         ;
+    }
+
+    /**
+     * Returns a list of all unique identifier values in the collection
+     * @return array
+     */
+    public function getAllUniqueIdentifierValues()
+    {
+        $unique_identifier_values = array();
+
+        /**
+         * @var $row Syncee_Entity_Abstract
+         */
+        foreach ($this->_rows as $row) {
+            $unique_identifier_values[] = $row->getUniqueIdentifierValue();
+        }
+
+        $unique_identifier_values = array_unique($unique_identifier_values);
+
+        return $unique_identifier_values;
     }
 
     public function entityAlreadyExistsInCollection(Syncee_Entity_Abstract $row)
