@@ -159,7 +159,7 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
         }
 
         // localhost needs to be open always because we use HTTP protocol on the local instance (this is something we may change in the future)
-        if ($this->_localhost_always_allowed && in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) {
+        if (static::$_localhost_always_allowed && in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) {
             return true;
         }
 
