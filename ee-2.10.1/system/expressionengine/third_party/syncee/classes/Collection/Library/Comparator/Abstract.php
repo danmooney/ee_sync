@@ -24,6 +24,7 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
     public function compareCollections()
     {
         $current_local_site_collection = null;
+        $current_local_site            = null;
         $other_site_collections        = array();
 
         $unique_identifier_values      = $this->getAllUniqueIdentifierValues();
@@ -40,6 +41,7 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
 
             if ($is_current_local_site) {
                 $current_local_site_collection = $collection;
+                $current_local_site            = $collection->getSite();
             } else {
                 $other_site_collections[$collection->getSite()->getUniqueIdentifier()] = $collection;
             }
@@ -50,6 +52,9 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
         }
 
         $comparison_library      = new Syncee_Entity_Comparison_Collection_Library();
+
+        $comparison_library->setTargetSite($current_local_site);
+
         $entity_comparator       = new Syncee_Entity_Comparator();
         $empty_entity_model_name = $current_local_site_collection->getRowModel();
         $empty_entity            = new $empty_entity_model_name();
