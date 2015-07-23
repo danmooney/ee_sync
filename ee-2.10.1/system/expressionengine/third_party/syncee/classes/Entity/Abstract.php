@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ implements Syncee_Entity_Interface, Syncee_Entity_Comparate_Interface, Syncee_Site_Storage_Interface
+abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ implements Syncee_Entity_Interface, Syncee_Entity_Comparate_Interface, Syncee_Site_Storage_Interface, Syncee_UniqueIdentifier_Interface
 {
     protected $_data;
 
