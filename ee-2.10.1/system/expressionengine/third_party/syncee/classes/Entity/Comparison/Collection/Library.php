@@ -20,7 +20,50 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Library_Abstract
 {
+    /**
+     * @var Syncee_Site
+     */
+    private $_target_site;
+
     protected $_collection_model = 'Syncee_Entity_Comparison_Collection';
+
+    public function __construct(array $collections = array())
+    {
+        $args = func_get_args();
+
+        if (isset($args[1])) {
+            $this->setTargetSite($args[1]);
+        }
+
+        parent::__construct($collections);
+    }
+
+    public function setTargetSite(Syncee_Site $target_site)
+    {
+        $this->_target_site = $target_site;
+    }
+
+    public function getTargetSite()
+    {
+        return $this->_target_site;
+    }
+
+    /**
+     * Override Syncee_Collection_Library_Abstract::appendToLibraryAsCollection to ensure that target inside $collection is identical to self::$_target
+     * @param Syncee_Collection_Abstract $collection
+     * @throws Syncee_Exception
+     */
+    public function appendToLibraryAsCollection(Syncee_Collection_Abstract $collection)
+    {
+        /**
+         * @var $collection Syncee_Entity_Comparison_Collection
+         */
+        if ($collection->getTarget()->getSite() !== $this->_target_site) {
+            throw new Syncee_Exception('Comparison collection passed to ' . __METHOD__ . ' must have target site identical to target site inside the containing library');
+        }
+
+        parent::appendToLibraryAsCollection($collection);
+    }
 
     public function hasNoComparisons()
     {
@@ -55,7 +98,7 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
             }
         }
 
-        return new $this($non_empty_collections);
+        return new $this($non_empty_collections, $this->_target_site);
     }
 
     public function getTotalComparisonEntityCountAcrossAllCollections()
@@ -88,6 +131,7 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
             }
         }
 
+        // TODO - this really shouldn't be returning false, should it?
         return isset($collection)
             ? $collection
             : false
@@ -97,7 +141,7 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
     /**
      * @param $unique_identifier_value
      * @return bool|Syncee_Entity_Comparison_Collection
-     * @deprecated
+     * @deprecated - TODO - has to be deprecated because since we allow multiple sources to compare against, there may well be multiple collections that match the test in the written logic
      */
     public function getComparisonCollectionByUniqueIdentifierValue($unique_identifier_value)
     {
@@ -120,6 +164,11 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
         ;
     }
 
+    /**
+     * @param $unique_identifier_key
+     * @param $unique_identifier_value
+     * @return Syncee_Entity_Comparison_Collection_Library
+     */
     public function getComparisonLibraryByUniqueIdentifierKeyAndValue($unique_identifier_key, $unique_identifier_value)
     {
         $matching_collections = array();
@@ -135,6 +184,28 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
             }
         }
 
-        return new $this($matching_collections);
+        return new $this($matching_collections, $this->_target_site);
+    }
+
+    public function getAllComparateColumnNames()
+    {
+        $comparate_column_names = array();
+
+        /**
+         * @var $collection Syncee_Entity_Comparison_Collection
+         * @var $row Syncee_Entity_Comparison
+         */
+        foreach ($this->_collections as $collection) {
+            foreach ($collection as $row) {
+                $comparate_column_names[] = $row->getComparateColumnName();
+            }
+        }
+
+        return $comparate_column_names;
+    }
+
+    public function getUniqueIdentifierKey()
+    {
+
     }
 }
