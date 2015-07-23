@@ -75,6 +75,20 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
         usort($this->_collections, $sortFunc);
     }
 
+    public function getUniqueIdentifierKey()
+    {
+        /**
+         * @var $collection_model Syncee_Collection_Abstract
+         * @var $row_model        Syncee_UniqueIdentifier_Interface
+         */
+        $collection_model = $this->_collection_model;
+        $collection_model = new $collection_model();
+        $row_model        = $collection_model->getRowModel();
+        $row_model        = new $row_model();
+
+        return $row_model->getUniqueIdentifierKey();
+    }
+
     public function getAllUniqueIdentifierValues()
     {
         $unique_identifier_values = array();
