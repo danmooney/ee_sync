@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
+abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, Syncee_UniqueIdentifier_Interface
 {
     const TABLE_NAME = '';
 
@@ -280,6 +280,16 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface
     public function getPrimaryKeyNamesValuesMap()
     {
         return array_combine($this->getPrimaryKeyNames(), $this->getPrimaryKeyValues());
+    }
+
+    public function getUniqueIdentifierKey()
+    {
+        return $this->getPrimaryKeyNames();
+    }
+
+    public function getUniqueIdentifierValue()
+    {
+        return $this->getPrimaryKeyValues();
     }
 
     /**
