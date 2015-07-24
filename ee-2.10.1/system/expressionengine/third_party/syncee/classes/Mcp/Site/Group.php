@@ -63,7 +63,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
         return Syncee_View::render(__FUNCTION__, array(
             'syncee_site_group'          => $syncee_site_group,
-            'channel_comparison_library' => $channel_comparison_library,
+            'entity_comparison_library' => $channel_comparison_library,
             'request_log_collection'     => $request_log_collection
         ), $this);
     }
