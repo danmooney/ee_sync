@@ -64,13 +64,14 @@ abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Coll
                 // if entity doesn't exist in local, then instantiate empty entity for comparison (to give result of RESULT_ENTITY_MISSING_IN_TARGET in Syncee_Entity_Comparison_Collection)
                 if (!($local_entity = $current_local_site_collection->getEntityByUniqueIdentifierValue($unique_identifier_value))) {
                     $local_entity = new $empty_entity();
-                    $local_entity->setSite($current_local_site_collection->getSite());
+                    $local_entity->setSite($current_local_site_collection->getSite())->setUniqueIdentifierValue($unique_identifier_value);;
                 }
 
                 // if entity doesn't exist in remote, then instantiate empty entity for comparison (to give result of RESULT_ENTITY_MISSING_IN_SOURCE in Syncee_Entity_Comparison_Collection)
                 if (!($remote_entity = $collection->getEntityByUniqueIdentifierValue($unique_identifier_value))) {
                     $remote_entity = new $empty_entity();
-                    $remote_entity->setSite($collection->getSite());
+                    $remote_entity->setSite($collection->getSite())->setUniqueIdentifierValue($unique_identifier_value);
+
                 }
 
                 $comparison_collection = $entity_comparator->compareEntities($remote_entity, $local_entity);
