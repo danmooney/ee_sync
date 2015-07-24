@@ -125,25 +125,27 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
     }
 
     /**
-     * @param Syncee_Entity_Abstract $source
-     * @param Syncee_Entity_Abstract $target
+     * @param Syncee_Site $source_site
+     * @param Syncee_Site $target_site
      * @return Syncee_Entity_Comparison_Collection|bool
      */
-    public function getComparisonCollectionBySourceAndTarget(Syncee_Entity_Abstract $source, Syncee_Entity_Abstract $target)
+    public function getComparisonCollectionBySourceSite(Syncee_Site $source_site, Syncee_Site $target_site = null)
     {
         /**
          * @var $collection_to_test Syncee_Entity_Comparison_Collection
          */
         foreach ($this->_collections as $collection_to_test) {
-            if ($collection_to_test->getSource() === $source &&
-                $collection_to_test->getTarget() === $target
-            ) {
+            $collection_found = (
+                $collection_to_test->getSource()->getSite() === $source_site &&
+                (!$target_site || $collection_to_test->getTarget()->getSite() === $target_site)
+            );
+
+            if ($collection_found) {
                 $collection = $collection_to_test;
                 break;
             }
         }
 
-        // TODO - this really shouldn't be returning false, should it?
         return isset($collection)
             ? $collection
             : false
