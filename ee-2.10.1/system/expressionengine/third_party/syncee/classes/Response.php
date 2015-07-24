@@ -95,14 +95,16 @@ class Syncee_Response
             }
 
             if (!$decoded_response['data']) {
-                $this->_errors[] = 'Unable to decode response data with private key.';
+                $this->_errors[] = 'Unable to decode response data with private key on this local machine.';
             }
         }
 
-        $this->_message            = isset($decoded_response['message']) ? $decoded_response['message'] : '';
-        $this->_response_decoded   = $decoded_response;
+        $this->_message             = isset($decoded_response['message']) ? $decoded_response['message'] : '';
 
-        $this->_raw_response       = json_encode($decoded_response);
+        $decoded_response['errors'] = $this->_errors;
+        $this->_response_decoded    = $decoded_response;
+
+        $this->_raw_response        = json_encode($decoded_response);
     }
 
     public function getStatusCode()
