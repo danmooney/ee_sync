@@ -169,6 +169,11 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
 
     public function getUniqueIdentifierValue()
     {
+        return $this->_source->getUniqueIdentifierValue() ?: $this->_target->getUniqueIdentifierValue();
+    }
+
+    public function getUniqueIdentifierHash()
+    {
         return md5(
             serialize($this->_source_value)
         .   serialize($this->_target_value)
