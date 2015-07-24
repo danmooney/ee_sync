@@ -25,6 +25,8 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
      */
     private $_target_site;
 
+    private $_unique_identifier_key_override;
+
     protected $_collection_model = 'Syncee_Entity_Comparison_Collection';
 
     public function __construct(array $collections = array())
@@ -33,6 +35,10 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
 
         if (isset($args[1])) {
             $this->setTargetSite($args[1]);
+        }
+
+        if (isset($args[2])) {
+            $this->setUniqueIdentifierKey($args[2]);
         }
 
         parent::__construct($collections);
@@ -60,6 +66,12 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
          */
         if ($collection->getTarget()->getSite() !== $this->_target_site) {
             throw new Syncee_Exception('Comparison collection passed to ' . __METHOD__ . ' must have target site identical to target site inside the containing library');
+        }
+
+        if (!$this->getUniqueIdentifierKey()) {
+            $this->setUniqueIdentifierKey($collection->getUniqueIdentifierKey());
+        } elseif ($this->getUniqueIdentifierKey() !== $collection->getUniqueIdentifierKey()) {
+            throw new Syncee_Exception('Unique identifier key in collection passed to ' . __METHOD__ . ' is not the same as that inside the containing library');
         }
 
         parent::appendToLibraryAsCollection($collection);
@@ -98,7 +110,7 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
             }
         }
 
-        return new $this($non_empty_collections, $this->_target_site);
+        return new $this($non_empty_collections, $this->_target_site, $this->_unique_identifier_key_override);
     }
 
     public function getTotalComparisonEntityCountAcrossAllCollections()
@@ -184,7 +196,7 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
             }
         }
 
-        return new $this($matching_collections, $this->_target_site);
+        return new $this($matching_collections, $this->_target_site, $this->_unique_identifier_key_override);
     }
 
     public function getAllComparateColumnNames()
@@ -206,6 +218,11 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
 
     public function getUniqueIdentifierKey()
     {
+        return $this->_unique_identifier_key_override;
+    }
 
+    public function setUniqueIdentifierKey($unique_identifier_key)
+    {
+        $this->_unique_identifier_key_override = $unique_identifier_key;
     }
 }

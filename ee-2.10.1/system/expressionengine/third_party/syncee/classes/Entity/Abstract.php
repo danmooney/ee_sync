@@ -24,6 +24,15 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
 
     protected $_unique_identifier_key;
 
+    protected $_unique_identifier_key_override;
+
+    /**
+     * Override value
+     * Used in entity comparisons, for example
+     * @var mixed
+     */
+    protected $_unique_identifier_value;
+
     protected $_ignored_columns_in_comparison = array();
 
     protected $_site;
@@ -50,13 +59,27 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
 
     public function getUniqueIdentifierKey()
     {
-        return $this->_unique_identifier_key;
+        return $this->_unique_identifier_key_override ?: $this->_unique_identifier_key;
+    }
+
+    public function setUniqueIdentifierKey($unique_identifier_key)
+    {
+        $this->_unique_identifier_key_override = $unique_identifier_key;
+    }
+
+    public function setUniqueIdentifierValue($unique_identifier_value)
+    {
+        $this->_unique_identifier_value = $unique_identifier_value;
     }
 
     public function getUniqueIdentifierValue()
     {
-        return isset($this->_data[$this->_unique_identifier_key])
-            ? $this->_data[$this->_unique_identifier_key]
+        if ($this->_unique_identifier_value) {
+            return $this->_unique_identifier_value;
+        }
+
+        return isset($this->_data[$this->getUniqueIdentifierKey()])
+            ? $this->_data[$this->getUniqueIdentifierKey()]
             : false
         ;
     }
@@ -64,6 +87,7 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
     public function setSite(Syncee_Site $site)
     {
         $this->_site = $site;
+        return $this;
     }
 
     public function getSite()

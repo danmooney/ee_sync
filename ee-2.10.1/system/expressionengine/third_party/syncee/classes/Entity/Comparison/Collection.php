@@ -37,9 +37,7 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
 
     private $_comparison_result;
 
-    private $_unique_identifier_key;
-
-    private $_unique_identifier_value;
+    private $_unique_identifier_key_override;
 
     protected $_row_model = 'Syncee_Entity_Comparison';
 
@@ -82,16 +80,6 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
         return $this->_comparison_result;
     }
 
-    public function setUniqueIdentifierKey($unique_identifier_key)
-    {
-
-    }
-
-    public function setUniqueIdentifierValue($unique_identifier_value)
-    {
-
-    }
-
     /**
      * @param $comparate_column_name
      * @return Syncee_Entity_Comparison
@@ -122,9 +110,16 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
         return $comparison_entity;
     }
 
+    public function setUniqueIdentifierKey($unique_identifier_key)
+    {
+        $this->_unique_identifier_key_override = $unique_identifier_key;
+        $this->getSource()->setUniqueIdentifierKey($unique_identifier_key);
+        $this->getTarget()->setUniqueIdentifierKey($unique_identifier_key);
+    }
+
     public function getUniqueIdentifierKey()
     {
-        return $this->getTarget()->getUniqueIdentifierKey();
+        return $this->_unique_identifier_key_override ?: $this->getTarget()->getUniqueIdentifierKey();
     }
 
     public function getUniqueIdentifierValue()
