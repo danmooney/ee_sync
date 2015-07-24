@@ -1,49 +1,42 @@
 <?php
 /**
+ * @var $syncee_site_group Syncee_Site_Group
  * @var $channel_comparison_library Syncee_Entity_Comparison_Collection_Library
  * @var $channel_comparison_collection Syncee_Entity_Comparison_Collection
  * @var $channel_comparison_entity Syncee_Entity_Comparison
  * @var $target_channel_entity Syncee_Entity_Channel
  */
 
-//$sortChannelComparisonCollectionAlhabeticallyBySources = function ($a, $b) {
-//    $c = 2;
-//};
+$site_collection        = $syncee_site_group->getSiteCollection();
+$remote_site_collection = $site_collection->filterByCondition(array('is_local' => false));
+$local_site             = $site_collection->filterByCondition(array('is_local' => true), true);
+
+$remote_site_collection->sortByCallback(function ($a, $b) {
+    return $a->getPrimaryKeyValues(true) - $b->getPrimaryKeyValues(true);
+});
 
 if ($channel_comparison_library->hasNoComparisons()): ?>
     <p>They're the same!</p>
 <?php
 else:
     $outer_column_count             = count($channel_comparison_library) + 2;
-    $unique_identifier_key          = null;
-    $unique_identifier_values       = array(); // store array of all of the unique identifier values (channel_name, which is short name)
+    $unique_identifier_key          = $channel_comparison_library->getUniqueIdentifierKey();
+    $unique_identifier_values       = $channel_comparison_library->getAllUniqueIdentifierValues(); // store array of all of the unique identifier values (channel_name, which is short name)
+    $channel_comparate_column_names = $channel_comparison_library->getAllComparateColumnNames();
 
-    $channel_comparate_column_names = array();
-
-    foreach ($channel_comparison_library as $channel_comparison_collection) {
-        $unique_identifier_key      = $channel_comparison_collection->getUniqueIdentifierKey();
-        $unique_identifier_values[] = $channel_comparison_collection->getUniqueIdentifierValue();
-    }
-
-    foreach ($channel_comparison_collection as $channel_comparison_entity) {
-        $channel_comparate_column_names[] = $channel_comparison_entity->getComparateColumnName();
-    }
-
-    // remove duplicates from unique identifier values and sort alphabetically
-    $unique_identifier_values = array_unique($unique_identifier_values);
     sort($unique_identifier_values, SORT_STRING);
 
-    $target_channel_entity    = $channel_comparison_library[0]->getTarget();
+    $target_channel_entity          = $channel_comparison_library[0]->getTarget();
     ?>
     <table class="collection-table">
         <thead>
             <?php // output the target site name and all of the sources after ?>
             <tr>
-                <th>Channel Short Name</th>
-                <th><?= $target_channel_entity->getSite()->title ?></th>
+                <th><span>Channel Short Name</span></th>
+                <th><span><?= $local_site->title ?></span></th>
                 <?php
-                    foreach ($channel_comparison_library as $idx => $channel_comparison_collection): ?>
-                        <th><?= $channel_comparison_collection->getSource()->getSite()->title ?></th>
+                    foreach ($remote_site_collection as $remote_site): ?>
+                        <th><span><?= $remote_site->title ?></span></th>
                 <?php
                     endforeach ?>
             </tr>
@@ -62,7 +55,7 @@ else:
                 */ ?>
                             <tr>
                                 <td>
-                                    <?= $unique_identifier_value ?>
+                                    <span><?= $unique_identifier_value ?></span>
                                     <?php /*
                                     <table>
                                         <tbody>
@@ -77,23 +70,31 @@ else:
                                     </table>*/ ?>
                                 </td>
                                 <td>
-                                    <?= $target_has_entity_missing ? 'MISSING' : 'EXISTS' ?>
+                                    <span><?= $target_has_entity_missing ? 'MISSING' : 'EXISTS' ?></span>
                                 </td>
 
                                 <?php
+                                    foreach ($remote_site_collection as $remote_site):
+
+                                    endforeach;
+
                                     foreach ($channel_comparison_library_with_unique_identifier_value as $channel_comparison_collection): ?>
-                                        <td><?= $channel_comparison_collection->getSource()->isEmptyRow() ? 'MISSING' : 'EXISTS' ?></td>
+                                        <td><span><?= $channel_comparison_collection->getSource()->isEmptyRow() ? 'MISSING' : 'EXISTS' ?></span></td>
                                 <?php
                                     endforeach ?>
                             </tr>
                             <?php
                                 foreach ($channel_comparate_column_names as $idx => $comparate_column_name): ?>
                                     <tr>
-                                        <td><?= $comparate_column_name ?></td>
-                                        <td><?= $channel_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->getTargetValue() ?></td>
+                                        <td><span><?= $comparate_column_name ?></span></td>
+                                        <td>
+                                            <span><?= Syncee_Helper::ifNull($channel_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->getTargetValue(), '<i>(NULL)</i>') ?></span>
+                                        </td>
                                         <?php
                                             foreach ($channel_comparison_library_with_unique_identifier_value as $channel_comparison_collection): ?>
-                                                <td><?= $channel_comparison_collection->getComparisonEntityByComparateColumnName($comparate_column_name)->getSourceValue() ?></td>
+                                                <td>
+                                                    <span><?= Syncee_Helper::ifNull($channel_comparison_collection->getComparisonEntityByComparateColumnName($comparate_column_name)->getSourceValue(), '<i>(NULL)</i>') ?></span>
+                                                </td>
                                         <?php
                                             endforeach ?>
                                     </tr>
