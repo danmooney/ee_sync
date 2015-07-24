@@ -131,6 +131,10 @@ class Syncee_Helper
 
     public static function prettyPrintJson($json)
     {
+        if (!is_string($json)) {
+            $json = json_encode($json);
+        }
+
         if (defined('JSON_PRETTY_PRINT')) {
             $result = json_encode(json_decode($json, true), JSON_PRETTY_PRINT);
         } else {
