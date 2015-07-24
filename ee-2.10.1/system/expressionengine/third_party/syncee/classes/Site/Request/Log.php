@@ -64,6 +64,21 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
         return true;
     }
 
+    public function getRawResponseWithDataDecoded()
+    {
+        $response              = new Syncee_Response($this, $this->site, $this->request_entity);
+        $response_decoded      = $response->getResponseDecoded();
+
+        if (!is_array($response_decoded)) {
+            return false;
+        }
+
+        $response_data_decoded    = json_decode(Syncee_Helper::prettyPrintJson($response->getResponseDataDecoded()), true);
+        $response_decoded['data'] = $response_data_decoded;
+
+        return json_encode($response_decoded);
+    }
+
     public function isSuccess()
     {
         $response     = new Syncee_Response($this, $this->site, $this->request_entity);
@@ -83,4 +98,5 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
     {
         return (string) $this->raw_response;
     }
+
 }
