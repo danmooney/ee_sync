@@ -292,3 +292,7 @@
     border-top: 0;
 }
 
+
+#syncee-page .comparison-collection-table .comparison-summary td {
+    border-top: 0;
+}

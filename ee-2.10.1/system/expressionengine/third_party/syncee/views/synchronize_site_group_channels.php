@@ -34,7 +34,7 @@ else:
     sort($unique_identifier_values, SORT_STRING);
 
     ?>
-    <table class="collection-table">
+    <table class="collection-table comparison-collection-table">
         <thead>
             <?php // output the target site name and all of the sources after ?>
             <tr>
@@ -74,7 +74,7 @@ else:
                 $entity_comparison_library_with_unique_identifier_value = $entity_comparison_library->getComparisonLibraryByUniqueIdentifierKeyAndValue($unique_identifier_key, $unique_identifier_value);
                 $target_has_entity_missing = $entity_comparison_library_with_unique_identifier_value[0]->getTarget()->isEmptyRow();
             ?>
-            <tr>
+            <tr class="comparison-summary">
                 <td>
                     <span><?= $unique_identifier_value ?></span>
                 </td>
@@ -88,27 +88,29 @@ else:
                 <?php
                     endforeach ?>
             </tr>
-            <tr>
+            <tr class="comparison-results">
                 <td colspan="<?= $total_columns ?>" class="nested-table-container">
-                    <table>
-                        <?php
-                            foreach ($entity_comparate_column_names as $idx => $comparate_column_name): ?>
-                                <tr>
-                                    <td style="width: <?= $unique_identifier_column_percentage_width ?>%"><span><?= $comparate_column_name ?></span></td>
-                                    <td style="width: <?= $other_columns_percentage_width ?>%">
-                                        <span><?= Syncee_Helper::ifNull($entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->getTargetValue(), '<i>(NULL)</i>') ?></span>
-                                    </td>
-                                    <?php
-                                        foreach ($entity_comparison_library_with_unique_identifier_value as $entity_comparison_collection): ?>
-                                            <td style="width: <?= $other_columns_percentage_width ?>%">
-                                                <span><?= Syncee_Helper::ifNull($entity_comparison_collection->getComparisonEntityByComparateColumnName($comparate_column_name)->getSourceValue(), '<i>(NULL)</i>') ?></span>
-                                            </td>
-                                    <?php
-                                        endforeach ?>
-                                </tr>
-                        <?php
-                            endforeach ?>
-                    </table>
+                    <div style="display: none;">
+                        <table>
+                            <?php
+                                foreach ($entity_comparate_column_names as $idx => $comparate_column_name): ?>
+                                    <tr>
+                                        <td style="width: <?= $unique_identifier_column_percentage_width ?>%"><span><?= $comparate_column_name ?></span></td>
+                                        <td style="width: <?= $other_columns_percentage_width ?>%">
+                                            <span><?= Syncee_Helper::ifNull($entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->getTargetValue(), '<i>(NULL)</i>') ?></span>
+                                        </td>
+                                        <?php
+                                            foreach ($entity_comparison_library_with_unique_identifier_value as $entity_comparison_collection): ?>
+                                                <td style="width: <?= $other_columns_percentage_width ?>%">
+                                                    <span><?= Syncee_Helper::ifNull($entity_comparison_collection->getComparisonEntityByComparateColumnName($comparate_column_name)->getSourceValue(), '<i>(NULL)</i>') ?></span>
+                                                </td>
+                                        <?php
+                                            endforeach ?>
+                                    </tr>
+                            <?php
+                                endforeach ?>
+                        </table>
+                    </div>
                 </td>
             </tr>
         <?php
