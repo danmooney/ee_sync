@@ -91,6 +91,7 @@
 
 #syncee-page table {
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 #syncee-page table tr td > a,
@@ -269,3 +270,25 @@
 #syncee-page table.form-table select[multiple] option {
     padding: 3px;
 }
+
+#syncee-page table .nested-table-container {
+    padding: 0;
+    border: 0;
+}
+
+#syncee-page table .nested-table-container table {
+    width: 100%;
+    width: -webkit-calc(100% + 1px);
+    width: calc(100% + 1px);
+}
+
+@-moz-document url-prefix() {
+    #syncee-page table .nested-table-container table {
+        margin-left: -1px;
+    }
+}
+
+#syncee-page table .nested-table-container table tr:first-child td {
+    border-top: 0;
+}
+
