@@ -79,9 +79,11 @@ class Syncee_View
         $ee = ee();
 
         if (isset($ee->cp) && method_exists($ee->cp, 'set_variable')) {
-            $ee->cp->set_variable('cp_page_title', $title);
+            $ee->cp->set_variable('cp_heading',    $title);
+            $ee->cp->set_variable('cp_page_title', strip_tags($title));
         } else {
-            ee()->view->cp_page_title = $title;
+            ee()->view->cp_heading    = $title;
+            ee()->view->cp_page_title = strip_tags($title);
         }
     }
 
