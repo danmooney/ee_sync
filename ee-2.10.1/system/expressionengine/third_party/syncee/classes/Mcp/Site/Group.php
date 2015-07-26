@@ -51,7 +51,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
         $site_group_id     = ee()->input->get('site_group_id');
         $syncee_site_group = Syncee_Site_Group::findByPk($site_group_id);
 
-        $channel_comparison_library = $syncee_site_group->getSiteCollection()->getChannelComparisonCollectionLibrary()/*->getNonEmptyComparisonCollectionLibrary()*/;
+        $channel_comparison_library = $syncee_site_group->getSiteCollection()->getChannelComparisonCollectionLibrary();
 
         // sort collections alphabetically by source site primary key.
         // this is to have a known and predictable way to iterate over collections and get everything in the right order.
@@ -59,7 +59,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
             return $a->getSource()->getSite()->getPrimaryKeyValues(true) - $b->getSource()->getSite()->getPrimaryKeyValues(true);
         });
 
-        $request_log_collection     = $syncee_site_group->getSiteCollection()->getRequestLogCollection();
+        $request_log_collection = $syncee_site_group->getSiteCollection()->getRequestLogCollection();
 
         return Syncee_View::render(__FUNCTION__, array(
             'syncee_site_group'          => $syncee_site_group,
