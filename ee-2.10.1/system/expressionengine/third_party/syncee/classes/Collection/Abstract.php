@@ -34,6 +34,10 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
     public function __construct(array $rows = array())
     {
         foreach ($rows as $row) {
+            if (is_bool($row)) {
+                $row = array();
+            }
+
             if (is_array($row)) {
                 $this->appendToCollectionAsArray($row);
             } else {
@@ -112,22 +116,22 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
         return $unique_identifier_values;
     }
 
-    public function entityAlreadyExistsInCollection(Syncee_Entity_Abstract $row)
-    {
-        $entity_already_exists = false;
-
-        /**
-         * @var $row_to_test Syncee_Entity_Comparison
-         */
-        foreach ($this->_rows as $row_to_test) {
-            if ($row->getUniqueIdentifierValue() === $row_to_test->getUniqueIdentifierValue()) {
-                $entity_already_exists = true;
-                break;
-            }
-        }
-
-        return $entity_already_exists;
-    }
+//    public function entityAlreadyExistsInCollection(Syncee_Entity_Abstract $row)
+//    {
+//        $entity_already_exists = false;
+//
+//        /**
+//         * @var $row_to_test Syncee_Entity_Comparison
+//         */
+//        foreach ($this->_rows as $row_to_test) {
+//            if ($row->getUniqueIdentifierHash() === $row_to_test->getUniqueIdentifierHash()) {
+//                $entity_already_exists = true;
+//                break;
+//            }
+//        }
+//
+//        return $entity_already_exists;
+//    }
 
     /**
      * @param $method
