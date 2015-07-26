@@ -113,6 +113,10 @@ class Syncee_Request_Remote
 			'errors'  => $errors
 		);
 
+        if (defined(APP_VER)) {
+            $data['ee_version'] = APP_VER;
+        }
+
         if (SYNCEE_TEST_MODE) {
             $meta['public_key']           = $site->rsa->getPublicKey();
             $meta['private_key']          = $site->rsa->getPrivateKey();
