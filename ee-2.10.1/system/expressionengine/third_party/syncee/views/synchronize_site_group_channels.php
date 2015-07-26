@@ -3,6 +3,8 @@
  * @var $syncee_site_group Syncee_Site_Group
  * @var $entity_comparison_library Syncee_Entity_Comparison_Collection_Library
  * @var $entity_comparison_collection Syncee_Entity_Comparison_Collection
+ * @var $local_site Syncee_Site
+ * @var $remote_site Syncee_Site
  */
 
 $site_collection        = $syncee_site_group->getSiteCollection();
@@ -29,11 +31,31 @@ else:
         <thead>
             <?php // output the target site name and all of the sources after ?>
             <tr>
-                <th><span>Channel Short Name</span></th>
-                <th><span><?= $local_site->title ?></span></th>
+                <th><span><?= $unique_identifier_key ?></span></th>
+                <th>
+                    <span>
+                        <?= $local_site->title ?>
+                        <?php
+                            if (!$local_site->last_request_log->isSuccess()): ?>
+                                <br><br>
+                                <a class="warning" href="<?= Syncee_Helper::createModuleCpUrl('viewRequestLog', $remote_site->last_request_log->getPrimaryKeyNamesValuesMap()) ?>">Requests to this site contained errors!</a>
+                        <?php
+                            endif ?>
+                    </span>
+                </th>
                 <?php
                     foreach ($remote_site_collection as $remote_site): ?>
-                        <th><span><?= $remote_site->title ?></span></th>
+                        <th>
+                            <span>
+                                <?= $remote_site->title ?>
+                                <?php
+                                    if (!$remote_site->last_request_log->isSuccess()): ?>
+                                        <br><br>
+                                        <a class="warning" href="<?= Syncee_Helper::createModuleCpUrl('viewRequestLog', $remote_site->last_request_log->getPrimaryKeyNamesValuesMap()) ?>">Requests to this site contained errors!</a>
+                                <?php
+                                    endif ?>
+                            </span>
+                        </th>
                 <?php
                     endforeach ?>
             </tr>
