@@ -55,7 +55,9 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract
             $request_log = new Syncee_Site_Request_Log();
             $response    = $request->makeEntityCallToSite($row, $channel_remote_request_entity, $request_log);
 
-            $collection  = $response->getResponseDataDecodedAsCollection();
+            $collection            = $response->getResponseDataDecodedAsCollection();
+            $row->last_request_log = $request_log;
+
             $collection->setSite($row);
 
             $site_channel_library->appendToLibraryAsCollection($collection);
@@ -82,13 +84,16 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract
          */
         foreach ($this->_rows as $row) {
             $request            = new Syncee_Request();
-            $response           = $request->makeEntityCallToSite($row, $channel_remote_request_entity, new Syncee_Site_Request_Log());
+            $request_log        = new Syncee_Site_Request_Log();
+            $response           = $request->makeEntityCallToSite($row, $channel_remote_request_entity, $request_log);
             $channel_collection = $response->getResponseDataDecodedAsCollection();
 
             // get fields from channel collection and add to channel field collection
             foreach ($channel_collection as $channel_entity) {
                 $channel_field_collection = $channel_entity->getFieldCollection();
                 $channel_field_collection->setSite($row);
+
+                $row->last_request_log = $request_log;
 
                 if (!$site_channel_field_library->collectionAlreadyExistsInLibrary($channel_field_collection)) {
                     $site_channel_field_library->appendToLibraryAsCollection($channel_field_collection);
