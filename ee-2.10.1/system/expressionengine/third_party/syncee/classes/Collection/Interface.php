@@ -40,5 +40,5 @@ interface Syncee_Collection_Interface extends Syncee_Entity_Interface
      * @param Syncee_Entity_Abstract $row
      * @return bool
      */
-    public function entityAlreadyExistsInCollection(Syncee_Entity_Abstract $row);
+//    public function entityAlreadyExistsInCollection(Syncee_Entity_Abstract $row);
 }
