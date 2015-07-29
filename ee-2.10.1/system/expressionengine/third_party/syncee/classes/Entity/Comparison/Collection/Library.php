@@ -85,7 +85,7 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
          * @var $collection Syncee_Entity_Comparison_Collection
          */
         foreach ($this->_collections as $collection) {
-            if (!$collection->isEmptyCollection()) {
+            if (!$collection->hasNoComparisons()) {
                 $has_no_comparisons = false;
                 break;
             }
@@ -105,7 +105,7 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
          * @var $collection Syncee_Entity_Comparison_Collection
          */
         foreach ($this->_collections as $collection) {
-            if (!$collection->isEmptyCollection()) {
+            if (!$collection->hasNoComparisons()) {
                 $non_empty_collections[] = $collection;
             }
         }
