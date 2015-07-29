@@ -25,7 +25,7 @@ abstract class Syncee_Table_Row_Formatter_Abstract implements Syncee_Table_Row_F
      */
     protected $_callback;
 
-    public function __construct(callable $callback)
+    public function __construct(Closure $callback)
     {
         $this->_callback = $callback;
     }

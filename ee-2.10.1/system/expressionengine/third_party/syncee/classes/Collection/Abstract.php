@@ -26,7 +26,7 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
 
     protected $_row_model;
 
-    public function sortByCallback(callable $sortFunc)
+    public function sortByCallback(Closure $sortFunc)
     {
         usort($this->_rows, $sortFunc);
     }

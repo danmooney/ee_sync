@@ -70,7 +70,7 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
         return $collection_exists_already;
     }
 
-    public function sortByCallback(callable $sortFunc)
+    public function sortByCallback(Closure $sortFunc)
     {
         usort($this->_collections, $sortFunc);
     }

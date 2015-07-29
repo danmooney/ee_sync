@@ -23,5 +23,5 @@ interface Syncee_Container_Interface
 {
     public function getAllUniqueIdentifierValues();
 
-    public function sortByCallback(callable $sortFunc);
+    public function sortByCallback(Closure $sortFunc);
 }
