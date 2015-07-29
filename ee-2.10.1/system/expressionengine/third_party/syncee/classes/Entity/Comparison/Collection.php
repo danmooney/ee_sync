@@ -126,4 +126,10 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
     {
         return $this->getTarget()->getUniqueIdentifierValue() ?: $this->getSource()->getUniqueIdentifierValue();
     }
+
+    // TODO - need to refactor this to be hasComparisons most likely... negation is uncharacteristic of the rest of the code
+    public function hasNoComparisons()
+    {
+        return $this->isEmptyCollection();
+    }
 }
