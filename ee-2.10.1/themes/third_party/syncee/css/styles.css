@@ -293,6 +293,10 @@
 }
 
 
+#syncee-page .comparison-collection-table .comparison-summary {
+    cursor: pointer;
+}
+
 #syncee-page .comparison-collection-table .comparison-summary td {
     border-top: 0;
 }
