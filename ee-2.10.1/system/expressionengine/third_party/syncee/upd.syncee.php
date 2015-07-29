@@ -4,7 +4,7 @@ require_once dirname(__FILE__) . '/_init.php';
 
 class Syncee_Upd
 {
-    const VERSION = '0.1.0';
+    const VERSION = SYNCEE_VERSION;
 
     const MODULE_NAME = 'Syncee';
 
