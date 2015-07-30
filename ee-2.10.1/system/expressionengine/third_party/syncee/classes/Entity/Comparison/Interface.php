@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-interface Syncee_Entity_Comparate_Interface
+interface Syncee_Entity_Comparison_Interface
 {
-    public function columnIsIgnoredInComparison($column_name);
+    public function comparateColumnIsIgnoredInComparison();
 }
