@@ -7,8 +7,16 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'System' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
+    'React\\Stream' => array($vendorDir . '/react/stream'),
+    'React\\Socket' => array($vendorDir . '/react/socket'),
+    'React\\EventLoop' => array($vendorDir . '/react/event-loop'),
     'Net' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
     'Math' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
+    'Guzzle\\Stream' => array($vendorDir . '/guzzle/stream'),
+    'Guzzle\\Parser' => array($vendorDir . '/guzzle/parser'),
+    'Guzzle\\Http' => array($vendorDir . '/guzzle/http'),
+    'Guzzle\\Common' => array($vendorDir . '/guzzle/common'),
     'File' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
+    'Evenement' => array($vendorDir . '/evenement/evenement/src'),
     'Crypt' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
 );

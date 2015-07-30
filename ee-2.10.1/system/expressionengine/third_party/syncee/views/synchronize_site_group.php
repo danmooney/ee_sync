@@ -36,6 +36,8 @@ $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
 <?php
     endif ?>
 <br><br>
-<p>Synchronize Channels</p>
+<p>
+    <a href="<?= Syncee_Helper::createModuleCpUrl('synchronizeSiteGroupChannels', $syncee_site_group->getPrimaryKeyNamesValuesMap()) ?>">Synchronize Channels</a>
+</p>
 <p>Synchronize Channel Fields</p>
 <p>Synchronize Channel Data</p>

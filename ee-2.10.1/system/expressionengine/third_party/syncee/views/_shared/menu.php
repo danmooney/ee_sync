@@ -9,8 +9,11 @@ $menu = array(
     'Remote Sites' => array(
         'method' => 'viewRemoteSiteList'
     ),
-    'Request Log' => array(
+    'Outbound Request Log' => array(
         'method' => 'viewRequestLogList',
+    ),
+    'Inbound Request Log' => array(
+        'method' => 'viewRequestInboundLogList',
     ),
     'Conflicts' => array(
         'method' => 'viewConflictList'
@@ -19,7 +22,8 @@ $menu = array(
         'method' => 'viewSettingsList',
     ),
     'Help' => array(
-        'method' => 'help'
+        'method' => 'help',
+        'href'   => '',
     ),
 );
 

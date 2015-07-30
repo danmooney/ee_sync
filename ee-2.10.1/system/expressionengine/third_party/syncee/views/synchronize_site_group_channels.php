@@ -15,7 +15,7 @@ $remote_site_collection->sortByCallback(function ($a, $b) {
     return $a->getPrimaryKeyValues(true) - $b->getPrimaryKeyValues(true);
 });
 
-if ($entity_comparison_library->hasNoComparisons()): ?>
+if ($entity_comparison_library->hasNoDifferingComparisons()): ?>
     <p>They're the same!</p>
 <?php
 else:
