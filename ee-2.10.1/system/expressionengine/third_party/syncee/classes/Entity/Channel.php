@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Entity_Channel extends Syncee_Entity_Abstract
+class Syncee_Entity_Channel extends Syncee_Entity_Comparate_Abstract
 {
     /**
      * @var Syncee_Entity_Channel_Field_Collection

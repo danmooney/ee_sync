@@ -18,9 +18,11 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Entity_Channel_Field extends Syncee_Entity_Abstract
+class Syncee_Entity_Channel_Field extends Syncee_Entity_Comparate_Abstract
 {
-    protected $_ignored_columns_in_comparison = array();
+    protected $_ignored_columns_in_comparison = array(
+
+    );
 
     protected $_unique_identifier_key = 'field_name';
 }
