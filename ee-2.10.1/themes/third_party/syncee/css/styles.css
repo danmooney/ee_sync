@@ -280,6 +280,7 @@
     width: 100%;
     width: -webkit-calc(100% + 1px);
     width: calc(100% + 1px);
+    margin-bottom: 0;
 }
 
 @-moz-document url-prefix() {
