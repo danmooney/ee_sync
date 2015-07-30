@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ implements Syncee_Entity_Interface, Syncee_Entity_Comparate_Interface, Syncee_Site_Storage_Interface, Syncee_UniqueIdentifier_Interface
+abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ implements Syncee_Entity_Interface, Syncee_Site_Storage_Interface, Syncee_UniqueIdentifier_Interface
 {
     protected $_data;
 
@@ -32,8 +32,6 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
      * @var mixed
      */
     protected $_unique_identifier_value;
-
-    protected $_ignored_columns_in_comparison = array();
 
     protected $_site;
 
@@ -50,11 +48,6 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
     public function isEmptyRow()
     {
         return !count($this->_data);
-    }
-
-    public function columnIsIgnoredInComparison($column_name)
-    {
-        return in_array($column_name, $this->_ignored_columns_in_comparison);
     }
 
     public function getUniqueIdentifierKey()
