@@ -20,7 +20,7 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Mcp_Setting extends Syncee_Mcp_Abstract
 {
-    public function viewSettingsList()
+    public function viewSettingList()
     {
         return Syncee_View::render(__FUNCTION__, array(
 
