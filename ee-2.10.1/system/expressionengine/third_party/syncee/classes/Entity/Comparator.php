@@ -41,19 +41,16 @@ class Syncee_Entity_Comparator implements Syncee_Entity_Comparator_Interface
         $source_data = $source->toArray();
         $target_data = $target->toArray();
 
-        $differences_from_source = array_diff_assoc($source_data, $target_data);
-
-        foreach ($differences_from_source as $key => $value_in_source) {
+        foreach ($source_data as $key => $value_in_source) {
             $comparison = new Syncee_Entity_Comparison($source, $target);
-
             $comparison->setComparateColumnName($key)->setSourceValue($value_in_source);
 
-            $column_missing_in_target = !isset($target_data[$key]);
+            $column_exists_in_target = array_key_exists($key, $target_data);
 
-            if ($column_missing_in_target) {
-                $comparison->setComparateColumnExistsInTarget(false);
-            } else {
+            if ($column_exists_in_target) {
                 $comparison->setTargetValue($target_data[$key]);
+            } else {
+                $comparison->setComparateColumnExistsInTarget(false);
             }
 
             $comparison->getComparisonResult();
@@ -61,15 +58,14 @@ class Syncee_Entity_Comparator implements Syncee_Entity_Comparator_Interface
             $comparison_collection->appendToCollectionAsEntity($comparison);
         }
 
-        $differences_from_target = array_diff_assoc($target_data, $source_data);
-
-        foreach ($differences_from_target as $key => $value_in_target) {
-            $column_missing_in_source = !isset($source_data[$key]);
+        // iterate through target data, since there may be columns in target that are missing in source
+        foreach ($target_data as $key => $value_in_target) {
+            $column_exists_in_source = array_key_exists($key, $source_data);
 
             // the only comparisons we need to add in this loop are array keys that exist in target but not in source,
             // since they would've been overlooked in the first loop.
             // Return if column exists in both source and target since the comparison would be a redundant addition to the collection
-            if (!$column_missing_in_source) {
+            if ($column_exists_in_source) {
                 continue;
             }
 
