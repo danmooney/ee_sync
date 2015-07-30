@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract implements Syncee_Comparison_Result_Interface
+class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract implements Syncee_Comparison_Result_Interface, Syncee_Comparison_Differ_Interface
 {
     const RESULT_ENTITY_MISSING_IN_SOURCE_AND_TARGET = 'RESULT_ENTITY_MISSING_IN_SOURCE_AND_TARGET';
     const RESULT_ENTITY_MISSING_IN_SOURCE            = 'RESULT_ENTITY_MISSING_IN_SOURCE';
@@ -127,9 +127,72 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
         return $this->getTarget()->getUniqueIdentifierValue() ?: $this->getSource()->getUniqueIdentifierValue();
     }
 
-    // TODO - need to refactor this to be hasComparisons most likely... negation is uncharacteristic of the rest of the code
-    public function hasNoComparisons()
+    public function hasNoDifferingComparisons()
     {
-        return $this->isEmptyCollection();
+        $has_no_comparisons = true;
+
+        /**
+         * @var $row Syncee_Entity_Comparison
+         */
+        foreach ($this->_rows as $row) {
+            if (!$row->hasNoDifferingComparisons()) {
+                $has_no_comparisons = false;
+                break;
+            }
+        }
+
+        return $has_no_comparisons;
+    }
+
+    /**
+     * @return Syncee_Entity_Comparison_Collection
+     */
+    public function getDifferingComparisonEntityCollection()
+    {
+        $differing_entities = array();
+
+        /**
+         * @var $row Syncee_Entity_Comparison
+         */
+        foreach ($this->_rows as $row) {
+            if (!$row->hasNoDifferingComparisons()) {
+                $differing_entities[] = $row;
+            }
+        }
+
+        /**
+         * @var $collection Syncee_Entity_Comparison_Collection
+         */
+        $collection = new $this($differing_entities);
+
+        $collection->setSource($this->_source);
+        $collection->setTarget($this->_target);
+        $collection->setUniqueIdentifierKey($this->getUniqueIdentifierKey());
+
+        return $collection;
+    }
+
+    public function getTotalComparisonEntityCount($include_differing_entity_count_only = true, $exclude_ignored_columns = true)
+    {
+        $total_comparison_entity_count = 0;
+
+        /**
+         * @var $row Syncee_Entity_Comparison
+         */
+        foreach ($this->_rows as $row) {
+            // if column is being ignored from comparison and we're only counting unignored columns, then continue
+            if ($exclude_ignored_columns && $row->comparateColumnIsIgnoredInComparison()) {
+                continue;
+            }
+
+            // if comparison result is the same and we're only counting comparison differences, then continue
+            if ($include_differing_entity_count_only && $row->hasNoDifferingComparisons()) {
+                continue;
+            }
+
+            $total_comparison_entity_count += 1;
+        }
+
+        return $total_comparison_entity_count;
     }
 }

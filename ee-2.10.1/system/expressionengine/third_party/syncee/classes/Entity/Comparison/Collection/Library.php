@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Library_Abstract
+class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Library_Abstract implements Syncee_Comparison_Differ_Interface
 {
     /**
      * @var Syncee_Site
@@ -77,48 +77,51 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
         parent::appendToLibraryAsCollection($collection);
     }
 
-    public function hasNoComparisons()
+    public function hasNoDifferingComparisons()
     {
-        $has_no_comparisons = true;
+        $has_no_differing_comparisons = true;
 
         /**
          * @var $collection Syncee_Entity_Comparison_Collection
          */
         foreach ($this->_collections as $collection) {
-            if (!$collection->hasNoComparisons()) {
-                $has_no_comparisons = false;
+            if (!$collection->hasNoDifferingComparisons()) {
+                $has_no_differing_comparisons = false;
                 break;
             }
         }
 
-        return $has_no_comparisons;
+        return $has_no_differing_comparisons;
     }
 
     /**
      * @return Syncee_Entity_Comparison_Collection_Library
      */
-    public function getNonEmptyComparisonCollectionLibrary()
+    public function getDifferingComparisonCollectionLibrary()
     {
-        $non_empty_collections = array();
+        $differing_collections = array();
 
         /**
          * @var $collection Syncee_Entity_Comparison_Collection
          */
         foreach ($this->_collections as $collection) {
-            if (!$collection->hasNoComparisons()) {
-                $non_empty_collections[] = $collection;
+            if (!$collection->hasNoDifferingComparisons()) {
+                $differing_collections[] = $collection;
             }
         }
 
-        return new $this($non_empty_collections, $this->_target_site, $this->_unique_identifier_key_override);
+        return new $this($differing_collections, $this->_target_site, $this->_unique_identifier_key_override);
     }
 
-    public function getTotalComparisonEntityCountAcrossAllCollections()
+    public function getTotalComparisonEntityCountAcrossAllCollections($include_differing_entity_count_only = true, $exclude_ignored_columns = true)
     {
         $comparison_entity_count = 0;
 
+        /**
+         * @var $collection Syncee_Entity_Comparison_Collection
+         */
         foreach ($this->_collections as $collection) {
-            $comparison_entity_count += count($collection);
+            $comparison_entity_count += $collection->getTotalComparisonEntityCount($include_differing_entity_count_only, $exclude_ignored_columns);
         }
 
         return $comparison_entity_count;

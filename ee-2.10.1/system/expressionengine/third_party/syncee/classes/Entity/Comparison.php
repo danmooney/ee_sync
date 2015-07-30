@@ -18,18 +18,20 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_Comparison_Result_Interface
+class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_Comparison_Result_Interface, Syncee_Entity_Comparison_Interface, Syncee_Comparison_Differ_Interface
 {
     const RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET = 'RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE';
     const RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE            = 'RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE';
     const RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET            = 'RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET';
     const RESULT_COMPARATE_VALUE_DIFFERS                       = 'RESULT_COMPARATE_VALUE_DIFFERS';
+    const RESULT_COMPARATE_VALUE_SAME                          = 'RESULT_COMPARATE_VALUE_SAME';
 
     private $_comparison_results = array(
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET,
-        self::RESULT_COMPARATE_VALUE_DIFFERS
+        self::RESULT_COMPARATE_VALUE_DIFFERS,
+        self::RESULT_COMPARATE_VALUE_SAME
     );
 
     /**
@@ -38,12 +40,12 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
     private $_comparison_result;
 
     /**
-     * @var Syncee_Entity_Abstract
+     * @var Syncee_Entity_Comparate_Abstract
      */
     private $_source;
 
     /**
-     * @var Syncee_Entity_Abstract
+     * @var Syncee_Entity_Comparate_Abstract
      */
     private $_target;
 
@@ -77,6 +79,11 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
      */
     private $_fix;
 
+    /**
+     * @var bool
+     */
+    private $_column_is_ignored_in_comparison;
+
     public function __construct(Syncee_Entity_Abstract $source, Syncee_Entity_Abstract $target)
     {
         $this->_source = $source;
@@ -86,6 +93,7 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
     public function setComparateColumnName($comparate_column_name)
     {
         $this->_comparate_column_name = $comparate_column_name;
+        $this->comparateColumnIsIgnoredInComparison();
         return $this;
     }
 
@@ -145,8 +153,10 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
                 $this->_comparison_result = self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE;
             } elseif (!$this->_comparate_column_exists_in_target) {
                 $this->_comparison_result = self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET;
-            } else {
+            } elseif ($this->getSourceValue() !== $this->getTargetValue()) {
                 $this->_comparison_result = self::RESULT_COMPARATE_VALUE_DIFFERS;
+            } else {
+                $this->_comparison_result = self::RESULT_COMPARATE_VALUE_SAME;
             }
         }
 
@@ -182,5 +192,19 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         .   serialize($this->_source->toArray())
         .   serialize($this->_target->toArray())
         );
+    }
+
+    public function comparateColumnIsIgnoredInComparison()
+    {
+        if (!isset($this->_column_is_ignored_in_comparison)) {
+            $this->_column_is_ignored_in_comparison = in_array($this->getComparateColumnName(), $this->_source->getIgnoredColumnsFromComparison());
+        }
+
+        return $this->_column_is_ignored_in_comparison;
+    }
+
+    public function hasNoDifferingComparisons()
+    {
+        return $this->getComparisonResult() === self::RESULT_COMPARATE_VALUE_SAME;
     }
 }
