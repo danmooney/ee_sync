@@ -57,17 +57,20 @@ class Test_Comparison_Channel_Field extends Syncee_Unit_Test_Case_Abstract
     {
         $channel_field_comparison_library = $this->_site_collection->getChannelFieldComparisonCollectionLibrary();
 
-        $non_empty_channel_field_comparison_library = $channel_field_comparison_library->getDifferingComparisonCollectionLibrary();
+        $differing_channel_field_comparison_library = $channel_field_comparison_library->getDifferingComparisonCollectionLibrary();
 
-        $this->assertEqual($non_empty_channel_field_comparison_library->getTotalComparisonEntityCountAcrossAllCollections(), 1, 'Number of non-empty channel field comparison collections is 1: %s');
-
-        $channel_field_comparison_collection        = $non_empty_channel_field_comparison_library[0];
-        $this->assertEqual(count($channel_field_comparison_collection), 1, 'There is 1 comparison result entity in channel field comparison collection: %s');
+        $this->assertEqual($differing_channel_field_comparison_library->getTotalComparisonEntityCountAcrossAllCollections(), 1, 'Number of non-empty channel field comparison collections is 1: %s');
 
         /**
+         * @var $channel_field_comparison_collection Syncee_Entity_Comparison_Collection
          * @var $channel_field_comparison_entity Syncee_Entity_Comparison
          */
-        $channel_field_comparison_entity = $channel_field_comparison_collection[0];
+        $channel_field_comparison_collection = $differing_channel_field_comparison_library[0];
+        $this->assertEqual($channel_field_comparison_collection->getTotalComparisonEntityCount(), 1, 'There is 1 comparison result entity in channel field comparison collection: %s');
+
+        $differing_channel_field_comparison_collection = $channel_field_comparison_collection->getDifferingComparisonEntityCollection();
+
+        $channel_field_comparison_entity = $differing_channel_field_comparison_collection[0];
         $this->assertEqual($channel_field_comparison_entity->getComparateColumnName(), 'field_label', 'Lone channel comparison entity\'s comparate column name is "field_label": %s');
         $this->assertEqual($channel_field_comparison_entity->getSourceValue(), 'Animal Description YO', 'Lone channel comparison entity\'s source value is "Animal Description YO": %s');
         $this->assertEqual($channel_field_comparison_entity->getTargetValue(), 'Animal Description', 'Lone channel comparison entity\'s target value is "Animal Description": %s');
