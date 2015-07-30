@@ -31,7 +31,7 @@ abstract class Syncee_Entity_Comparate_Collection_Abstract extends Syncee_Collec
         $this->_site = $site;
 
         /**
-         * @var $row Syncee_Entity_Abstract
+         * @var $row Syncee_Entity_Comparate_Abstract
          */
         foreach ($this->_rows as $row) {
             $row->setSite($site);
