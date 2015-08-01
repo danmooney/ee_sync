@@ -94,7 +94,7 @@ class Syncee_Response
                 $decoded_response['data'] = $this->_decryptResponseData($site, $decoded_response['data']);
             }
 
-            if (!$decoded_response['data']) {
+            if (!is_array($decoded_response['data'])) {
                 $this->_errors[] = 'Unable to decode response data with private key on this local machine.';
             }
         }
