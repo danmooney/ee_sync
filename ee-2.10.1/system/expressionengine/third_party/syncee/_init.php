@@ -56,6 +56,7 @@ if ($ee_will_eval_templates) {
 
 // TODO - start tracking memory usage in tests/for the entire module in general while building
 defined('SYNCEE_VERSION')         or define('SYNCEE_VERSION',        '0.1.0');
+defined('SYNCEE_EE_VERSION')      or define('SYNCEE_EE_VERSION',     defined('APP_VER') ? APP_VER : null);
 defined('SYNCEE_URL')             or define('SYNCEE_URL',            'http://www.sync-ee.com');
 defined('SYNCEE_PATH')            or define('SYNCEE_PATH',           dirname(__FILE__));
 defined('SYNCEE_PATH_TESTS')      or define('SYNCEE_PATH_TESTS',     SYNCEE_PATH . '/tests');
