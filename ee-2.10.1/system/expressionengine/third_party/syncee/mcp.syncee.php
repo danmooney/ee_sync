@@ -71,7 +71,7 @@ class Syncee_Mcp
 
             if (method_exists($mcp_obj, $method)) {
                 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                   $this->_runLocalSiteCleanup();
+                    $this->_runLocalSiteCleanup();
                 }
 
                 $mcp_obj->setCalledMethod($method);
@@ -110,7 +110,7 @@ class Syncee_Mcp
         $entity = new $entity_class_name();
         $entity->setRequestedEeSiteId($ee_site_id);
 
-        new Syncee_Request_Remote($site, $entity);
+        new Syncee_Request_Remote($site, $entity, new Syncee_Site_Request_Log());
     }
 
     private function _runLocalSiteCleanup()
