@@ -37,6 +37,7 @@ class Syncee_Helper_Curl
     public $http_error = false;
     public $http_status_code = 0;
     public $http_error_message = null;
+    public $primary_ip = null;
 
     public $base_url = null;
     public $url = null;
@@ -325,6 +326,7 @@ class Syncee_Helper_Curl
         $this->curl_error = !($this->curl_error_code === 0);
         $this->http_status_code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
         $this->http_error = in_array(floor($this->http_status_code / 100), array(4, 5));
+        $this->primary_ip = curl_getinfo($this->curl, CURLINFO_PRIMARY_IP);
         $this->error = $this->curl_error || $this->http_error;
         $this->error_code = $this->error ? ($this->curl_error ? $this->curl_error_code : $this->http_status_code) : 0;
 
