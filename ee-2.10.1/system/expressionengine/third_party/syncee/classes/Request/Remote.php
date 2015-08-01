@@ -37,7 +37,7 @@ class Syncee_Request_Remote
      * @param Syncee_Site $site
      * @param Syncee_Request_Remote_Entity_Interface $entity
      */
-    public function __construct(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity = null)
+    public function __construct(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity = null, Syncee_Site_Request_Log $log = null)
     {
         $ee_site_id          = $entity->getRequestedEeSiteId();
         $this->_site         = $site;
@@ -84,7 +84,7 @@ class Syncee_Request_Remote
         }
 
         if ($code !== 200) {
-            $this->_sendJsonResponse(array(), $errors, $code, $message);
+            $this->_sendJsonResponse($this->_getJsonResponse(array(), $errors, $code, $message));
         }
 
         $collection = $entity->getCollection();
@@ -97,13 +97,30 @@ class Syncee_Request_Remote
             $message = 'Bad public key.';
         }
 
-        $this->_sendJsonResponse($data, $errors, $code, $message);
+        $response_data_to_send = $this->_getJsonResponse($data, $errors, $code, $message);
+
+        if ($log) {
+            $log->assign(array(
+                'site_id'           => $site->getPrimaryKeyValues(true),
+                'entity_class_name' => get_class($entity),
+                'code'              => $code,
+                'content_type'      => $this->_json_mime_type,
+                'version'           => SYNCEE_VERSION,
+                'ee_version'        => SYNCEE_EE_VERSION,
+                'message'           => $message,
+                'errors'            => $errors,
+                'raw_response'      => json_encode($response_data_to_send, SYNCEE_TEST_MODE ? JSON_PRETTY_PRINT : 0),
+                'request_direction' => $log::REQUEST_DIRECTION_INBOUND
+            ));
+
+            $log->save();
+        }
+
+        $this->_sendJsonResponse($response_data_to_send);
     }
 
-    private function _sendJsonResponse($data = array(), $errors = array(), $code = 200, $message = '', $meta = array())
+    private function _getJsonResponse($data = array(), $errors = array(), $code = 200, $message = '', $meta = array())
     {
-        header("Content-Type: {$this->_json_mime_type}", true, $code);
-
         $site = $this->_site;
 
 		$data = array(
@@ -113,9 +130,7 @@ class Syncee_Request_Remote
 			'errors'  => $errors
 		);
 
-        if (defined(APP_VER)) {
-            $data['ee_version'] = APP_VER;
-        }
+        $data['ee_version'] = SYNCEE_EE_VERSION;
 
         if (SYNCEE_TEST_MODE) {
             $meta['public_key']           = $site->rsa->getPublicKey();
@@ -134,6 +149,13 @@ class Syncee_Request_Remote
 		if ($message) {
 			$data['message'] = $message;
 		}
+
+		return $data;
+    }
+
+    private function _sendJsonResponse(array $data)
+    {
+        header("Content-Type: {$this->_json_mime_type}", true, $data['code']);
 
 		echo json_encode($data, SYNCEE_TEST_MODE ? JSON_PRETTY_PRINT : 0);
         exit;
