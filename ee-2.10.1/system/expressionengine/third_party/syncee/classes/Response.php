@@ -88,11 +88,12 @@ class Syncee_Response
         );
 
         if (isset($decoded_response['data']) && is_string($decoded_response['data'])) {
-            if (is_array(json_decode($decoded_response['data'], true))) {
-                $decoded_response['data'] = json_decode($decoded_response['data'], true);
-            } else {
+            if (!is_array(json_decode($decoded_response['data'], true))) {
                 $decoded_response['data'] = $this->_decryptResponseData($site, $decoded_response['data']);
             }
+
+            $decoded_response['data'] = json_decode($decoded_response['data'], true);
+
 
             if (!is_array($decoded_response['data'])) {
                 $this->_errors[] = 'Unable to decode response data with private key on this local machine.';
