@@ -109,6 +109,7 @@ class Syncee_Request_Remote
                 'ee_version'        => SYNCEE_EE_VERSION,
                 'message'           => $message,
                 'errors'            => $errors,
+                'ip_address'        => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null,
                 'raw_response'      => json_encode($response_data_to_send, SYNCEE_TEST_MODE ? JSON_PRETTY_PRINT : 0),
                 'request_direction' => $log::REQUEST_DIRECTION_INBOUND
             ));

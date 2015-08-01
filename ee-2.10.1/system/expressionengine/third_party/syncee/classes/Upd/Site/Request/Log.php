@@ -27,10 +27,28 @@ class Syncee_Upd_Site_Request_Log extends Syncee_Upd_Abstract
             'null'           => false,
             'auto_increment' => true
         ),
+//        'site_group_id' => array(
+//            'type'          => 'INT',
+//            'unsigned'      => true,
+//            'null'          => true,
+//        ),
+// REMEMBER - local_site_id can easily be changed at any time by the user!  Need to denormalize this value
+//        'local_site_id' => array(
+//            'type'          => 'INT',
+//            'unsigned'      => true,
+//            'null'          => true,
+//        ),
+        // remote site id
         'site_id' => array(
             'type'          => 'INT',
             'unsigned'      => true,
             'null'          => false,
+        ),
+        'request_direction' => array(
+            'type'       => 'tinyint',
+            'constraint' => '1',
+            'default'    => Syncee_Site_Request_Log::REQUEST_DIRECTION_OUTBOUND,
+            'null'       => false,
         ),
         'entity_class_name' => array(
             'type'       => 'VARCHAR',
@@ -50,6 +68,16 @@ class Syncee_Upd_Site_Request_Log extends Syncee_Upd_Abstract
         'version' => array(
             'type'       => 'VARCHAR',
             'constraint' => 25,
+            'null'       => true
+        ),
+        'ee_version' => array(
+            'type'       => 'VARCHAR',
+            'constraint' => 25,
+            'null'       => true
+        ),
+        'ip_address' => array(
+            'type'       => 'VARCHAR',
+            'constraint' => 100,
             'null'       => true
         ),
         'message' => array(
@@ -77,7 +105,7 @@ class Syncee_Upd_Site_Request_Log extends Syncee_Upd_Abstract
         ee()->dbforge->drop_table($this->getTableName());
         ee()->dbforge->add_field($this->_fields);
         ee()->dbforge->add_key('request_log_id', true);
-        ee()->dbforge->add_key('site_id', false);
+        ee()->dbforge->add_key(array('request_direction', 'site_id'), false);
         ee()->dbforge->add_key('entity_class_name', false);
         ee()->dbforge->create_table($this->getTableName(), true);
     }

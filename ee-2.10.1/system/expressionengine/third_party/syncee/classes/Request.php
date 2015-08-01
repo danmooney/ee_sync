@@ -20,6 +20,7 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Request implements Syncee_Request_Interface
 {
+
     /**
      * @var Syncee_Helper_Curl
      */
@@ -65,9 +66,12 @@ class Syncee_Request implements Syncee_Request_Interface
                 'code'              => $response->getStatusCode(),
                 'content_type'      => $response->getContentType(),
                 'version'           => $response->getResponseDecoded('version'),
+                'ee_version'        => $response->getResponseDecoded('ee_version'),
                 'message'           => $response->getMessage(),
                 'errors'            => $response->getErrors(),
                 'raw_response'      => $response->getRawResponse(),
+                'ip_address'        => $ch->primary_ip,
+                'request_direction' => $log::REQUEST_DIRECTION_OUTBOUND
             ));
 
             $log->save();
