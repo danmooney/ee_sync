@@ -25,6 +25,19 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
 {
     const TABLE_NAME = 'syncee_site_request_log';
 
+    const REQUEST_DIRECTION_BOTH     = 0;
+    const REQUEST_DIRECTION_INBOUND  = 1;
+    const REQUEST_DIRECTION_OUTBOUND = 2;
+
+    const REQUEST_DIRECTION_DEFAULT  = self::REQUEST_DIRECTION_OUTBOUND;
+
+    private $_request_directions = array(
+        self::REQUEST_DIRECTION_INBOUND,
+        self::REQUEST_DIRECTION_OUTBOUND
+    );
+
+    private $_request_direction = self::REQUEST_DIRECTION_DEFAULT;
+
     protected $_collection_model = 'Syncee_Site_Request_Log_Collection';
 
     protected $_primary_key_names = array('request_log_id');
@@ -64,6 +77,11 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
         return true;
     }
 
+    public function setRequestDirection($request_direction)
+    {
+        $this->_request_direction = $request_direction;
+    }
+
     public function getRawResponseWithDataDecoded()
     {
         $response              = new Syncee_Response($this, $this->site, $this->request_entity);
@@ -98,5 +116,4 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
     {
         return (string) $this->raw_response;
     }
-
 }
