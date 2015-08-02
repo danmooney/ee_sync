@@ -105,7 +105,7 @@ class Syncee_Upd_Site_Request_Log extends Syncee_Upd_Abstract
         ee()->dbforge->drop_table($this->getTableName());
         ee()->dbforge->add_field($this->_fields);
         ee()->dbforge->add_key('request_log_id', true);
-        ee()->dbforge->add_key(array('request_direction', 'site_id'), false);
+        ee()->dbforge->add_key(array('request_direction', 'request_log_id', 'site_id'), false);
         ee()->dbforge->add_key('entity_class_name', false);
         ee()->dbforge->create_table($this->getTableName(), true);
     }
