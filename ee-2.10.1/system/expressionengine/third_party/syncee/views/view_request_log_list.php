@@ -23,6 +23,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                         $request_log->site->title
                     );
                 }, false, 'center'),
+                new Syncee_Table_Column('IP Address', 'ip_address', true, 'center'),
                 new Syncee_Table_Column('Date of Request', 'create_datetime', true, 'center', new Syncee_Table_Column_Value_Formatter_Datetime()),
                 new Syncee_Table_Column('Request Entity Type', function (Syncee_Site_Request_Log $request_log) {
                     return $request_log->request_entity->getName();
