@@ -23,4 +23,22 @@ class Syncee_Paginator_Site_Request_Log extends Syncee_Paginator
     protected $_order_by = 'request_log_id';
 
     protected $_order_dir = 'desc';
+
+    public function __construct(array $params = array(), Syncee_Mcp_Abstract $mcp)
+    {
+        parent::__construct($params, $mcp);
+
+        if (!isset($this->_params['request_direction'])) {
+            $this->_params['request_direction'] = Syncee_Site_Request_Log::REQUEST_DIRECTION_DEFAULT;
+        }
+    }
+
+    public function modifyQueryOnDriver($db)
+    {
+        if (isset($this->_params['request_direction']) && $this->_params['request_direction']) {
+            $db->where('request_direction', $this->_params['request_direction']);
+        }
+
+        parent::modifyQueryOnDriver($db);
+    }
 }
