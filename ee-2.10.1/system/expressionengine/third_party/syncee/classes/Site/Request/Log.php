@@ -105,7 +105,7 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
         $success = (
             intval($this->code) === 200 &&
             empty($this->errors) &&
-            $this->version === Syncee_Upd::VERSION &&
+            $this->version === $this->request_version &&
             is_array($decoded_data)
         );
 
