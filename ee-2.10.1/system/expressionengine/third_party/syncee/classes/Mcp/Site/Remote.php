@@ -111,7 +111,6 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
 
     }
 
-    // TODO - add to Syncee_Mcp_Site_Request_Log???
     public function pingRemoteSitePOST()
     {
         $site_id     = ee()->input->get('site_id');
