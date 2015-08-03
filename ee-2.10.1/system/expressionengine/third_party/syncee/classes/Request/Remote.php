@@ -100,17 +100,22 @@ class Syncee_Request_Remote
         $response_data_to_send = $this->_getJsonResponse($data, $errors, $code, $message);
 
         if ($log) {
+            // decrypt the encrypted response data for easy viewing in inbound request log
+            $raw_response_data_decoded         = $response_data_to_send;
+            $raw_response_data_decoded['data'] = $collection->toArray(false);
+
             $log->assign(array(
                 'site_id'           => $site->getPrimaryKeyValues(true),
                 'entity_class_name' => get_class($entity),
                 'code'              => $code,
                 'content_type'      => $this->_json_mime_type,
                 'version'           => SYNCEE_VERSION,
+                'request_version'   => SYNCEE_VERSION,
                 'ee_version'        => SYNCEE_EE_VERSION,
                 'message'           => $message,
                 'errors'            => $errors,
                 'ip_address'        => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null,
-                'raw_response'      => json_encode($response_data_to_send, SYNCEE_TEST_MODE ? JSON_PRETTY_PRINT : 0),
+                'raw_response'      => json_encode($raw_response_data_decoded),
                 'request_direction' => $log::REQUEST_DIRECTION_INBOUND
             ));
 
@@ -125,7 +130,7 @@ class Syncee_Request_Remote
         $site = $this->_site;
 
 		$data = array(
-            'version' => Syncee_Upd::VERSION,
+            'version' => SYNCEE_VERSION,
 			'code'    => $code,
 			'data'    => $data,
 			'errors'  => $errors
