@@ -65,10 +65,17 @@ class Syncee_Upd_Site_Request_Log extends Syncee_Upd_Abstract
             'constraint' => 100,
             'null'       => true
         ),
+        // the syncee version of the responder
         'version' => array(
             'type'       => 'VARCHAR',
             'constraint' => 25,
             'null'       => true
+        ),
+        // the syncee version of the requestor
+        'request_version' => array(
+            'type'       => 'VARCHAR',
+            'constraint' => 25,
+            'null'       => false
         ),
         'ee_version' => array(
             'type'       => 'VARCHAR',
