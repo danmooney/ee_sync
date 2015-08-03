@@ -15,7 +15,7 @@ require_once dirname(__FILE__) . '/../_init.php';
     else:
         echo new Syncee_Table(
             new Syncee_Table_Column_Collection(array(
-                new Syncee_Table_Column('Syncee Request ID', 'request_log_id', true, 'center', new Syncee_Table_Column_Value_Formatter_Link('viewRequestLog')),
+                new Syncee_Table_Column('Syncee Request ID', 'request_log_id', true, 'center', new Syncee_Table_Column_Value_Formatter_Link('viewRequestLog', null, array('request_direction'))),
                 new Syncee_Table_Column('Site', function (Syncee_Site_Request_Log $request_log) {
                     return sprintf(
                         '<a href="%s">%s</a>',
