@@ -74,7 +74,7 @@ class Syncee_Site_Request_Log_Diagnosis
             $diagnoses[] = static::REQUEST_DIAGNOSIS_ACTION_ID_INVALID;
         }
 
-        if ($request_log->version && $request_log->version !== Syncee_Upd::VERSION) {
+        if ($request_log->version && $request_log->version !== $request_log->request_version) {
             $diagnoses[] = static::REQUEST_DIAGNOSIS_SYNCEE_VERSIONS_DIFFER;
         }
 
