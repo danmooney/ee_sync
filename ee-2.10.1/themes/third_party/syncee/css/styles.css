@@ -249,8 +249,19 @@
 
 #syncee-page .flash-message-container .btn-close {
     position: absolute;
-    top: 10px;
+    top: 8px;
     right: 10px;
+    background: url('../img/btn_close.png') 0 2px no-repeat;
+    width: 15px;
+    height: 19px;
+    border: 0;
+    padding: 0;
+}
+
+#syncee-page .flash-message-container .btn-close:hover,
+#syncee-page .flash-message-container .btn-close.clicked
+{
+    background-image: url('../img/btn_close_hover.png');
 }
 
 #syncee-page table.form-table label {
@@ -300,4 +311,8 @@
 
 #syncee-page .comparison-collection-table .comparison-summary td {
     border-top: 0;
+}
+
+#syncee-page .image-cache {
+    display: none;
 }
