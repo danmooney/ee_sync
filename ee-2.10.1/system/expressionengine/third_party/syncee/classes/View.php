@@ -42,7 +42,9 @@ class Syncee_View
         $vars = array_merge(
             $vars,
             array(
-                'mcp' => $mcp
+                'mcp'        => $mcp,
+                'theme_path' => static::_getThemePath(),
+                'theme_url'  => static::_getThemeUrl(),
             )
         );
 
@@ -56,21 +58,19 @@ class Syncee_View
             ) : ''
         ;
 
+        $image_cache_html = ee()->load->view('_shared/image_cache.php', $vars, true);
+
         return sprintf(
-            '<div id="syncee">%s<div id="syncee-page">%s %s<div style="clear:both;"></div>%s</div></div>',
+            '<div id="syncee">%s<div id="syncee-page">%s %s<div style="clear:both;"></div>%s%s</div></div>',
             $menu_html,
             $flash_message_html,
             ee()->load->view(
                 Syncee_Helper::convertCamelCaseToUnderscore($template_filename),
-                array_merge(
-                    $vars,
-                    array(
-                        'mcp' => $mcp
-                    )
-                ),
+                $vars,
                 true
             ),
-            $paginator_html
+            $paginator_html,
+            $image_cache_html
         );
     }
 
