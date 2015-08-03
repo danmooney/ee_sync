@@ -66,6 +66,7 @@ class Syncee_Request implements Syncee_Request_Interface
                 'code'              => $response->getStatusCode(),
                 'content_type'      => $response->getContentType(),
                 'version'           => $response->getResponseDecoded('version'),
+                'request_version'   => SYNCEE_VERSION,
                 'ee_version'        => $response->getResponseDecoded('ee_version'),
                 'message'           => $response->getMessage(),
                 'errors'            => $response->getErrors(),
