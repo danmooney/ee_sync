@@ -42,8 +42,10 @@ $active_menu_item_submenu_items = null;
         if (isset($data['method'])) {
             $menu_item_to_reference = $data;
             $should_be_active_menu_item = in_array($data['method'], $mcp_class_methods);
+            $has_submenu = false;
         } else {
             $menu_item_to_reference = reset($data);
+            $has_submenu = true;
         }
 
         $should_be_active_menu_item = in_array($menu_item_to_reference['method'], $mcp_class_methods);
@@ -51,9 +53,16 @@ $active_menu_item_submenu_items = null;
         if ($should_be_active_menu_item && $menu_item_to_reference !== $data) {
             $active_menu_item_submenu_items = $data;
         }
+
+        $additional_class = $should_be_active_menu_item ? 'active' : 'not-active';
+
+        if ($has_submenu) {
+            $additional_class .= ' has-submenu';
+        }
+
     ?>
     <li>
-        <a class="btn-secondary <?= $should_be_active_menu_item ? 'active' : 'not-active' ?>" href="<?= Syncee_Helper::createModuleCpUrl($menu_item_to_reference) ?>"><?= $label ?></a>
+        <a class="btn-secondary <?= $additional_class ?>" href="<?= Syncee_Helper::createModuleCpUrl($menu_item_to_reference) ?>"><?= $label ?></a>
     </li>
 <?php
     endforeach ?>
@@ -63,10 +72,11 @@ $active_menu_item_submenu_items = null;
         <ul class="menu submenu">
         <?php
             foreach ($active_menu_item_submenu_items as $label => $submenu):
-                $should_be_active_menu_item = false;
+                $should_be_active_menu_item = Syncee_Helper::queryParamsMatchValues($submenu);
+
                 ?>
                 <li>
-                    <a class="btn-tertiary <?= $should_be_active_menu_item ? 'active' : 'not-active' ?>" href="<?= Syncee_Helper::createModuleCpUrl($submenu) ?>">
+                    <a class="btn-secondary <?= $should_be_active_menu_item ? 'active' : 'not-active' ?>" href="<?= Syncee_Helper::createModuleCpUrl($submenu) ?>">
                         <?= $label ?>
                     </a>
                 </li>
