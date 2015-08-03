@@ -69,6 +69,19 @@ class Syncee_Helper
         return $path;
     }
 
+    public static function queryParamsMatchValues(array $values)
+    {
+        $all_values_match_params = true;
+
+        foreach ($values as $key => $value) {
+            if (ee()->input->get($key) != $value) {
+                $all_values_match_params = false;
+            }
+        }
+
+        return $all_values_match_params;
+    }
+
     public static function convertUTCDateToLocalizedHumanDatetime($utc_datetime)
     {
         return ee()->localize->human_time(strtotime($utc_datetime . ' UTC'));
