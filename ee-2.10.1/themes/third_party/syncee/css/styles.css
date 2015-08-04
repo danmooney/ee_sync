@@ -107,6 +107,26 @@
     padding: 8px 23px;
 }
 
+#syncee-page table tr th > a {
+    color: #FFF;
+    font-weight: bold;
+}
+
+#syncee-page table tr th > a.current-order-by:after {
+    text-decoration: none;
+    position: absolute;
+    top: 25%;
+    right: 10px
+}
+
+#syncee-page table tr th > a.order-dir-asc:after {
+    content: "\25b2";
+}
+
+#syncee-page table tr th > a.order-dir-desc:after {
+    content: "\25bc";
+}
+
 #syncee-page table tr > * > a,
 #syncee-page table tr > *  > span
 {
@@ -129,6 +149,7 @@
 #syncee-page table tr th {
     background: #1B1D36;
     color: #FFF;
+    position: relative;
     /*padding: 8px 23px;*/
 }
 
@@ -315,4 +336,8 @@
 
 #syncee-page .image-cache {
     display: none;
+}
+
+#syncee .menu.submenu {
+    background: #FFF;
 }
