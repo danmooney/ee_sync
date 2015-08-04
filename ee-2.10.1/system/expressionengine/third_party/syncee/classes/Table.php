@@ -69,7 +69,9 @@ class Syncee_Table
         foreach ($this->_column_collection as $column) {
             // ordering logic
             if ($column->isOrderable() && ($paginator = $this->_paginator)) {
-                $new_order_dir = $paginator->getOrderBy() === $column->getColumnReferenceValue()
+                $is_currently_being_ordered_by_this_column = $paginator->getOrderBy() === $column->getColumnReferenceValue();
+
+                $new_order_dir = $is_currently_being_ordered_by_this_column
                     ? $paginator->getOppositeOrderDir()
                     : $paginator->getOrderDir()
                 ;
@@ -84,8 +86,15 @@ class Syncee_Table
                     )
                 ));
 
+                if ($is_currently_being_ordered_by_this_column) {
+                    $class_html = 'class="current-order-by order-dir-' . strtolower($paginator->getOrderDir()) . '"';
+                } else {
+                    $class_html = '';
+                }
+
                 $label = sprintf(
-                    '<a href="%s">%s</a>',
+                    '<a %s href="%s">%s</a>',
+                    $class_html,
                     $order_href,
                     $column->getLabel()
                 );
