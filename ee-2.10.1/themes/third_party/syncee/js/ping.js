@@ -27,14 +27,40 @@ $(function ($) {
 
             },
             complete: function (response) {
-                var responseText = response.responseText || '(Empty Response)'
+                var emptyResponseStr = '(Empty Response)',
+                    responseText = response.responseText || responseText.response,
+                    diagnoses = [],
+                    diagnosesStr = '',
+                    diagnosesClassStr = 'negative',
+                    rawResponseStr
                 ;
 
                 try {
-                    responseText = JSON.stringify(JSON.parse(responseText), null, 4);
-                } catch (e) {}
+                    responseText = JSON.parse(responseText);
+                    diagnoses    = responseText.diagnoses;
 
-                $remoteSitePayloadContents.text(responseText).wrap('<pre></pre>');
+                    if (responseText.response) {
+                        responseText = responseText.response;
+                        responseText = JSON.stringify(JSON.parse(responseText), null, 4);
+                    } else {
+                        responseText = emptyResponseStr;
+                    }
+
+                    if (diagnoses.length) {
+                        //diagnosesStr += 'Request Errors\n';
+                        diagnosesStr += diagnoses.join('\n');
+                    } else {
+                        diagnosesStr += 'Request Successful!\n';
+                        diagnosesClassStr = 'positive';
+                    }
+
+                } catch (e) {
+                    diagnosesStr = 'An error occurred while parsing the response\n';
+                }
+
+                rawResponseStr = '\n\n-----------BEGIN RAW RESPONSE----------\n' + responseText;
+
+                $remoteSitePayloadContents.text(rawResponseStr).wrapInner('<pre></pre>').prepend('<span class="diagnosis-' + diagnosesClassStr + '">' + diagnosesStr + '</span>');
                 isCurrentlyPinging = false;
             }
         });
