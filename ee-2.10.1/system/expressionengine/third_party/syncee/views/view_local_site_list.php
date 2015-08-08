@@ -8,7 +8,7 @@ require_once dirname(__FILE__) . '/../_init.php';
 
 echo new Syncee_Table(
     new Syncee_Table_Column_Collection(array(
-        new Syncee_Table_Column('Label', 'title', true, 'left', new Syncee_Table_Column_Value_Formatter_Link('editLocalSite')),
+        new Syncee_Table_Column('Label', 'title', false, 'left', new Syncee_Table_Column_Value_Formatter_Link('editLocalSite')),
         new Syncee_Table_Column('EE Site ID', 'ee_site_id', true, 'right'),
         new Syncee_Table_Column('Allows calls from remote sites?', 'requests_from_remote_sites_enabled', true, 'center', new Syncee_Table_Column_Value_Formatter_YesNo()),
         new Syncee_Table_Column('IP Whitelist', function (Syncee_Site $row) {
