@@ -125,9 +125,14 @@ class Syncee_Mcp
             return;
         }
 
+        $local_ee_site_ids = array();
+
+        // iterate through local sites that don't exist as syncee sites yet and create them
         foreach ($local_ee_sites as $local_ee_site) {
-            $corresponding_local_syncee_site = $sites_with_current_local_host->filterByCondition(array('ee_site_id' => $local_ee_site->site_id), true);
-            if ($corresponding_local_syncee_site->isEmptyRow()) {
+            $local_ee_site_ids[] = $local_ee_site->site_id;
+            $corresponding_local_syncee_sites = $sites_with_current_local_host->filterByCondition(array('ee_site_id' => $local_ee_site->site_id));
+            if (!count($corresponding_local_syncee_sites)) {
+                $corresponding_local_syncee_site = new Syncee_Site();
                 $corresponding_local_syncee_site->ee_site_id                         = $local_ee_site->site_id;
                 $corresponding_local_syncee_site->is_local                           = true;
                 $corresponding_local_syncee_site->site_url                           = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']);
@@ -139,14 +144,18 @@ class Syncee_Mcp
         // re-evaluate $sites_with_current_local_host
         $sites_with_current_local_host = $syncee_site_collection->filterByCondition(array('site_host' => $_SERVER['HTTP_HOST']));
 
+        $local_ee_site_ids_satisfied = array();
+
         /**
+         * Delete duplicate local syncee sites belonging to same EE site id
          * @var $site_with_current_local_host Syncee_ActiveRecord_Abstract
          */
         foreach ($sites_with_current_local_host as $site_with_current_local_host) {
             $corresponding_local_ee_site = null;
             foreach ($local_ee_sites as $local_ee_site) {
-                if ($local_ee_site->site_id === $site_with_current_local_host->ee_site_id) {
-                    $corresponding_local_ee_site = $local_ee_site;
+                if ($local_ee_site->site_id === $site_with_current_local_host->ee_site_id && !in_array($local_ee_site->site_id, $local_ee_site_ids_satisfied)) {
+                    $corresponding_local_ee_site   = $local_ee_site;
+                    $local_ee_site_ids_satisfied[] = $local_ee_site->site_id;
                     break;
                 }
             }
