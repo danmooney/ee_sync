@@ -13,7 +13,7 @@ require_once dirname(__FILE__) . '/../_init.php';
 </div>
 <div class="remote-site-settings-payload-container">
     <div style="float: right;">
-        <a href="<?= Syncee_Helper::createModuleCpUrl('pingRemoteSite', $syncee_remote_site->getPrimaryKeyNamesValuesMap()) ?>" class="btn-secondary btn-ping-site">Ping Site</a>
+        <a href="<?= Syncee_Helper::createModuleCpUrl('pingRemoteSite', $syncee_remote_site->getPrimaryKeyNamesValuesMap()) ?>" class="btn btn-secondary btn-ping-site">Ping Site</a>
     </div>
     <div class="clr"></div>
     <br>
