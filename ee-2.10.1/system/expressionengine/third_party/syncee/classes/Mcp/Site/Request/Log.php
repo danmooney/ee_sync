@@ -40,6 +40,9 @@ class Syncee_Mcp_Site_Request_Log extends Syncee_Mcp_Abstract
             // TODO
         }
 
+        // set active state on proper submenu button by assigning the appropriate request_direction of the request log to the $_GET superglobal
+        $_GET['request_direction'] = $request_log->request_direction;
+
         return Syncee_View::render(__FUNCTION__, array(
             'request_log' => $request_log
         ), $this);
