@@ -30,19 +30,30 @@ class Syncee_Table_Column_Value_Formatter_Link extends Syncee_Table_Column_Value
      */
     private $_row_override;
 
-    public function __construct($method, Syncee_ActiveRecord_Abstract $row_override = null)
+    private $_extra_keys_to_create_module_cp_url_from;
+
+    public function __construct($method, Syncee_ActiveRecord_Abstract $row_override = null, array $extra_keys_to_create_module_cp_url_from = array())
     {
-        $this->_method       = $method;
-        $this->_row_override = $row_override;
+        $this->_method                                  = $method;
+        $this->_row_override                            = $row_override;
+        $this->_extra_keys_to_create_module_cp_url_from = $extra_keys_to_create_module_cp_url_from;
     }
 
     public function format($value, Syncee_ActiveRecord_Abstract $row)
     {
         $row = $this->_row_override ?: $row;
 
+        $extra_key_values_to_create_module_cp_url_from = array();
+
+        foreach ($this->_extra_keys_to_create_module_cp_url_from as $extra_key_to_create_module_cp_url_from) {
+            if (strlen($row->$extra_key_to_create_module_cp_url_from)) {
+                $extra_key_values_to_create_module_cp_url_from[$extra_key_to_create_module_cp_url_from] = $row->$extra_key_to_create_module_cp_url_from;
+            }
+        }
+
         return sprintf(
             '<a href="%s">%s</a>',
-            Syncee_Helper::createModuleCpUrl($this->_method, $row->getPrimaryKeyNamesValuesMap()),
+            Syncee_Helper::createModuleCpUrl($this->_method, array_merge($row->getPrimaryKeyNamesValuesMap(), $extra_key_values_to_create_module_cp_url_from)),
             $value
         );
     }
