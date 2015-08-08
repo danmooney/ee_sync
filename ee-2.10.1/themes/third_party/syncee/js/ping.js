@@ -32,12 +32,14 @@ $(function ($) {
                     diagnoses = [],
                     diagnosesStr = '',
                     diagnosesClassStr = 'negative',
+                    requestLogUrl,
                     rawResponseStr
                 ;
 
                 try {
-                    responseText = JSON.parse(responseText);
-                    diagnoses    = responseText.diagnoses;
+                    responseText  = JSON.parse(responseText);
+                    diagnoses     = responseText.diagnoses;
+                    requestLogUrl = responseText.request_log_url;
 
                     if (responseText.response) {
                         responseText = responseText.response;
@@ -52,6 +54,10 @@ $(function ($) {
                     } else {
                         diagnosesStr += 'Request Successful!\n';
                         diagnosesClassStr = 'positive';
+                    }
+
+                    if (requestLogUrl) {
+                        diagnosesStr += '<br><a href="' + requestLogUrl + '">Click here to view Request Log in detail</a>';
                     }
 
                 } catch (e) {
