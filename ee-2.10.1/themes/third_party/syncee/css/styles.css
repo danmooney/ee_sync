@@ -45,26 +45,62 @@
     margin: 8px 10px;
 }
 
-#syncee a.btn-secondary {
-    color: #FFF;
+#syncee .menu a {
+    position: relative;
+}
+
+#syncee .btn {
     display: inline-block;
     padding: 8px 12px;
-    background: #56646C;
     border-radius: 4px;
     box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+#syncee a.btn-secondary {
+    color: #FFF;
+    background: #56646C;
+    border: 0;
+}
+
+#syncee a.btn-tertiary {
+    /*background: /!*#98AAB6*!/#56646C;*/
+    /*color: #FFF;*/
+
+    background: #F3F3F3;
+    color: #000;
 }
 
 #syncee a.btn-secondary.active {
     background: #1B1D36;
 }
 
-#syncee a.btn-secondary:hover {
+#syncee a.btn-tertiary.active {
+    /*background: #272937;*/
+    background: #1B1D36;
+    color: #FFF;
+}
+
+#syncee .menu a.has-submenu.active:after {
+    content: "\25b2";
+    position: absolute;
+    bottom: -12px;
+    left: 46%;
+}
+
+#syncee a.btn:hover {
     text-decoration: none;
 }
 
 #syncee a.btn-secondary.not-active:hover,
-#syncee-page a.btn-secondary:hover {
+#syncee-page a.btn-secondary:hover
+{
     background: #3E4C54;
+}
+
+#syncee a.btn-tertiary.not-active:hover,
+#syncee-page a.btn-tertiary:hover
+{
+    background: #D4D4D4;
 }
 
 .clr {
@@ -102,7 +138,6 @@
     padding: 8px;
 }
 
-
 #syncee-page table tr th > * {
     padding: 8px 23px;
 }
@@ -115,8 +150,8 @@
 #syncee-page table tr th > a.current-order-by:after {
     text-decoration: none;
     position: absolute;
-    top: 25%;
-    right: 10px
+    /*top: 9px;*/
+    right: 10px;
 }
 
 #syncee-page table tr th > a.order-dir-asc:after {
@@ -207,6 +242,14 @@
     margin: 0;
 }
 
+.remote-site-settings-payload-container .diagnosis-positive {
+    color: green;
+}
+
+.remote-site-settings-payload-container .diagnosis-negative {
+    color: red;
+}
+
 #syncee-page .flash-message-container {
     margin-bottom: 15px;
     border: 1px solid #CCC;
@@ -277,6 +320,7 @@
     height: 19px;
     border: 0;
     padding: 0;
+    box-shadow: none;
 }
 
 #syncee-page .flash-message-container .btn-close:hover,
@@ -325,7 +369,6 @@
     border-top: 0;
 }
 
-
 #syncee-page .comparison-collection-table .comparison-summary {
     cursor: pointer;
 }
@@ -338,6 +381,14 @@
     display: none;
 }
 
+#syncee .menu.mainmenu,
+#syncee .menu.submenu
+{
+    border-bottom: 1px solid #D4D4D4;
+}
+
 #syncee .menu.submenu {
     background: #FFF;
+    border-left: 1px solid #D4D4D4;
+    border-right: 1px solid #D4D4D4;
 }
