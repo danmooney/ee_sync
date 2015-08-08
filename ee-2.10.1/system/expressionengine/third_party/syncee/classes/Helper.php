@@ -69,10 +69,20 @@ class Syncee_Helper
         return $path;
     }
 
-    public static function queryParamsMatchValues(array $values)
+    public static function queryParamsMatchValues(array $values, Syncee_Mcp_Abstract $mcp = null)
     {
         $all_values_match_params = true;
 
+        // if $mcp passed, check to see if method is in $mcp object.  If it isn't, then $all_values_match_params is false
+        if (isset($values['method']) && $mcp) {
+            if (!in_array($values['method'], get_class_methods(get_class($mcp)))) {
+                $all_values_match_params = false;
+            }
+
+            unset($values['method']);
+        }
+
+        // now do regular equality comparisons on rest of values
         foreach ($values as $key => $value) {
             if (ee()->input->get($key) != $value) {
                 $all_values_match_params = false;
