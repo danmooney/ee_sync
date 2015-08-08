@@ -54,6 +54,17 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
         $syncee_site     = Syncee_Site::getByDecodingRemoteSiteSettingsPayload($encoded_payload);
 
         $syncee_site->assign($form->getValues());
+
+        $local_sites_with_same_values = Syncee_Site::findAllByCondition(array(
+            'ee_site_id' => $syncee_site->ee_site_id,
+            'site_host'  => $syncee_site->site_host,
+        ));
+
+        if (count($local_sites_with_same_values)) {
+            Syncee_Helper_Flashdata::setFlashData('The remote site you\'re trying to save exists as a local site on this machine.', 'error');
+            Syncee_Helper::redirect('viewRemoteSiteList', array(), $this, null);
+        }
+
         $syncee_site->save();
 
         Syncee_Helper::redirect('editRemoteSite', array(
@@ -117,10 +128,19 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
         $syncee_site = Syncee_Site::findByPk($site_id);
 
         $request     = new Syncee_Request();
-        $response    = $request->makeEntityCallToSite($syncee_site, new Syncee_Request_Remote_Entity_Empty(), new Syncee_Site_Request_Log());
+        $request_log = new Syncee_Site_Request_Log();
+        $ping_entity = new Syncee_Request_Remote_Entity_Empty();
+        $response    = $request->makeEntityCallToSite($syncee_site, $ping_entity, $request_log);
+
+        $diagnosis   = new Syncee_Site_Request_Log_Diagnosis($request_log);
 
         header('Content-type: text/javascript');
-        echo $response->getRawResponse();
+
+        echo json_encode(array(
+            'diagnoses'       => $diagnosis->getDiagnoses(),
+            'request_log_url' => Syncee_Helper::createModuleCpUrl('viewRequestLog', $request_log->getPrimaryKeyNamesValuesMap()),
+            'response'        => $response->getRawResponse()
+        ));
         exit(0);
     }
 
