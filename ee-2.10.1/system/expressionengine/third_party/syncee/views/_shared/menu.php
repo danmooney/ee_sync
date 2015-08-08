@@ -34,7 +34,7 @@ $menu = array(
 $active_menu_item_submenu_items = null;
 
 ?>
-<ul class="menu">
+<ul class="menu mainmenu">
 <?php
     $mcp_class_methods = get_class_methods(get_class($mcp));
 
@@ -62,7 +62,7 @@ $active_menu_item_submenu_items = null;
 
     ?>
     <li>
-        <a class="btn-secondary <?= $additional_class ?>" href="<?= Syncee_Helper::createModuleCpUrl($menu_item_to_reference) ?>"><?= $label ?></a>
+        <a class="btn btn-secondary <?= $additional_class ?>" href="<?= Syncee_Helper::createModuleCpUrl($menu_item_to_reference) ?>"><?= $label ?></a>
     </li>
 <?php
     endforeach ?>
@@ -72,11 +72,11 @@ $active_menu_item_submenu_items = null;
         <ul class="menu submenu">
         <?php
             foreach ($active_menu_item_submenu_items as $label => $submenu):
-                $should_be_active_menu_item = Syncee_Helper::queryParamsMatchValues($submenu);
+                $should_be_active_menu_item = Syncee_Helper::queryParamsMatchValues($submenu, $mcp);
 
                 ?>
                 <li>
-                    <a class="btn-secondary <?= $should_be_active_menu_item ? 'active' : 'not-active' ?>" href="<?= Syncee_Helper::createModuleCpUrl($submenu) ?>">
+                    <a class="btn btn-tertiary <?= $should_be_active_menu_item ? 'active' : 'not-active' ?>" href="<?= Syncee_Helper::createModuleCpUrl($submenu) ?>">
                         <?= $label ?>
                     </a>
                 </li>
