@@ -4,6 +4,9 @@ require_once dirname(__FILE__) . '/_init.php';
 
 class Syncee_Mcp
 {
+    const PROXY_METHOD            = 'proxy';
+    const REAL_METHOD_QUERY_PARAM = 'real_method';
+
     private $_default_method = 'viewSiteGroupList';
 
     private static $_real_method;
@@ -19,16 +22,16 @@ class Syncee_Mcp
         Syncee_View::addStylesheets();
         Syncee_View::addScripts();
 
-        if (!ee()->input->get('method')) {
-            $_GET['method'] = $this->_default_method;
+        if (!ee()->input->get(self::REAL_METHOD_QUERY_PARAM)) {
+            $_GET[self::REAL_METHOD_QUERY_PARAM] = $this->_default_method;
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['method'])) {
-            $_GET['method'] .= 'POST';
+            $_GET[self::REAL_METHOD_QUERY_PARAM] .= 'POST';
         }
 
         // Set method to proxy and save real method so EE will execute the method and not display "Requested page not found" error
-        self::$_real_method = $_GET['method'];
+        self::$_real_method = $_GET[self::REAL_METHOD_QUERY_PARAM];
         $_GET['method']     = 'proxy';
     }
 

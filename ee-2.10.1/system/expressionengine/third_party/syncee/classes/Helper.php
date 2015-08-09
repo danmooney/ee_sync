@@ -55,7 +55,8 @@ class Syncee_Helper
         $additional_query_params = array_diff_key($additional_query_params, array_flip(Syncee_Form_Abstract::getRequestBlacklist()));
 
         if ($method) {
-            $path .= '&method=' . $method;
+            $path .= '&' . Syncee_Mcp::REAL_METHOD_QUERY_PARAM . '=' . $method;
+            $path .= '&method=' . Syncee_Mcp::PROXY_METHOD;
         }
 
         $additional_query_params = array_filter($additional_query_params, function ($additional_query_param) {
