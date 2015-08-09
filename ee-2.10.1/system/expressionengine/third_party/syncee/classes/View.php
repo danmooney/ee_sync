@@ -80,10 +80,10 @@ class Syncee_View
 
         if (isset($ee->cp) && method_exists($ee->cp, 'set_variable')) {
             $ee->cp->set_variable('cp_heading',    $title);
-            $ee->cp->set_variable('cp_page_title', strip_tags($title));
+            $ee->cp->set_variable('cp_page_title', strip_tags($title . ' | ' . Syncee_Upd::MODULE_NAME));
         } else {
             ee()->view->cp_heading    = $title;
-            ee()->view->cp_page_title = strip_tags($title);
+            ee()->view->cp_page_title = strip_tags($title . ' | ' . Syncee_Upd::MODULE_NAME);
         }
     }
 
