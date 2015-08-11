@@ -33,6 +33,10 @@
     border: 0;
 }
 
+#syncee-page table {
+    color: #000;
+}
+
 #syncee .menu {
     display: table;
     width: 100%;
@@ -242,11 +246,11 @@
     margin: 0;
 }
 
-.remote-site-settings-payload-container .diagnosis-positive {
+#syncee-page .diagnosis-positive {
     color: green;
 }
 
-.remote-site-settings-payload-container .diagnosis-negative {
+#syncee-page .diagnosis-negative {
     color: red;
 }
 
@@ -373,9 +377,62 @@
     cursor: pointer;
 }
 
-#syncee-page .comparison-collection-table .comparison-summary td {
+#syncee-page .collection-table.comparison-collection-table .comparison-summary td {
     border-top: 0;
+    font-weight: bold;
 }
+
+#syncee-page .collection-table.comparison-collection-table .comparate-field {
+
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparate-key-field-container {
+    background: #C8D4FF;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparate-key-field {
+    background: #E2E8FF;
+    /*color: #FFF;*/
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparate-value-field {
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparate-value-field.clicked {
+    background: #FFFEE4;
+}
+
+#syncee-page .collection-table.comparison-collection-table .target-field.target-field-container {
+    /*background: #FFFDBA;*/
+    background: #ECECEC;
+}
+
+#syncee-page .collection-table.comparison-collection-table .source-field.source-field-container {
+    background: #ECECEC;
+}
+
+#syncee-page .collection-table.comparison-collection-table .target-field {
+    /*background: #FFFEE4;*/
+    background: #FFF;
+}
+
+#syncee-page .collection-table.comparison-collection-table .source-field {
+    background: #FFF;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-results .value {
+    width: 90%;
+    float: left;
+}
+
+#syncee-page .collection-table.comparison-collection-table .decision-checkbox {
+    float: right;
+}
+
+#syncee-page .collection-table.comparison-collection-table .target-site-header {
+    /*background: #7B7900;*/
+}
+
 
 #syncee-page .image-cache {
     display: none;
