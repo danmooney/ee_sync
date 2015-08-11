@@ -1,7 +1,7 @@
 $(function ($) {
     var $comparisonCollectionTable = $('.comparison-collection-table'),
-        summaryCheckboxesByColIdx = [],
-        resultCheckboxesByColIdx = [],
+        summaryCheckboxesByColIdxAndSummaryRowIdx = [],
+        resultCheckboxesByColIdxAndSummaryRowIdx = [],
         resultCheckboxesByRowIdx = []
     ;
 
@@ -28,6 +28,7 @@ $(function ($) {
             $comparisonResultsRow,
             colIdx = $cell.data('col-idx'),
             rowIdx = $row.data('row-idx'),
+            summaryRowIdx,
             $colCheckboxes,
             $rowCheckboxes,
             $otherCheckboxesToTrigger,
@@ -54,19 +55,29 @@ $(function ($) {
             $cell.removeClass('clicked');
         }
 
-        if (!resultCheckboxesByColIdx[colIdx]) {
-            resultCheckboxesByColIdx[colIdx] = $comparisonResultsRow.find('[data-col-idx="' + colIdx + '"]').find(':checkbox');
+        summaryRowIdx = $comparisonSummaryRow.data('row-idx');
+
+        if (!resultCheckboxesByColIdxAndSummaryRowIdx[colIdx]) {
+            resultCheckboxesByColIdxAndSummaryRowIdx[colIdx] = [];
+        }
+
+        if (!resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx]) {
+            resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx] = $comparisonResultsRow.find('[data-col-idx="' + colIdx + '"]').find(':checkbox');
         }
 
         if (!resultCheckboxesByRowIdx[rowIdx]) {
             resultCheckboxesByRowIdx[rowIdx] = $comparisonResultsRow.find('[data-row-idx="' + rowIdx + '"]').find(':checkbox');
         }
 
-        if (!summaryCheckboxesByColIdx[colIdx]) {
-            summaryCheckboxesByColIdx[colIdx] = $comparisonSummaryRow.find('[data-col-idx="' + colIdx + '"]').find(':checkbox');
+        if (!summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx]) {
+            summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx] = [];
         }
 
-        $colCheckboxes = resultCheckboxesByColIdx[colIdx];
+        if (!summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx]) {
+            summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx] = $comparisonSummaryRow.find('[data-col-idx="' + colIdx + '"]').find(':checkbox');
+        }
+
+        $colCheckboxes = resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
         $rowCheckboxes = resultCheckboxesByRowIdx[rowIdx];
 
         if (isSummaryRow && triggerOtherCheckboxesOnSummaryRow) { // trigger entire column of checkboxes
@@ -85,12 +96,12 @@ $(function ($) {
                 allCheckboxesInColumnAreChecked = $colCheckboxes.length === $colCheckboxes.filter(':checked').length;
 
                 if (allCheckboxesInColumnAreChecked) {
-                    $checkboxesToCheck = summaryCheckboxesByColIdx[colIdx].filter(':not(":checked")');
+                    $checkboxesToCheck = summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx].filter(':not(":checked")');
                 }
             }
         } else {
             if (!isSummaryRow) { // uncheck summary checkbox, since now not all of the fields in the column are checked
-                $checkboxesToUncheck = summaryCheckboxesByColIdx[colIdx].filter(':checked');
+                $checkboxesToUncheck = summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx].filter(':checked');
                 triggerOtherCheckboxesOnSummaryRow = false;
             }
         }
