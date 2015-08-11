@@ -33,7 +33,7 @@ $outer_column_count             = count($entity_comparison_library) + 2;
 $unique_identifier_key          = $entity_comparison_library->getUniqueIdentifierKey();
 $unique_identifier_values       = $entity_comparison_library->getAllUniqueIdentifierValues(); // store array of all of the unique identifier values (channel_name, which is short name)
 $entity_comparate_column_names  = $entity_comparison_library->getAllComparateColumnNames();
-$total_columns                  = count($site_collection) + 1;
+$total_columns                  = count($site_collection) + 2;
 
 $unique_identifier_column_percentage_width = 10;
 $other_columns_percentage_width            = round(
@@ -46,10 +46,10 @@ sort($unique_identifier_values, SORT_STRING);
 ?>
 <table class="collection-table comparison-collection-table">
     <thead>
-        <?php // output the target site name and all of the sources after ?>
-        <tr>
-            <th class="comparate-column-header" style="width: <?= $unique_identifier_column_percentage_width ?>%"><span><?= $unique_identifier_key ?></span></th>
-            <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%">
+        <?php $row_idx = 0; $col_idx = 0; ?>
+        <tr data-row-idx="<?= $row_idx++ ?>">
+            <th class="comparate-column-header" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $unique_identifier_key ?></span></th>
+            <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                 <span>
                     <?= $local_site->title ?> - <em>(Local Site)</em>
                     <?php
@@ -60,9 +60,14 @@ sort($unique_identifier_values, SORT_STRING);
                         endif ?>
                 </span>
             </th>
+            <th>
+                <span>
+                    Merge Result
+                </span>
+            </th>
             <?php
                 foreach ($remote_site_collection as $remote_site): ?>
-                    <th class="source-site-header" style="width: <?= $other_columns_percentage_width ?>%">
+                    <th class="source-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                         <span>
                             <?= $remote_site->title ?>
                             <?php
@@ -83,38 +88,50 @@ sort($unique_identifier_values, SORT_STRING);
         foreach ($unique_identifier_values as $unique_identifier_value):
             $entity_comparison_library_with_unique_identifier_value = $entity_comparison_library->getComparisonLibraryByUniqueIdentifierKeyAndValue($unique_identifier_key, $unique_identifier_value);
             $target_has_entity_missing = $entity_comparison_library_with_unique_identifier_value[0]->getTarget()->isEmptyRow();
+            $col_idx = 0;
         ?>
-        <tr class="comparison-summary">
-            <td class="comparate-field-container comparate-key-field-container">
+        <tr class="comparison-summary" data-row-idx="<?= $row_idx++ ?>">
+            <td class="comparate-field-container comparate-key-field-container" data-col-idx="<?= $col_idx++ ?>">
                 <span><?= $unique_identifier_value ?></span>
             </td>
-            <td class="target-field-container target-field">
+            <td class="target-field-container target-field" data-col-idx="<?= $col_idx++ ?>">
                 <span>
                     <span class="diagnosis-<?= $target_has_entity_missing ? 'negative' : 'positive' ?>"><?= $target_has_entity_missing ? 'MISSING' : 'EXISTS' ?></span>
+                    <span class="decision-checkbox">
+                        <input type="checkbox">
+                    </span>
                 </span>
             </td>
-
+            <td data-col-idx="<?= $col_idx++ ?>">
+                <span>
+                    Merge Result Summary
+                </span>
+            </td>
             <?php
                 foreach ($remote_site_collection as $remote_site):
                     $source_has_entity_missing = $entity_comparison_library_with_unique_identifier_value->getComparisonCollectionBySourceSite($remote_site)->getSource()->isEmptyRow();
                     ?>
-                    <td class="source-field-container source-field">
+                    <td class="source-field-container source-field" data-col-idx="<?= $col_idx++ ?>">
                         <span>
                             <span class="diagnosis-<?= $source_has_entity_missing ? 'negative' : 'positive' ?>"><?= $source_has_entity_missing ? 'MISSING' : 'EXISTS' ?></span>
+                            <span class="decision-checkbox">
+                                <input type="checkbox">
+                            </span>
                         </span>
                     </td>
             <?php
                 endforeach ?>
         </tr>
-        <tr class="comparison-results">
+        <tr class="comparison-results" data-row-idx="<?= $row_idx++ ?>">
             <td colspan="<?= $total_columns ?>" class="nested-table-container">
                 <div style="display: none;">
                     <table>
                         <?php
-                            foreach ($entity_comparate_column_names as $idx => $comparate_column_name): ?>
-                                <tr>
-                                    <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%"><span><?= $comparate_column_name ?></span></td>
-                                    <td class="target-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%">
+                            foreach ($entity_comparate_column_names as $comparate_column_name):
+                                $col_idx = 0 ?>
+                                <tr data-row-idx="<?= $row_idx++ ?>">
+                                    <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $comparate_column_name ?></span></td>
+                                    <td class="target-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                         <span class="value">
                                             <?= Syncee_Helper::ifNull($entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->getTargetValue(), '<i>(NULL)</i>') ?>
                                         </span>
@@ -122,9 +139,14 @@ sort($unique_identifier_values, SORT_STRING);
                                             <input type="checkbox">
                                         </span>
                                     </td>
+                                    <td data-col-idx="<?= $col_idx++ ?>">
+                                        <span>
+                                            Merge Result
+                                        </span>
+                                    </td>
                                     <?php
                                         foreach ($entity_comparison_library_with_unique_identifier_value as $entity_comparison_collection): ?>
-                                            <td class="source-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%">
+                                            <td class="source-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                                 <span class="value">
                                                     <?= Syncee_Helper::ifNull($entity_comparison_collection->getComparisonEntityByComparateColumnName($comparate_column_name)->getSourceValue(), '<i>(NULL)</i>') ?>
                                                 </span>
