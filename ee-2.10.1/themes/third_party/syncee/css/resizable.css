@@ -1,0 +1,38 @@
+#syncee-page table th {
+
+}
+
+#syncee-page table th:after/*,
+#syncee-page table th > a:after*/
+{
+    content: "|";
+    position: absolute;
+    top: 0;
+    right: -10px;
+    height: 100%;
+    background: 0;
+    cursor: col-resize;
+    color: transparent;
+    width: 15px;
+    z-index: 999;
+}
+
+#syncee-page .no-cursor {
+    margin-right: 5px;
+    cursor: default;
+}
+
+#syncee-page .no-select,
+#syncee-page th
+{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#syncee-page table th {
+
+}
