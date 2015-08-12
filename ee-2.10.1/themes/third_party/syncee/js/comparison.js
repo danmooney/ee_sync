@@ -10,7 +10,7 @@ $(function ($) {
             return;
         }
 
-        $(e.currentTarget).next('.comparison-results').find('.nested-table-container div').slideToggle();
+        $(e.currentTarget).next('.comparison-details').find('.nested-table-container div').slideToggle();
     });
 
     function calculateMergeResult () {
@@ -41,9 +41,9 @@ $(function ($) {
 
         if (isSummaryRow) {
             $comparisonSummaryRow = $checkbox.closest('.comparison-summary');
-            $comparisonResultsRow = $comparisonSummaryRow.next('.comparison-results');
+            $comparisonResultsRow = $comparisonSummaryRow.next('.comparison-details');
         } else {
-            $comparisonResultsRow = $checkbox.closest('.comparison-results');
+            $comparisonResultsRow = $checkbox.closest('.comparison-details');
             $comparisonSummaryRow = $comparisonResultsRow.prev('.comparison-summary');
         }
 

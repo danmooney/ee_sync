@@ -189,6 +189,7 @@
     background: #1B1D36;
     color: #FFF;
     position: relative;
+    background-clip: padding-box;
     /*padding: 8px 23px;*/
 }
 
@@ -398,7 +399,9 @@
 #syncee-page .collection-table.comparison-collection-table .comparate-value-field {
 }
 
-#syncee-page .collection-table.comparison-collection-table .comparate-value-field.clicked {
+#syncee-page .collection-table.comparison-collection-table .comparate-value-field.clicked,
+#syncee-page .collection-table.comparison-collection-table .comparison-site-collection-existence-container
+{
     background: #FFFEE4;
 }
 
@@ -420,7 +423,7 @@
     background: #FFF;
 }
 
-#syncee-page .collection-table.comparison-collection-table .comparison-results .value {
+#syncee-page .collection-table.comparison-collection-table .comparison-details .value {
     width: 90%;
     float: left;
 }
