@@ -94,7 +94,7 @@ sort($unique_identifier_values, SORT_STRING);
             <td class="comparate-field-container comparate-key-field-container" data-col-idx="<?= $col_idx++ ?>">
                 <span><?= $unique_identifier_value ?></span>
             </td>
-            <td class="target-field-container target-field" data-col-idx="<?= $col_idx++ ?>">
+            <td class="comparison-site-collection-existence-container target-field-container target-field" data-col-idx="<?= $col_idx++ ?>">
                 <span>
                     <span class="diagnosis-<?= $target_has_entity_missing ? 'negative' : 'positive' ?>"><?= $target_has_entity_missing ? 'MISSING' : 'EXISTS' ?></span>
                     <span class="decision-checkbox">
@@ -111,7 +111,7 @@ sort($unique_identifier_values, SORT_STRING);
                 foreach ($remote_site_collection as $remote_site):
                     $source_has_entity_missing = $entity_comparison_library_with_unique_identifier_value->getComparisonCollectionBySourceSite($remote_site)->getSource()->isEmptyRow();
                     ?>
-                    <td class="source-field-container source-field" data-col-idx="<?= $col_idx++ ?>">
+                    <td class="comparison-site-collection-existence-container source-field-container comparison-site-field-container source-field" data-col-idx="<?= $col_idx++ ?>">
                         <span>
                             <span class="diagnosis-<?= $source_has_entity_missing ? 'negative' : 'positive' ?>"><?= $source_has_entity_missing ? 'MISSING' : 'EXISTS' ?></span>
                             <span class="decision-checkbox">
@@ -122,7 +122,7 @@ sort($unique_identifier_values, SORT_STRING);
             <?php
                 endforeach ?>
         </tr>
-        <tr class="comparison-results" data-row-idx="<?= $row_idx++ ?>">
+        <tr class="comparison-details" data-row-idx="<?= $row_idx++ ?>">
             <td colspan="<?= $total_columns ?>" class="nested-table-container">
                 <div style="display: none;">
                     <table>
