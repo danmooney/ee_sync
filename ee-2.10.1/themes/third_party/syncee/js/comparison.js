@@ -134,6 +134,7 @@ $(function ($) {
                 return true; // continue
             }
 
+            $checkboxes.prop('disabled', 'disabled');
             updateCheckbox($checkboxes, true);
         });
     }());
