@@ -13,7 +13,7 @@ $(function ($) {
         $(e.currentTarget).next('.comparison-details').find('.nested-table-container div').slideToggle();
     });
 
-    function calculateMergeResult () {
+    function calculateMergeResult ($checkbox) {
         // TODO
     }
 
@@ -54,6 +54,8 @@ $(function ($) {
         } else {
             $cell.removeClass('clicked');
         }
+
+        calculateMergeResult($row);
 
         summaryRowIdx = $comparisonSummaryRow.data('row-idx');
 
@@ -120,4 +122,19 @@ $(function ($) {
     }
 
     $comparisonCollectionTable.find('.decision-checkbox :checkbox').on('change', updateCheckbox);
+
+    (function checkOffCellsThatHaveNoOtherOption() {
+        $comparisonCollectionTable.find('.comparison-summary').each(function () {
+            var $row = $(this),
+                $checkboxes = $row.find(':checkbox'),
+                hasOnlyOneCheckbox = $checkboxes.length === 1
+            ;
+
+            if (!hasOnlyOneCheckbox) {
+                return true; // continue
+            }
+
+            updateCheckbox($checkboxes, true);
+        });
+    }());
 });
