@@ -17,6 +17,12 @@
     z-index: 999;
 }
 
+#syncee-page table th.resizing,
+#syncee-page table th.resizing > *
+{
+    cursor: col-resize;
+}
+
 #syncee-page .no-cursor {
     margin-right: 5px;
     cursor: default;
