@@ -127,15 +127,23 @@ $(function ($) {
         $comparisonCollectionTable.find('.comparison-summary').each(function () {
             var $row = $(this),
                 $checkboxes = $row.find(':checkbox'),
-                hasOnlyOneCheckbox = $checkboxes.length === 1
+                $cell,
+                hasOnlyOneCheckbox = $checkboxes.length === 1,
+                colIdx,
+                summaryRowIdx = $row.data('row-idx')
             ;
 
             if (!hasOnlyOneCheckbox) {
                 return true; // continue
             }
 
+            $cell = $checkboxes.closest('td');
+            colIdx = $cell.data('col-idx');
+
             $checkboxes.prop('disabled', 'disabled');
             updateCheckbox($checkboxes, true);
+
+            resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx].prop('disabled', 'disabled');
         });
     }());
 });
