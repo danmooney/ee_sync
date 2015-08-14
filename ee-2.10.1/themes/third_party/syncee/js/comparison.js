@@ -107,19 +107,31 @@ $(function ($) {
         ;
 
         if (!checkedCheckboxesExistInTarget) {
-            $correspondingMergeCell.removeClass('left');
-            $summaryMergeCell.removeClass('left');
+            $summaryMergeCell.removeClass('target');
         } else {
-            $correspondingMergeCell.addClass('left');
-            $summaryMergeCell.addClass('left');
+            $summaryMergeCell.addClass('target');
         }
 
         if (!checkedCheckboxesExistInSources) {
-            $correspondingMergeCell.removeClass('right');
-            $summaryMergeCell.removeClass('right');
+            $summaryMergeCell.removeClass('source');
         } else {
-            $correspondingMergeCell.addClass('right');
-            $summaryMergeCell.addClass('right');
+            $summaryMergeCell.addClass('source');
+        }
+
+        if (!isExistenceSummaryCell) {
+            if (isTargetField) {
+                if ($checkbox.is(':checked')) {
+                    $correspondingMergeCell.addClass('target');
+                } else {
+                    $correspondingMergeCell.removeClass('target');
+                }
+            } else {
+                if ($checkbox.is(':checked')) {
+                    $correspondingMergeCell.addClass('source');
+                } else {
+                    $correspondingMergeCell.removeClass('source');
+                }
+            }
         }
 
         // TODO - update result text

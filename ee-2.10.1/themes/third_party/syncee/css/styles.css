@@ -399,18 +399,17 @@
 #syncee-page .collection-table.comparison-collection-table .comparate-value-field {
 }
 
-#syncee-page .collection-table.comparison-collection-table .comparate-value-field.clicked,
-#syncee-page .collection-table.comparison-collection-table .comparison-site-collection-existence-container
+#syncee-page .collection-table.comparison-collection-table .comparate-value-field.clicked/*,
+#syncee-page .collection-table.comparison-collection-table .comparison-site-collection-existence-container.clicked*/
 {
     background: #FFFEE4;
 }
 
-#syncee-page .collection-table.comparison-collection-table .target-field.target-field-container {
-    /*background: #FFFDBA;*/
-    background: #ECECEC;
+#syncee-page .collection-table.comparison-collection-table .comparison-summary .comparison-site-collection-existence-container.clicked {
+    background: #FFFDBA;
 }
 
-#syncee-page .collection-table.comparison-collection-table .source-field.source-field-container {
+#syncee-page .collection-table.comparison-collection-table .comparison-summary .comparison-site-collection-existence-container {
     background: #ECECEC;
 }
 
@@ -434,6 +433,40 @@
 
 #syncee-page .collection-table.comparison-collection-table .target-site-header {
     /*background: #7B7900;*/
+}
+
+#syncee-page .collection-table.comparison-collection-table .merge-result span {
+    position: relative;
+    padding-left: 30px;
+    padding-right: 30px;
+    text-align: center;
+}
+
+#syncee-page .collection-table.comparison-collection-table .merge-result.target > span:before,
+#syncee-page .collection-table.comparison-collection-table .merge-result.source > span:after
+{
+    color: green;
+    position: absolute;
+    font-size: 20px;
+    margin-top: -8px;
+    display: inline-block;
+}
+
+#syncee-page .collection-table.comparison-collection-table .merge-result.target span:before {
+    left: 5px;
+    content: "\2B05";
+}
+
+#syncee-page .collection-table.comparison-collection-table .merge-result.source span:after {
+    right: 5px;
+    /* need to flip, since for some strange reason unicode right arrow matching left's style doesn't exist */
+    content: "\2B05";
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    transform: scaleX(-1);
+    -ms-filter: fliph; /*IE*/
+    filter: fliph; /*IE*/
 }
 
 
