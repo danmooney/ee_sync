@@ -246,9 +246,10 @@ $(function ($) {
             var $row = $(this),
                 $checkboxes = $row.find(':checkbox'),
                 $cell,
-                hasOnlyOneCheckbox = $checkboxes.length === 1,
+                hasOnlyOneCheckbox = $checkboxes.length === 1,// if only one checkbox in summary, no other option exists
                 colIdx,
-                summaryRowIdx = $row.data('row-idx')
+                summaryRowIdx = $row.data('row-idx'),
+                isInTargetColumnOnly
             ;
 
             if (!hasOnlyOneCheckbox) {
@@ -258,10 +259,15 @@ $(function ($) {
             $cell = $checkboxes.closest('td');
             colIdx = $cell.data('col-idx');
 
-            $checkboxes.prop('disabled', 'disabled');
+            isInTargetColumnOnly = parseInt(summaryRowIdx, 10) === 1;
+
+            if (isInTargetColumnOnly) { // don't allow unchecking of local checkbox with no other option
+                $checkboxes.prop('disabled', 'disabled');
+            }
+
             updateCheckbox($checkboxes, true);
 
-            resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx].prop('disabled', 'disabled');
+            getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).prop('disabled', 'disabled');
         });
     }());
 });
