@@ -434,6 +434,10 @@
     background: #FFF;
 }
 
+#syncee-page .collection-table.comparison-collection-table .comparison-details td span i {
+    color: #A0A0A0;
+}
+
 #syncee-page .collection-table.comparison-collection-table .merge-result span {
     position: relative;
     padding-left: 30px;
