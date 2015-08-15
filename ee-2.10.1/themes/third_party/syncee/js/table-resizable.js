@@ -8,6 +8,11 @@ $(function () {
 
     $("table th")
         .mousedown(function (e) {
+            // if mousedown triggered over something other than th, return;
+            if ((e.target || e.srcElement) != e.currentTarget) {
+                return;
+            }
+
             $start = $(this);
             pressed = true;
             startX = e.pageX;
@@ -52,7 +57,7 @@ $(function () {
                 }
             });
 
-            console.log(maxWidthOfCellInColumn);
+            //console.log(maxWidthOfCellInColumn);
 
             if (!maxWidthOfCellInColumn) {
                 return;
