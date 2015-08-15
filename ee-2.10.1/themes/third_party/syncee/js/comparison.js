@@ -91,11 +91,13 @@ $(function ($) {
             rowIdx = $row.data('row-idx'),
             summaryRowIdx = $row.data('summary-row-idx') || rowIdx,
             $correspondingMergeCell = $cell.siblings('.merge-result'),
+            $correspondingMergeCellSpan = $correspondingMergeCell.children('span'),
             isTargetField = $cell.hasClass('target-field'),
             isSourceField = !isTargetField,
             isExistenceSummaryCell = $cell.hasClass('comparison-site-collection-existence-container'),
             $summaryCheckbox = getSummaryCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx),
             $summaryMergeCell = $summaryCheckbox.closest('tr').find('.merge-result'),
+            $summaryMergeCellSpan =$summaryMergeCell.children('span'),
             checkedCheckboxesExistInTarget = (
                 getSummaryCheckboxesByColIdxAndSummaryRowIdx(1, summaryRowIdx).filter(':checked').length ||
                 getResultCheckboxesByColIdxAndSummaryRowIdx(1, summaryRowIdx).filter(':checked').length
@@ -103,8 +105,13 @@ $(function ($) {
             checkedCheckboxesExistInSources = (
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, summaryCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length ||
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, resultCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length
-            )
+            ),
+            cellHtml = $.trim($cell.children('.value').html()) ? '<span>' + $cell.children('.value').html() + '</span>' : '<span>&nbsp;</span>'
         ;
+
+        if (!$correspondingMergeCell.data('original-content')) {
+            $correspondingMergeCell.data('original-content', $correspondingMergeCell.html());
+        }
 
         if (!checkedCheckboxesExistInTarget) {
             $summaryMergeCell.removeClass('target');
@@ -145,7 +152,13 @@ $(function ($) {
             //}
 
         } else {
-
+            if ($checkbox.is(':checked')) {
+                $correspondingMergeCell.addClass('merged');
+                $correspondingMergeCell.html(cellHtml);
+            } else if (!$row.find(':checked').length) {
+                $correspondingMergeCell.removeClass('merged');
+                $correspondingMergeCell.html($correspondingMergeCell.data('original-content'));
+            }
         }
     }
 
