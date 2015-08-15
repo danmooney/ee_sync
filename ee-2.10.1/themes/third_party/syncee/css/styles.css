@@ -375,6 +375,7 @@
 #syncee-page .collection-table.comparison-collection-table .comparison-summary td {
     border-top: 0;
     font-weight: bold;
+    background: #ECECEC;
 }
 
 #syncee-page .collection-table.comparison-collection-table .comparate-field {
@@ -427,6 +428,10 @@
 
 #syncee-page .collection-table.comparison-collection-table .target-site-header {
     /*background: #7B7900;*/
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-details .merge-result {
+    background: #FFF;
 }
 
 #syncee-page .collection-table.comparison-collection-table .merge-result span {
