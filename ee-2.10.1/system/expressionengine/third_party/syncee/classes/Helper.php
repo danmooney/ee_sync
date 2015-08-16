@@ -241,4 +241,17 @@ class Syncee_Helper
 
         return $value;
     }
+
+    public static function pluralize($count, $str, $plural_str = null)
+    {
+        if ($count === 1) {
+            return $str;
+        }
+
+        if (!$plural_str) {
+            return $str . 's';
+        } else {
+            return $plural_str;
+        }
+    }
 }
