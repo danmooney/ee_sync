@@ -28,10 +28,11 @@ $(function ($) {
             },
             complete: function (response) {
                 var emptyResponseStr = '(Empty Response)',
-                    responseText = response.responseText || responseText.response,
+                    responseText = response.responseText /*|| responseText.response*/,
                     diagnoses = [],
                     diagnosesStr = '',
                     diagnosesClassStr = 'negative',
+                    pingedUrl,
                     requestLogUrl,
                     rawResponseStr
                 ;
@@ -40,6 +41,7 @@ $(function ($) {
                     responseText  = JSON.parse(responseText);
                     diagnoses     = responseText.diagnoses;
                     requestLogUrl = responseText.request_log_url;
+                    pingedUrl     = responseText.url;
 
                     if (responseText.response) {
                         responseText = responseText.response;
@@ -54,6 +56,10 @@ $(function ($) {
                     } else {
                         diagnosesStr += 'Request Successful!\n';
                         diagnosesClassStr = 'positive';
+                    }
+
+                    if (pingedUrl) {
+                        diagnosesStr += '<br>Pinged Url: <a target="_blank" href="' + pingedUrl + '">' + pingedUrl + '</a>';
                     }
 
                     if (requestLogUrl) {
