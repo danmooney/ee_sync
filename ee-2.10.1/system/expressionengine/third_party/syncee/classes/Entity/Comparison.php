@@ -20,18 +20,29 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_Comparison_Result_Interface, Syncee_Entity_Comparison_Interface, Syncee_Comparison_Differ_Interface
 {
-    const RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET = 'RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE';
+    const RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET = 'RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET';
     const RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE            = 'RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE';
     const RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET            = 'RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET';
     const RESULT_COMPARATE_VALUE_DIFFERS                       = 'RESULT_COMPARATE_VALUE_DIFFERS';
     const RESULT_COMPARATE_VALUE_SAME                          = 'RESULT_COMPARATE_VALUE_SAME';
 
-    private $_comparison_results = array(
+    private static $_comparison_results = array(
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET,
         self::RESULT_COMPARATE_VALUE_DIFFERS,
         self::RESULT_COMPARATE_VALUE_SAME
+    );
+
+    private static $_sameness_comparison_results = array(
+        self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET,
+        self::RESULT_COMPARATE_VALUE_SAME
+    );
+
+    private static $_difference_comparison_results = array(
+        self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE,
+        self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET,
+        self::RESULT_COMPARATE_VALUE_DIFFERS,
     );
 
     /**
@@ -88,6 +99,21 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
     {
         $this->_source = $source;
         $this->_target = $target;
+    }
+
+    public static function getComparisonResults()
+    {
+        return self::$_comparison_results;
+    }
+
+    public static function getSamenessComparisonResults()
+    {
+        return self::$_sameness_comparison_results;
+    }
+
+    public static function getDifferenceComparisonResults()
+    {
+        return self::$_difference_comparison_results;
     }
 
     public function setComparateColumnName($comparate_column_name)
@@ -205,6 +231,6 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
 
     public function hasNoDifferingComparisons()
     {
-        return $this->getComparisonResult() === self::RESULT_COMPARATE_VALUE_SAME;
+        return in_array($this->getComparisonResult(), self::$_sameness_comparison_results);
     }
 }
