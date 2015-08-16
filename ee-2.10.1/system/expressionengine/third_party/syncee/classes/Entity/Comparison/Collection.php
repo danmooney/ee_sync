@@ -80,6 +80,58 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
         return $this->_comparison_result;
     }
 
+    public function getTotalComparisonEntityCountByResult($comparison_results = array(), $exclude_ignored_columns = true)
+    {
+        $total_comparison_entity_count = 0;
+
+        if (!is_array($comparison_results)) {
+            $comparison_results = (array) $comparison_results;
+        }
+
+        foreach ($comparison_results as $comparison_result) {
+            if (!in_array($comparison_result, Syncee_Entity_Comparison::getComparisonResults())) {
+                throw new Syncee_Exception('Result passed to ' . __METHOD__ . ' not in list of comparison results; result passed: '. print_r($comparison_result, true));
+            }
+        }
+
+        if (empty($comparison_results)) {
+            $comparison_results = Syncee_Entity_Comparison::getComparisonResults();
+        }
+
+        /**
+         * @var $row Syncee_Entity_Comparison
+         */
+        foreach ($this->_rows as $row) {
+            if ($exclude_ignored_columns && $row->comparateColumnIsIgnoredInComparison()) {
+                continue;
+            }
+
+            if (in_array($row->getComparisonResult(), $comparison_results)) {
+                $total_comparison_entity_count += 1;
+            }
+        }
+
+        return $total_comparison_entity_count;
+    }
+
+    /**
+     * @param bool|true $include_differing_entity_count_only
+     * @param bool|true $exclude_ignored_columns
+     * @return int
+     * @throws Syncee_Exception
+     * @deprecated - use self::getTotalComparisonEntityCountByResult
+     */
+    public function getTotalComparisonEntityCount($include_differing_entity_count_only = true, $exclude_ignored_columns = true)
+    {
+        if ($include_differing_entity_count_only) {
+            $comparison_results_to_test = Syncee_Entity_Comparison::getDifferenceComparisonResults();
+        } else {
+            $comparison_results_to_test = Syncee_Entity_Comparison::getComparisonResults(); // all
+        }
+
+        return $this->getTotalComparisonEntityCountByResult($comparison_results_to_test, $exclude_ignored_columns);
+    }
+
     /**
      * @param $comparate_column_name
      * @return Syncee_Entity_Comparison
@@ -170,29 +222,5 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
         $collection->setUniqueIdentifierKey($this->getUniqueIdentifierKey());
 
         return $collection;
-    }
-
-    public function getTotalComparisonEntityCount($include_differing_entity_count_only = true, $exclude_ignored_columns = true)
-    {
-        $total_comparison_entity_count = 0;
-
-        /**
-         * @var $row Syncee_Entity_Comparison
-         */
-        foreach ($this->_rows as $row) {
-            // if column is being ignored from comparison and we're only counting unignored columns, then continue
-            if ($exclude_ignored_columns && $row->comparateColumnIsIgnoredInComparison()) {
-                continue;
-            }
-
-            // if comparison result is the same and we're only counting comparison differences, then continue
-            if ($include_differing_entity_count_only && $row->hasNoDifferingComparisons()) {
-                continue;
-            }
-
-            $total_comparison_entity_count += 1;
-        }
-
-        return $total_comparison_entity_count;
     }
 }
