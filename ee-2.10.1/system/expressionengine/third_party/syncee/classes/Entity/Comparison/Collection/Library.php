@@ -218,6 +218,8 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
             }
         }
 
+        $comparate_column_names = array_unique($comparate_column_names);
+
         return $comparate_column_names;
     }
 
