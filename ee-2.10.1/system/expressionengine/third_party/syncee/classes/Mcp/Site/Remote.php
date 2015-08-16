@@ -139,7 +139,8 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
         echo json_encode(array(
             'diagnoses'       => $diagnosis->getDiagnoses(),
             'request_log_url' => Syncee_Helper::createModuleCpUrl('viewRequestLog', $request_log->getPrimaryKeyNamesValuesMap()),
-            'response'        => $response->getRawResponse()
+            'response'        => $response->getRawResponse(),
+            'url'             => $request->getCurlHandle()->url,
         ));
         exit(0);
     }
