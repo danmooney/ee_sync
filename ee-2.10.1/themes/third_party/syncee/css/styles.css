@@ -173,12 +173,16 @@
 }
 
 
-#syncee-page table tr.positive td {
+#syncee-page table tr.positive td, #syncee-page .comparison-collection-table td.positive {
     background: #E1FFE1 !important;
 }
 
-#syncee-page table tr.negative td {
+#syncee-page table tr.negative td, #syncee-page table tr.positive td, #syncee-page .comparison-collection-table td.negative {
     background: #FFE4E4 !important;
+}
+
+#syncee-page table tr.positive td, #syncee-page .comparison-summary td.positive {
+    background: #ADFDAD !important;
 }
 
 #syncee-page table tr > * {
@@ -382,7 +386,7 @@
 
 }
 
-#syncee-page .collection-table.comparison-collection-table .comparate-key-field-container {
+#syncee-page .collection-table.comparison-collection-table .comparison-summary .comparate-key-field-container {
     background: #C8D4FF;
 }
 
