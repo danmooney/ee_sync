@@ -182,7 +182,7 @@
 }
 
 #syncee-page table tr.positive td, #syncee-page .comparison-summary td.positive {
-    background: #ADFDAD !important;
+    background: #BCFFBC/*ADFDAD*/ !important;
 }
 
 #syncee-page table tr > * {
