@@ -89,34 +89,69 @@ sort($unique_identifier_values, SORT_STRING);
             $entity_comparison_library_with_unique_identifier_value = $entity_comparison_library->getComparisonLibraryByUniqueIdentifierKeyAndValue($unique_identifier_key, $unique_identifier_value);
             $target_has_entity_missing = $entity_comparison_library_with_unique_identifier_value[0]->getTarget()->isEmptyRow();
             $col_idx = 0;
+            $comparison_summary_row_idx = $row_idx++;
         ?>
-        <tr class="comparison-summary" data-row-idx="<?= $row_idx++ ?>">
+        <tr class="comparison-summary" data-row-idx="<?= $comparison_summary_row_idx ?>">
             <td class="comparate-field-container comparate-key-field-container" data-col-idx="<?= $col_idx++ ?>">
                 <span><?= $unique_identifier_value ?></span>
             </td>
             <td class="comparison-site-collection-existence-container target-field-container target-field" data-col-idx="<?= $col_idx++ ?>">
                 <span>
-                    <span class="diagnosis-<?= $target_has_entity_missing ? 'negative' : 'positive' ?>"><?= $target_has_entity_missing ? 'MISSING' : 'EXISTS' ?></span>
-                    <span class="decision-checkbox">
-                        <input type="checkbox">
+                    <span class="diagnosis-<?= $target_has_entity_missing ? 'negative' : 'positive' ?>">
+                        <?= $target_has_entity_missing ? 'MISSING' : 'EXISTS' ?>
                     </span>
+                    <?php
+                        if (!$target_has_entity_missing): ?>
+                            <span class="decision-checkbox">
+                                <input type="checkbox">
+                            </span>
+                    <?php
+                        endif ?>
                 </span>
             </td>
-            <td data-col-idx="<?= $col_idx++ ?>">
+            <td class="comparison-site-collection-merge-result-container merge-result" data-col-idx="<?= $col_idx++ ?>">
                 <span>
                     Merge Result Summary
                 </span>
             </td>
             <?php
                 foreach ($remote_site_collection as $remote_site):
-                    $source_has_entity_missing = $entity_comparison_library_with_unique_identifier_value->getComparisonCollectionBySourceSite($remote_site)->getSource()->isEmptyRow();
+                    $entity_comparison_collection = $entity_comparison_library_with_unique_identifier_value->getComparisonCollectionBySourceSite($remote_site);
+                    $source_has_entity_missing    = $entity_comparison_collection->getSource()->isEmptyRow();
                     ?>
                     <td class="comparison-site-collection-existence-container source-field-container comparison-site-field-container source-field" data-col-idx="<?= $col_idx++ ?>">
                         <span>
-                            <span class="diagnosis-<?= $source_has_entity_missing ? 'negative' : 'positive' ?>"><?= $source_has_entity_missing ? 'MISSING' : 'EXISTS' ?></span>
-                            <span class="decision-checkbox">
-                                <input type="checkbox">
+                            <span class="diagnosis-<?= $source_has_entity_missing ? 'negative' : 'positive' ?>">
+                                <?= $source_has_entity_missing ? 'MISSING' : 'EXISTS' ?>
+                                <?php
+                                    if (!$source_has_entity_missing && !$target_has_entity_missing):
+                                        $total_columns_in_target    = count($entity_comparison_collection->getTarget()->toArray());
+                                        $total_sameness_comparisons = $entity_comparison_collection->getTotalComparisonEntityCountByResult(Syncee_Entity_Comparison::getSamenessComparisonResults());
+                                        $total_comparisons          = $entity_comparison_collection->getTotalComparisonEntityCountByResult();
+                                        $percentage_difference      = intval(($total_sameness_comparisons / $total_comparisons) * 100);
+
+                                        echo sprintf(
+                                            '(%s%% match with %s)',
+                                            $percentage_difference,
+                                            $entity_comparison_collection->getTarget()->getSite()->title
+                                        );
+
+//                                        echo sprintf(
+//                                            '(%s %s; %s%% match with %s)',
+//                                            $total_columns_in_target,
+//                                            Syncee_Helper::pluralize($total_columns_in_target, 'column'),
+//                                            $percentage_difference,
+//                                            $entity_comparison_collection->getTarget()->getSite()->title
+//                                        );
+                                    endif ?>
                             </span>
+                        <?php
+                            if (!$source_has_entity_missing): ?>
+                                <span class="decision-checkbox">
+                                    <input type="checkbox">
+                                </span>
+                        <?php
+                            endif ?>
                         </span>
                     </td>
             <?php
@@ -128,31 +163,42 @@ sort($unique_identifier_values, SORT_STRING);
                     <table>
                         <?php
                             foreach ($entity_comparate_column_names as $comparate_column_name):
-                                $col_idx = 0 ?>
-                                <tr data-row-idx="<?= $row_idx++ ?>">
+                                $col_idx = 0;
+                                $entity_missing_in_target = $entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->getComparisonResult() === Syncee_Entity_Comparison::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET ?>
+                                <tr data-row-idx="<?= $row_idx++ ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>">
                                     <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $comparate_column_name ?></span></td>
                                     <td class="target-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                         <span class="value">
                                             <?= Syncee_Helper::ifNull($entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->getTargetValue(), '<i>(NULL)</i>') ?>
                                         </span>
-                                        <span class="decision-checkbox">
-                                            <input type="checkbox">
-                                        </span>
-                                    </td>
-                                    <td data-col-idx="<?= $col_idx++ ?>">
-                                        <span>
-                                            Merge Result
-                                        </span>
-                                    </td>
-                                    <?php
-                                        foreach ($entity_comparison_library_with_unique_identifier_value as $entity_comparison_collection): ?>
-                                            <td class="source-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
-                                                <span class="value">
-                                                    <?= Syncee_Helper::ifNull($entity_comparison_collection->getComparisonEntityByComparateColumnName($comparate_column_name)->getSourceValue(), '<i>(NULL)</i>') ?>
-                                                </span>
+                                        <?php
+                                            if (!$entity_missing_in_target): ?>
                                                 <span class="decision-checkbox">
                                                     <input type="checkbox">
                                                 </span>
+                                        <?php
+                                            endif ?>
+                                    </td>
+                                    <td class="merge-result" data-col-idx="<?= $col_idx++ ?>">
+                                        <span>
+                                            <i>(Action Required)</i>
+                                        </span>
+                                    </td>
+                                    <?php
+                                        foreach ($entity_comparison_library_with_unique_identifier_value as $entity_comparison_collection):
+                                            $entity_comparison        = $entity_comparison_collection->getComparisonEntityByComparateColumnName($comparate_column_name);
+                                            $entity_missing_in_source = $entity_comparison->getComparisonResult() === Syncee_Entity_Comparison::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE ?>
+                                            <td class="source-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
+                                                <span class="value">
+                                                    <?= Syncee_Helper::ifNull($entity_comparison->getSourceValue(), '<i>(NULL)</i>') ?>
+                                                </span>
+                                                <?php
+                                                    if (!$entity_missing_in_source): ?>
+                                                        <span class="decision-checkbox">
+                                                            <input type="checkbox">
+                                                        </span>
+                                                <?php
+                                                    endif ?>
                                             </td>
                                     <?php
                                         endforeach ?>
