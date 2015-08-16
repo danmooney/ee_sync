@@ -3,6 +3,7 @@ $(function ($) {
         summaryCheckboxesByColIdxAndSummaryRowIdx = [],
         resultCheckboxesByColIdxAndSummaryRowIdx = [],
         resultCheckboxesByRowIdx = [],
+        resultCheckboxesBySummaryRowIdx = [],
         summaryRowIdxs = [],
         colIdxCount = $comparisonCollectionTable.children('thead').find('tr th').length
     ;
@@ -39,7 +40,7 @@ $(function ($) {
 
     // fetch all source checkboxes by summary row index
     function getSourceCheckboxesBySummaryRowIdx (summaryRowIdx, arrOrigin) {
-        var $checkboxes = $();
+        var $checkboxes;
 
         // seed the data first
         $.each(summaryRowIdxs, function (idx, summaryRowIdx) {
@@ -54,6 +55,7 @@ $(function ($) {
         }
 
         if (!arrOrigin['sourcesBySummaryRowIdxOnly'][summaryRowIdx]) {
+            $checkboxes = $();
             $.each(arrOrigin, function (idx, arr) {
                 if (typeof idx === 'number' && arr && arr[summaryRowIdx]) {
                     $checkboxes = $checkboxes.add(arr[summaryRowIdx].filter(function () {
@@ -74,6 +76,14 @@ $(function ($) {
         }
 
         return resultCheckboxesByRowIdx[rowIdx];
+    }
+
+    function getResultCheckboxesBySummaryRowIdx (summaryRowIdx) {
+        if (!resultCheckboxesBySummaryRowIdx[summaryRowIdx]) {
+            resultCheckboxesBySummaryRowIdx[summaryRowIdx] = $comparisonCollectionTable.find(' .comparison-details [data-summary-row-idx="' + summaryRowIdx + '"]').find(':checkbox');
+        }
+
+        return resultCheckboxesBySummaryRowIdx[summaryRowIdx];
     }
 
     $comparisonCollectionTable.find('.comparison-summary').on('click', function (e) {
@@ -106,7 +116,8 @@ $(function ($) {
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, summaryCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length ||
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, resultCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length
             ),
-            cellHtml = $.trim($cell.children('.value').html()) ? '<span>' + $cell.children('.value').html() + '</span>' : '<span>&nbsp;</span>'
+            cellHtml = $.trim($cell.children('.value').html()) ? '<span>' + $cell.children('.value').html() + '</span>' : '<span>&nbsp;</span>',
+            hasAllDetailedRowsChecked = getResultCheckboxesBySummaryRowIdx(summaryRowIdx).filter(':checked').length === getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).length
         ;
 
         if (!$correspondingMergeCell.data('original-content')) {
@@ -153,12 +164,18 @@ $(function ($) {
 
         } else {
             if ($checkbox.is(':checked')) {
-                $correspondingMergeCell.addClass('merged');
+                $correspondingMergeCell.addClass('merged').addClass('positive');
                 $correspondingMergeCell.html(cellHtml);
             } else if (!$row.find(':checked').length) {
-                $correspondingMergeCell.removeClass('merged');
+                $correspondingMergeCell.removeClass('merged').removeClass('positive');
                 $correspondingMergeCell.html($correspondingMergeCell.data('original-content'));
             }
+        }
+
+        if (hasAllDetailedRowsChecked) {
+            $summaryMergeCell.addClass('positive');
+        } else {
+            $summaryMergeCell.removeClass('positive');
         }
     }
 
