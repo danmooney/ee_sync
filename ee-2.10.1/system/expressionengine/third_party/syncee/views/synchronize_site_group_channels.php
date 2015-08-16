@@ -49,7 +49,7 @@ sort($unique_identifier_values, SORT_STRING);
         <?php $row_idx = 0; $col_idx = 0; ?>
         <tr data-row-idx="<?= $row_idx++ ?>">
             <th class="comparate-column-header" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $unique_identifier_key ?></span></th>
-            <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
+            <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= htmlentities($local_site->title) ?>">
                 <span>
                     <?= $local_site->title ?> - <em>(Local Site)</em>
                     <?php
@@ -60,14 +60,14 @@ sort($unique_identifier_values, SORT_STRING);
                         endif ?>
                 </span>
             </th>
-            <th>
+            <th data-col-idx="<?= $col_idx++ ?>">
                 <span>
                     Merge Result
                 </span>
             </th>
             <?php
                 foreach ($remote_site_collection as $remote_site): ?>
-                    <th class="source-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
+                    <th class="source-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= htmlentities($remote_site->title) ?>">
                         <span>
                             <?= $remote_site->title ?>
                             <?php
