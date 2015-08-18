@@ -45,6 +45,16 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         self::RESULT_COMPARATE_VALUE_DIFFERS,
     );
 
+    private static $_missing_in_target_comparison_results = array(
+        self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET,
+        self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET,
+    );
+
+    private static $_missing_in_source_comparison_results = array(
+        self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE,
+        self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET,
+    );
+
     /**
      * @var string
      */
@@ -227,6 +237,16 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         }
 
         return $this->_column_is_ignored_in_comparison;
+    }
+
+    public function isMissingInTarget()
+    {
+        return in_array($this->getComparisonResult(), self::$_missing_in_target_comparison_results);
+    }
+
+    public function isMissingInSource()
+    {
+        return in_array($this->getComparisonResult(), self::$_missing_in_source_comparison_results);
     }
 
     public function hasNoDifferingComparisons()
