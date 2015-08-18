@@ -164,7 +164,7 @@ sort($unique_identifier_values, SORT_STRING);
                         <?php
                             foreach ($entity_comparate_column_names as $comparate_column_name):
                                 $col_idx = 0;
-                                $entity_missing_in_target = $entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->getComparisonResult() === Syncee_Entity_Comparison::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET ?>
+                                $entity_missing_in_target = $entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->isMissingInTarget() ?>
                                 <tr data-row-idx="<?= $row_idx++ ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>">
                                     <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $comparate_column_name ?></span></td>
                                     <td class="target-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
@@ -187,7 +187,7 @@ sort($unique_identifier_values, SORT_STRING);
                                     <?php
                                         foreach ($entity_comparison_library_with_unique_identifier_value as $entity_comparison_collection):
                                             $entity_comparison        = $entity_comparison_collection->getComparisonEntityByComparateColumnName($comparate_column_name);
-                                            $entity_missing_in_source = $entity_comparison->getComparisonResult() === Syncee_Entity_Comparison::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE ?>
+                                            $entity_missing_in_source = $entity_comparison->isMissingInSource() ?>
                                             <td class="source-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                                 <span class="value">
                                                     <?= Syncee_Helper::ifNull($entity_comparison->getSourceValue(), '<i>(NULL)</i>') ?>
