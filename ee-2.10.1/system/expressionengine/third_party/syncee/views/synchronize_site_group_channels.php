@@ -3,6 +3,7 @@
  * @var $syncee_site_group Syncee_Site_Group
  * @var $entity_comparison_library Syncee_Entity_Comparison_Collection_Library
  * @var $entity_comparison_collection Syncee_Entity_Comparison_Collection
+ * @var $entity_comparison Syncee_Entity_Comparison
  * @var $local_site Syncee_Site
  * @var $remote_site Syncee_Site
  */
@@ -62,7 +63,7 @@ sort($unique_identifier_values, SORT_STRING);
             </th>
             <th data-col-idx="<?= $col_idx++ ?>">
                 <span>
-                    Merge Result
+                    &nbsp;
                 </span>
             </th>
             <?php
@@ -111,7 +112,7 @@ sort($unique_identifier_values, SORT_STRING);
             </td>
             <td class="comparison-site-collection-merge-result-container merge-result" data-col-idx="<?= $col_idx++ ?>">
                 <span>
-                    Merge Result Summary
+                    &nbsp;
                 </span>
             </td>
             <?php
@@ -164,41 +165,62 @@ sort($unique_identifier_values, SORT_STRING);
                         <?php
                             foreach ($entity_comparate_column_names as $comparate_column_name):
                                 $col_idx = 0;
-                                $entity_missing_in_target = $entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->isMissingInTarget() ?>
+                                $entity_comparison        = $entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name);
+                                $entity_missing_in_target = $entity_comparison->isMissingInTarget();
+
+
+                                if (null === $entity_comparison->getTargetValue()) {
+                                    $target_value_to_output = '<i>(NULL)</i>';
+                                } else {
+                                    $target_value_to_output = strlen(trim($entity_comparison->getTargetValue())) > 0 ? trim($entity_comparison->getTargetValue()) : '&nbsp;';
+                                }
+                                ?>
                                 <tr data-row-idx="<?= $row_idx++ ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>">
                                     <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $comparate_column_name ?></span></td>
                                     <td class="target-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
-                                        <span class="value">
-                                            <?= Syncee_Helper::ifNull($entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name)->getTargetValue(), '<i>(NULL)</i>') ?>
+                                        <span>
+                                            <span class="value">
+                                                <?= ee()->security->xss_clean($target_value_to_output) ?>
+                                            </span>
+                                            <?php
+                                                if (!$entity_missing_in_target): ?>
+                                                    <span class="decision-checkbox">
+                                                        <input type="checkbox">
+                                                    </span>
+                                            <?php
+                                                endif ?>
                                         </span>
-                                        <?php
-                                            if (!$entity_missing_in_target): ?>
-                                                <span class="decision-checkbox">
-                                                    <input type="checkbox">
-                                                </span>
-                                        <?php
-                                            endif ?>
                                     </td>
                                     <td class="merge-result" data-col-idx="<?= $col_idx++ ?>">
                                         <span>
-                                            <i>(Action Required)</i>
+                                            <i>(No Action Chosen)</i>
                                         </span>
                                     </td>
                                     <?php
                                         foreach ($entity_comparison_library_with_unique_identifier_value as $entity_comparison_collection):
                                             $entity_comparison        = $entity_comparison_collection->getComparisonEntityByComparateColumnName($comparate_column_name);
-                                            $entity_missing_in_source = $entity_comparison->isMissingInSource() ?>
+                                            $entity_missing_in_source = $entity_comparison->isMissingInSource();
+
+                                            if (null === $entity_comparison->getSourceValue()) {
+                                                $source_value_to_output = '<i>(NULL)</i>';
+                                            } else {
+                                                $source_value_to_output = strlen(trim($entity_comparison->getSourceValue())) > 0 ? trim($entity_comparison->getSourceValue()) : '&nbsp;';
+                                            }
+
+                                            ?>
                                             <td class="source-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
-                                                <span class="value">
-                                                    <?= Syncee_Helper::ifNull($entity_comparison->getSourceValue(), '<i>(NULL)</i>') ?>
+                                                <span>
+                                                    <span class="value">
+                                                        <?= ee()->security->xss_clean($source_value_to_output) ?>
+                                                    </span>
+                                                    <?php
+                                                        if (!$entity_missing_in_source): ?>
+                                                            <span class="decision-checkbox">
+                                                                <input type="checkbox">
+                                                            </span>
+                                                    <?php
+                                                        endif ?>
                                                 </span>
-                                                <?php
-                                                    if (!$entity_missing_in_source): ?>
-                                                        <span class="decision-checkbox">
-                                                            <input type="checkbox">
-                                                        </span>
-                                                <?php
-                                                    endif ?>
                                             </td>
                                     <?php
                                         endforeach ?>
