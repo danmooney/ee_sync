@@ -177,11 +177,11 @@
     background: #E1FFE1 !important;
 }
 
-#syncee-page table tr.negative td, #syncee-page table tr.positive td, #syncee-page .comparison-collection-table td.negative {
+#syncee-page table tr.negative td, #syncee-page .comparison-collection-table td.negative {
     background: #FFE4E4 !important;
 }
 
-#syncee-page table tr.positive td, #syncee-page .comparison-summary td.positive {
+#syncee-page .comparison-summary td.positive {
     background: #BCFFBC/*ADFDAD*/ !important;
 }
 
@@ -193,12 +193,13 @@
     background: #1B1D36;
     color: #FFF;
     position: relative;
-    background-clip: padding-box;
+    background-clip: padding-box !important;
     /*padding: 8px 23px;*/
 }
 
 #syncee-page table tr td {
     background: white;
+    background-clip: padding-box !important;
     /*padding: 8px;*/
 }
 
@@ -395,6 +396,19 @@
     /*color: #FFF;*/
 }
 
+#syncee-page .collection-table.comparison-collection-table .comparate-key-field span:before {
+    content: "\21B2";
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    transform: scaleX(-1);
+    -ms-filter: fliph; /*IE*/
+    filter: fliph; /*IE*/
+    display: inline-block;
+    margin-right: 7px;
+    font-family: "Lucida Sans Unicode", "Arial Unicode MS";
+}
+
 #syncee-page .collection-table.comparison-collection-table .comparate-value-field {
 }
 
@@ -408,8 +422,15 @@
     background: #FFFDBA;
 }
 
+#syncee-page .collection-table.comparison-collection-table .comparison-summary .comparison-site-collection-existence-container > span,
+#syncee-page .collection-table.comparison-collection-table .comparate-value-field
+{
+    position: relative;
+}
+
 #syncee-page .collection-table.comparison-collection-table .comparison-summary .comparison-site-collection-existence-container {
     background: #ECECEC;
+    text-align: center;
 }
 
 #syncee-page .collection-table.comparison-collection-table .target-field {
@@ -423,11 +444,14 @@
 
 #syncee-page .collection-table.comparison-collection-table .comparison-details .value {
     width: 90%;
-    float: left;
+    /*float: left;*/
 }
 
-#syncee-page .collection-table.comparison-collection-table .decision-checkbox {
-    float: right;
+#syncee-page .collection-table.comparison-collection-table .comparison-summary .comparison-site-collection-existence-container .decision-checkbox,
+#syncee-page .collection-table.comparison-collection-table .comparison-details .decision-checkbox
+{
+    position: absolute;
+    right: 8px;
 }
 
 #syncee-page .collection-table.comparison-collection-table .target-site-header {
@@ -442,15 +466,27 @@
     color: #A0A0A0;
 }
 
-#syncee-page .collection-table.comparison-collection-table .merge-result span {
+#syncee-page .collection-table.comparison-collection-table .merge-result > span {
     position: relative;
     padding-left: 30px;
     padding-right: 30px;
-    text-align: center;
+    /*text-align: center;*/
 }
 
-#syncee-page .collection-table.comparison-collection-table .merge-result.target > span:before,
-#syncee-page .collection-table.comparison-collection-table .merge-result.source > span:after
+#syncee-page .collection-table.comparison-collection-table .merge-result .merge-result-summary-target {
+    float: left;
+}
+
+#syncee-page .collection-table.comparison-collection-table .merge-result .merge-result-summary-source {
+    float: right;
+}
+
+/** Arrows **/
+
+#syncee-page .collection-table.comparison-collection-table .merge-result.target .merge-result-summary-target:before,
+#syncee-page .collection-table.comparison-collection-table .merge-result.source .merge-result-summary-source:after,
+#syncee-page .collection-table.comparison-collection-table .comparison-details .merge-result.target > span:before,
+#syncee-page .collection-table.comparison-collection-table .comparison-details .merge-result.source > span:after
 {
     color: green;
     position: absolute;
@@ -459,12 +495,18 @@
     display: inline-block;
 }
 
-#syncee-page .collection-table.comparison-collection-table .merge-result.target span:before {
+
+#syncee-page .collection-table.comparison-collection-table .comparison-summary .merge-result.target .merge-result-summary-target:before,
+#syncee-page .collection-table.comparison-collection-table .comparison-details .merge-result.target > span:before
+{
     left: 5px;
     content: "\2B05";
 }
 
-#syncee-page .collection-table.comparison-collection-table .merge-result.source span:after {
+
+#syncee-page .collection-table.comparison-collection-table .merge-result.source .merge-result-summary-source:after,
+#syncee-page .collection-table.comparison-collection-table .comparison-details .merge-result.source > span:after
+{
     right: 5px;
     /* need to flip, since for some strange reason unicode right arrow matching left's style doesn't exist */
     content: "\2B05";
@@ -475,6 +517,8 @@
     -ms-filter: fliph; /*IE*/
     filter: fliph; /*IE*/
 }
+
+/** END Arrows **/
 
 
 #syncee-page .image-cache {
@@ -492,7 +536,6 @@
     border-left: 1px solid #D4D4D4;
     border-right: 1px solid #D4D4D4;
 }
-
 
 
 @-moz-document url-prefix() {
