@@ -59,7 +59,7 @@ $site_primary_key_value_map = $request_log->site->getPrimaryKeyNamesValuesMap();
         <?= implode('<br>', $request_log->diagnosis->getDiagnoses()) ?>
 <?php
     endif ?>
-    <h2>Raw Decoded Response from Request</h2><br>
+    <h2>Raw Decrypted Response from Request</h2><br>
     <div id="remote_site_settings_payload">
         <div id="remote_site_settings_payload_contents"><pre><?= $request_log->raw_response ?  Syncee_Helper::prettyPrintJson($request_log->getRawResponseWithDataDecoded()) : '(Empty Response)' ?></pre></div>
     </div>

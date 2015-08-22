@@ -70,7 +70,7 @@ $(function ($) {
                     diagnosesStr = 'An error occurred while parsing the response\n';
                 }
 
-                rawResponseStr = '\n\n-----------BEGIN RAW RESPONSE----------\n' + responseText;
+                rawResponseStr = '\n\n-----------BEGIN RAW DECRYPTED RESPONSE----------\n' + responseText;
 
                 $remoteSitePayloadContents.text(rawResponseStr).wrapInner('<pre></pre>').prepend('<span class="diagnosis-' + diagnosesClassStr + '">' + diagnosesStr + '</span>');
                 isCurrentlyPinging = false;
