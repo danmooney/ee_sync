@@ -41,8 +41,6 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
         $this->_http_host_running_tests = $_SERVER['HTTP_HOST'];
         $this->_installFreshDatabases();
         $this->_switchToDatabaseBasedOnNumber();
-
-        Syncee_Site::setLocalhostAlwaysAllowed(false);
     }
 
     public function tearDown()
@@ -218,7 +216,9 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
                 return reset($row);
             }, ee()->db->query('SHOW TABLES')->result_array());
 
-            if (count($tables)) {
+            $is_empty_database_on_start = !count($tables);
+
+            if (!$is_empty_database_on_start) {
                 $exp_sites_count = ee()->db->select('site_id')
                     ->from('sites')
                     ->get()
@@ -242,11 +242,12 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
 
             // install fresh dump
             if ($need_to_execute_dump) {
-                shell_exec("mysql -u {$db->username} -p{$db->password} {$db->database} < '$sql_pathname'");
+                $response = shell_exec("mysql56 -u {$db->username} {$db->database} < '$sql_pathname'");
             }
 
             // uninstall and reinstall syncee
             $syncee_upd->uninstall();
+
             $syncee_upd->install();
 
             $i += 1;
@@ -273,9 +274,11 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
             }, ee()->db->query('SHOW TABLES')->result_array());
 
             if ($this->_truncation_setup_type !== self::TRUNCATE_SYNCEE_ONLY) {
+                ee()->db->db_debug = false; // db is doing some weird stuff saying that table doesn't exist when it clearly does... let's just get this show on the road
                 foreach ($tables as $table) {
                     ee()->db->truncate($table);
                 }
+                ee()->db->db_debug = true;
             }
 
             $syncee_upd->uninstall();
