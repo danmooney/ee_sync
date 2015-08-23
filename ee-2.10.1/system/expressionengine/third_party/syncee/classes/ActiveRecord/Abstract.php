@@ -130,7 +130,6 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
         return new $collection_model($rows);
     }
 
-    // TODO - test this!
     public static function findByPk($primary_key_value)
     {
         /**
