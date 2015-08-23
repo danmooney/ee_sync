@@ -30,6 +30,11 @@ class Syncee_Request_Remote
      */
     private $_entity;
 
+    /**
+     * @var int
+     */
+    private $_status_code = 0;
+
     private $_json_mime_type = 'text/javascript';
 
     /**
@@ -37,7 +42,7 @@ class Syncee_Request_Remote
      * @param Syncee_Site $site
      * @param Syncee_Request_Remote_Entity_Interface $entity
      */
-    public function __construct(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity = null, Syncee_Site_Request_Log $log = null)
+    public function __construct(Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity = null, Syncee_Site_Request_Log $log = null, $send_headers_and_exit_after_response = true, $is_local_internal_request = false)
     {
         $ee_site_id          = $entity->getRequestedEeSiteId();
         $this->_site         = $site;
@@ -70,23 +75,26 @@ class Syncee_Request_Remote
             } else {
                 $message = 'Could not find public key for the requesting site.';
             }
-        } elseif (!$site->allowsRemoteRequestFromIp(ee()->input->ip_address())) {
+        } elseif (!$is_local_internal_request && !$site->allowsRemoteRequestFromIp(ee()->input->ip_address())) {
             $code    = 403;
 
             if (!$site->requests_from_remote_sites_enabled) {
-                $message = 'Request forbidden from all IPs with master override.';
+                $message = 'Request forbidden from all IPs with master override OFF.' . (isset($_SERVER['REMOTE_ADDR']) ? '  Requesting IP: ' . $_SERVER['REMOTE_ADDR'] : '');
             } else {
-                $message = 'Request forbidden from your IP' . (isset($_SERVER['REMOTE_ADDR']) ? ': ' . $_SERVER['REMOTE_ADDR'] : '.');
+                $message = 'Request forbidden from requesting IP' . (isset($_SERVER['REMOTE_ADDR']) ? ': ' . $_SERVER['REMOTE_ADDR'] : '.');
             }
         } elseif ($site->isEmptyRow()) {
             $code    = 404;
             $message = 'Unable to find local site object to instantiate.';
         }
 
+        $this->_status_code = $code;
+
         if ($code !== 200) {
-            $this->_sendJsonResponse($this->_getJsonResponse(array(), $errors, $code, $message));
+            $this->_sendJsonResponse($this->_getJsonResponse(array(), $errors, $code, $message), $send_headers_and_exit_after_response);
         }
 
+        // get the data for the entity requested
         $collection = $entity->getCollection();
 
         $site->rsa->getCrypt()->loadKey($site->rsa->getPublicKey());
@@ -122,7 +130,18 @@ class Syncee_Request_Remote
             $log->save();
         }
 
-        $this->_sendJsonResponse($response_data_to_send);
+        $this->_status_code = $code;
+        $this->_sendJsonResponse($response_data_to_send, $send_headers_and_exit_after_response);
+    }
+
+    public function getJsonMimeType()
+    {
+        return $this->_json_mime_type;
+    }
+
+    public function getStatusCode()
+    {
+        return $this->_status_code;
     }
 
     private function _getJsonResponse($data = array(), $errors = array(), $code = 200, $message = '', $meta = array())
@@ -159,11 +178,16 @@ class Syncee_Request_Remote
 		return $data;
     }
 
-    private function _sendJsonResponse(array $data)
+    private function _sendJsonResponse(array $data, $send_headers_and_exit_after_response = true)
     {
-        header("Content-Type: {$this->_json_mime_type}", true, $data['code']);
+        if ($send_headers_and_exit_after_response) {
+            header("Content-Type: {$this->_json_mime_type}", true, $data['code']);
+        }
 
 		echo json_encode($data, SYNCEE_TEST_MODE ? JSON_PRETTY_PRINT : 0);
-        exit;
+
+        if ($send_headers_and_exit_after_response) {
+            exit;
+        }
     }
 }
