@@ -178,6 +178,33 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
         return new $this($matching_collections, $this->_target_site, $this->_unique_identifier_key_override);
     }
 
+    public function getAllValuesByComparateColumnName($comparate_column_name, $unique_only = false)
+    {
+        $values = array();
+
+        /**
+         * @var $collection Syncee_Entity_Comparison_Collection
+         * @var $row Syncee_Entity_Comparison
+         */
+        foreach ($this->_collections as $collection) {
+            $comparison_entity = $collection->getComparisonEntityByComparateColumnName($comparate_column_name);
+
+            if (!$comparison_entity->isMissingInSource()) {
+                $values[] = $comparison_entity->getSourceValue();
+            }
+
+            if (!$comparison_entity->isMissingInTarget()) {
+                $values[] = $comparison_entity->getTargetValue();
+            }
+        }
+
+        if ($unique_only) {
+            $values = array_unique($values);
+        }
+
+        return $values;
+    }
+
     public function getAllComparateColumnNames()
     {
         $comparate_column_names = array();
