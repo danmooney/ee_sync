@@ -15,6 +15,11 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
     private $_remote_site;
 
     /**
+     * @var Syncee_Site
+     */
+    private $_local_site;
+
+    /**
      * @var Syncee_Request
      */
     private $_request;
@@ -32,7 +37,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $this->_site_collection = Syncee_Site_Group::findByPk(1)->getSiteCollection();
 
         $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
-        $current_local_site     = $this->_site_collection->filterByCondition('isLocal', true);
+        $current_local_site     = $this->_local_site = $this->_site_collection->filterByCondition('isLocal', true);
         $_SERVER['HTTP_HOST']   = $current_local_site->site_host;
 
         $this->_request       = new Syncee_Request();
@@ -80,14 +85,19 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
          * @var $remote_site Syncee_Site
          */
         $request     = $this->_request;
-        $remote_site = $this->_remote_site;
+        $local_site  = $this->_local_site;
 
-        $this->_switchToDatabaseBasedOnSite($remote_site);
+        $this->_switchToDatabaseBasedOnSite($this->_remote_site);
 
         // need to be wary of when changing dbs; primary keys change too.  explicitly fetch the remote (now actually local since db switch) site's row
-        $remote_site = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => 1), true);
+        $remote_site_thats_actually_local_now_since_db_switch = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => 1), true);
 
-        $remote_site->addToIpWhitelist('0.0.0.1')->save();
+        $remote_site_thats_actually_local_now_since_db_switch->addToIpWhitelist('0.0.0.1')->save();
+
+        $this->_switchToDatabaseBasedOnSite($local_site);
+
+        // get local site's interpretation of remote site again
+        $remote_site = $this->_remote_site;
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $status_code = $response->getStatusCode();
@@ -133,18 +143,24 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
          */
         $request     = $this->_request;
         $remote_site = $this->_remote_site;
+        $local_site  = $this->_local_site;
 
         $this->_switchToDatabaseBasedOnSite($remote_site);
 
         // need to be wary of when changing dbs; primary keys change too.  explicitly fetch the remote (now actually local since db switch) site's row
-        $remote_site = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => 1), true);
+        $remote_site_thats_actually_local_now_since_db_switch = Syncee_Site::getLocalSiteCollection()->filterByCondition(array('ee_site_id' => 1), true);
 
-        $remote_site
+        $remote_site_thats_actually_local_now_since_db_switch
             ->addToIpWhitelist('127.0.0.1')
             ->addToIpWhitelist('0.0.0.1')
             ->addToIpWhitelist('FE80:0000:0000:0000:0202:B3FF:FE1E:8329')
             ->save()
         ;
+
+        $this->_switchToDatabaseBasedOnSite($local_site);
+
+        // get local site's interpretation of remote site again
+        $remote_site = $this->_remote_site;
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $status_code = $response->getStatusCode();
@@ -164,6 +180,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
          */
         $request     = $this->_request;
         $remote_site = $this->_remote_site;
+        $local_site  = $this->_local_site;
 
         $this->_switchToDatabaseBasedOnSite($remote_site);
 
@@ -172,6 +189,11 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
         $remote_site->addToIpWhitelist('127.0.0.1')->addToIpWhitelist('0.0.0.1')->save();
         $remote_site->removeFromIpWhitelist('127.0.0.1')->save();
+
+        $this->_switchToDatabaseBasedOnSite($local_site);
+
+        // get local site's interpretation of remote site again
+        $remote_site = $this->_remote_site;
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $status_code = $response->getStatusCode();
@@ -191,6 +213,7 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
          */
         $request     = $this->_request;
         $remote_site = $this->_remote_site;
+        $local_site  = $this->_local_site;
 
         $this->_switchToDatabaseBasedOnSite($remote_site);
 
@@ -199,6 +222,11 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
 
         $remote_site->requests_from_remote_sites_enabled = false;
         $remote_site->addToIpWhitelist('127.0.0.1')->addToIpWhitelist('0.0.0.1')->save();
+
+        $this->_switchToDatabaseBasedOnSite($local_site);
+
+        // get local site's interpretation of remote site again
+        $remote_site = $this->_remote_site;
 
         $response    = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
         $status_code = $response->getStatusCode();
