@@ -72,7 +72,7 @@ class Syncee_Response
         if ($request->requestHasAlreadyBeenMade()) {
             $response = (string) $request;
         } else {
-            $response = $this->_executeRequest($request);
+            $response = $this->_executeRequest($request, $site, $entity);
         }
 
         $decoded_response = json_decode($response, true);
@@ -176,19 +176,31 @@ class Syncee_Response
         return $this->_raw_response;
     }
 
-    private function _executeRequest(Syncee_Request $request)
+    private function _executeRequest(Syncee_Request $request, Syncee_Site $site, Syncee_Request_Remote_Entity_Interface $entity = null)
     {
-        $curl_handle         = $request->getCurlHandle();
-        $this->_raw_response = $response = $request->execute();
-        $this->_status_code  = (int) $curl_handle->http_status_code;
-        $this->_content_type = isset($curl_handle->response_headers, $curl_handle->response_headers['Content-Type'])
-            ? $curl_handle->response_headers['Content-Type']
-            : null
-        ;
+        if ($site->isLocal()) {
+            ob_start();
 
-        if ($curl_handle->curl_error_code) {
-            $this->_errors[$curl_handle->curl_error_code] = $curl_handle->curl_error_message;
+            $entity->setRequestedEeSiteId($site->ee_site_id);
+
+            $remote_request      = new Syncee_Request_Remote($site, $entity, null, false, true);
+            $this->_raw_response = $response = ob_get_clean();
+            $this->_status_code  = $remote_request->getStatusCode();
+            $this->_content_type = $remote_request->getJsonMimeType();
+        } else {
+            $curl_handle         = $request->getCurlHandle();
+            $this->_raw_response = $response = $request->execute();
+            $this->_status_code  = (int) $curl_handle->http_status_code;
+            $this->_content_type = isset($curl_handle->response_headers, $curl_handle->response_headers['Content-Type'])
+                ? $curl_handle->response_headers['Content-Type']
+                : null
+            ;
+
+            if ($curl_handle->curl_error_code) {
+                $this->_errors[$curl_handle->curl_error_code] = $curl_handle->curl_error_message;
+            }
         }
+
 
         return $response;
     }
