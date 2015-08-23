@@ -5,14 +5,24 @@ $(function ($) {
         resultCheckboxesByRowIdx = [],
         resultCheckboxesBySummaryRowIdx = [],
         summaryRowIdxs = [],
+        siteNamesByColIdx = [],
         colIdxCount = $comparisonCollectionTable.children('thead').find('tr th').length
     ;
 
+    // TODO - if values are all the same in the comparison detail row, then check off the local column for that row, or mark it as a completely matching row and maybe have checkbox to show/hide those rows
+
+    // get list of summary row indexes
     $('[data-summary-row-idx]').each(function () {
         summaryRowIdxs.push($(this).data('summary-row-idx'));
     });
 
     summaryRowIdxs = $.unique(summaryRowIdxs);
+
+
+    // get list of site names by col index
+    $('[data-site-title]').each(function () {
+        siteNamesByColIdx[$(this).data('col-idx')] = $(this).data('site-title');
+    });
 
     function getSummaryCheckboxesByColIdxAndSummaryRowIdx (colIdx, summaryRowIdx) {
         if (!summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx]) {
@@ -107,7 +117,7 @@ $(function ($) {
             isExistenceSummaryCell = $cell.hasClass('comparison-site-collection-existence-container'),
             $summaryCheckbox = getSummaryCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx),
             $summaryMergeCell = $summaryCheckbox.closest('tr').find('.merge-result'),
-            $summaryMergeCellSpan =$summaryMergeCell.children('span'),
+            $summaryMergeCellSpan = $summaryMergeCell.children('span'),
             checkedCheckboxesExistInTarget = (
                 getSummaryCheckboxesByColIdxAndSummaryRowIdx(1, summaryRowIdx).filter(':checked').length ||
                 getResultCheckboxesByColIdxAndSummaryRowIdx(1, summaryRowIdx).filter(':checked').length
@@ -116,9 +126,24 @@ $(function ($) {
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, summaryCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length ||
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, resultCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length
             ),
-            cellHtml = $.trim($cell.children('.value').html()) ? '<span>' + $cell.children('.value').html() + '</span>' : '<span>&nbsp;</span>',
-            hasAllDetailedRowsChecked = getResultCheckboxesBySummaryRowIdx(summaryRowIdx).filter(':checked').length === getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).length
+            detailCellHtml = $.trim($cell.find('.value').html()) ? '<span>' + $cell.find('.value').html() + '</span>' : '<span>&nbsp;</span>',
+            summaryCellTargetHtmlArr = [],
+            summaryCellSourceHtmlArr = [],
+            totalCheckboxInColumnCount = getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).length,
+            hasAllDetailedRowsChecked = getResultCheckboxesBySummaryRowIdx(summaryRowIdx).filter(':checked').length === totalCheckboxInColumnCount,
+            checkboxesCheckedInDetailResultsByColIdx = [],
+            i
         ;
+
+        // calculate number of checkboxes checked for this deatail result in each column
+        for (i = 1; i < colIdxCount; i += 1) {
+            if (!getResultCheckboxesByColIdxAndSummaryRowIdx(i, summaryRowIdx).length) { // if no checkboxes in column, assign null
+                checkboxesCheckedInDetailResultsByColIdx[i] = null;
+                continue;
+            }
+
+            checkboxesCheckedInDetailResultsByColIdx[i] = getResultCheckboxesByColIdxAndSummaryRowIdx(i, summaryRowIdx).filter(':checked').length;
+        }
 
         if (!$correspondingMergeCell.data('original-content')) {
             $correspondingMergeCell.data('original-content', $correspondingMergeCell.html());
@@ -153,24 +178,46 @@ $(function ($) {
         }
 
         // TODO - update result text
-        if (isExistenceSummaryCell) {
-            //if (hasTargetCheckboxesChecked) {
-            //    $summaryMergeCell.addClass('left');
-            //}
-            //
-            //if (hasSourceCheckboxesChecked) {
-            //    $summaryMergeCell.addClass('right');
-            //}
-
-        } else {
+        if (!isExistenceSummaryCell) {
             if ($checkbox.is(':checked')) {
                 $correspondingMergeCell.addClass('merged').addClass('positive');
-                $correspondingMergeCell.html(cellHtml);
+                $correspondingMergeCell.html(detailCellHtml);
             } else if (!$row.find(':checked').length) {
                 $correspondingMergeCell.removeClass('merged').removeClass('positive');
                 $correspondingMergeCell.html($correspondingMergeCell.data('original-content'));
             }
         }
+
+        $.each(checkboxesCheckedInDetailResultsByColIdx, function (idx, value) {
+            var isTargetColIdx = idx === 1,
+                hasOnlyTwoColumns = $('.source-site-header').length === 1,
+                arrToPushOnto = isTargetColIdx ? summaryCellTargetHtmlArr : summaryCellSourceHtmlArr;
+
+            if (typeof idx === 'undefined' || typeof value === 'undefined') {
+                return true;
+            }
+
+            if (value === null || parseInt(value, 10) == 0) {
+
+            } else {
+                if (isTargetColIdx || hasOnlyTwoColumns) { // if there's only one site being compared on either side or if comparing target, then forgo outpuuting the site name
+                    arrToPushOnto.push(value + '/' + totalCheckboxInColumnCount);
+                } else {
+                    arrToPushOnto.push(siteNamesByColIdx[idx] + ': ' + value + '/' + totalCheckboxInColumnCount);
+                }
+            }
+        });
+
+        $summaryMergeCell.html(
+            '<span class="merge-result-summary-target">'
+        +       summaryCellTargetHtmlArr.join('')
+        +   '</span>'
+        +   '<span class="merge-result-summary-source">'
+        +       summaryCellSourceHtmlArr.join('<br>')
+        +   '<span>'
+
+
+        );
 
         if (hasAllDetailedRowsChecked) {
             $summaryMergeCell.addClass('positive');
@@ -264,7 +311,7 @@ $(function ($) {
 
         if ($checkboxesToUncheck) {
             $checkboxesToUncheck.each(function () {
-                updateCheckbox($checkboxesToUncheck, false, triggerOtherCheckboxesOnSummaryRow);
+                updateCheckbox($(this), false, triggerOtherCheckboxesOnSummaryRow);
             });
         }
     }
