@@ -107,7 +107,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
             show_error('Form errors: <pre>' . print_r($form->getErrors(), true));
         }
 
-        $syncee_site_group = Syncee_Site_Group::findByPk($form->getValue('site_group_id')); // TODO - use $form->getValue('site_group_id')
+        $syncee_site_group = Syncee_Site_Group::findByPk($form->getValue('site_group_id'));
 
         $syncee_site_group->delete();
 
