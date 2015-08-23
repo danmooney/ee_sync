@@ -87,7 +87,11 @@ class Test_Comparison_Channel extends Syncee_Unit_Test_Case_Abstract
 
         $this->assertFalse($channel_comparison_library->hasNoDifferingComparisons(), 'Two sites are not exactly the same');
 
-        $channel_comparison_collection = $channel_comparison_library->getComparisonCollectionByUniqueIdentifierValue('plants');
+        $channel_comparison_library = $channel_comparison_library->getComparisonLibraryByUniqueIdentifierKeyAndValue($channel_comparison_library->getUniqueIdentifierKey(), 'plants');
+
+        $this->assertEqual(count($channel_comparison_library), 1, 'Number of collections in channel comparison library is equal to 1: %s');
+
+        $channel_comparison_collection = $channel_comparison_library[0];
 
         $this->assertIsA($channel_comparison_collection, 'Syncee_Entity_Comparison_Collection', 'Channel comparison collection fetched by unique identifier value of "plants" exists and is an object: %s');
 

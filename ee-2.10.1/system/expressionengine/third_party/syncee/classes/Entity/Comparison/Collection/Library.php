@@ -156,32 +156,6 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
     }
 
     /**
-     * @param $unique_identifier_value
-     * @return bool|Syncee_Entity_Comparison_Collection
-     * @deprecated - TODO - has to be deprecated because since we allow multiple sources to compare against, there may well be multiple collections that match the test in the written logic
-     */
-    public function getComparisonCollectionByUniqueIdentifierValue($unique_identifier_value)
-    {
-        /**
-         * @var $collection_to_test Syncee_Entity_Comparison_Collection
-         */
-        foreach ($this->_collections as $collection_to_test) {
-            $source_unique_value = $collection_to_test->getSource()->getUniqueIdentifierValue();
-            $target_unique_value = $collection_to_test->getTarget()->getUniqueIdentifierValue();
-
-            if (in_array($unique_identifier_value, array($source_unique_value, $target_unique_value), true)) {
-                $collection = $collection_to_test;
-                break;
-            }
-        }
-
-        return isset($collection)
-            ? $collection
-            : false
-        ;
-    }
-
-    /**
      * @param $unique_identifier_key
      * @param $unique_identifier_value
      * @return Syncee_Entity_Comparison_Collection_Library
