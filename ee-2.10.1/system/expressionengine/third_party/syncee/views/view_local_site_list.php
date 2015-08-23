@@ -39,7 +39,7 @@ echo new Syncee_Table(
 
                 $last_request_link_html = sprintf(
                     '<a href="%s">%s</a>',
-                    Syncee_Helper::createModuleCpUrl('viewRequestLog', $last_request_log->getPrimaryKeyNamesValuesMap()), // TODO - implement
+                    Syncee_Helper::createModuleCpUrl('viewRequestLog', $last_request_log->getPrimaryKeyNamesValuesMap()),
                     $last_request_log_status
                 );
             }
