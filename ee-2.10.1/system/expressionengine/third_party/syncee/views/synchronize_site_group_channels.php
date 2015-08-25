@@ -45,10 +45,10 @@ $other_columns_percentage_width            = round(
 sort($unique_identifier_values, SORT_STRING);
 
 ?>
-<table class="collection-table comparison-collection-table">
+<table class="collection-table comparison-collection-table" data-sticky-table>
     <thead>
         <?php $row_idx = 0; $col_idx = 0; ?>
-        <tr data-row-idx="<?= $row_idx++ ?>">
+        <tr data-row-idx="<?= $row_idx++ ?>" data-sticky-table-row>
             <th class="comparate-column-header" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $unique_identifier_key ?></span></th>
             <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= htmlentities($local_site->title) ?>">
                 <span>
@@ -98,7 +98,7 @@ sort($unique_identifier_values, SORT_STRING);
             </td>
             <td class="comparison-site-collection-existence-container target-field-container target-field" data-col-idx="<?= $col_idx++ ?>">
                 <span>
-                    <span class="diagnosis-<?= $target_has_entity_missing ? 'negative' : 'positive' ?>">
+                    <span class="diagnosis-<?= $target_has_entity_missing ? 'neutral' : 'positive' ?>">
                         <?= $target_has_entity_missing ? 'MISSING' : 'EXISTS' ?>
                     </span>
                     <?php
@@ -122,7 +122,7 @@ sort($unique_identifier_values, SORT_STRING);
                     ?>
                     <td class="comparison-site-collection-existence-container source-field-container comparison-site-field-container source-field" data-col-idx="<?= $col_idx++ ?>">
                         <span>
-                            <span class="diagnosis-<?= $source_has_entity_missing ? 'negative' : 'positive' ?>">
+                            <span class="diagnosis-<?= $source_has_entity_missing ? 'neutral' : 'positive' ?>">
                                 <?= $source_has_entity_missing ? 'MISSING' : 'EXISTS' ?>
                                 <?php
                                     if (!$source_has_entity_missing && !$target_has_entity_missing):
@@ -168,16 +168,21 @@ sort($unique_identifier_values, SORT_STRING);
                                 $entity_comparison        = $entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name);
                                 $entity_missing_in_target = $entity_comparison->isMissingInTarget();
 
+                                $entity_comparison_has_only_one_unique_value_or_less = (
+                                    count($entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name, true)) <= 1 &&
+                                    count($entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name, false)) > 1
+                                );
 
                                 if (null === $entity_comparison->getTargetValue()) {
                                     $target_value_to_output = '<i>(NULL)</i>';
                                 } else {
                                     $target_value_to_output = strlen(trim($entity_comparison->getTargetValue())) > 0 ? trim($entity_comparison->getTargetValue()) : '&nbsp;';
                                 }
+
                                 ?>
                                 <tr data-row-idx="<?= $row_idx++ ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>">
                                     <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $comparate_column_name ?></span></td>
-                                    <td class="target-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
+                                    <td class="target-field comparate-value-field <?= $entity_missing_in_target ? 'comparate-value-field-missing' : '' ?>" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                         <span>
                                             <span class="value">
                                                 <?= ee()->security->xss_clean($target_value_to_output) ?>
@@ -207,14 +212,30 @@ sort($unique_identifier_values, SORT_STRING);
                                                 $source_value_to_output = strlen(trim($entity_comparison->getSourceValue())) > 0 ? trim($entity_comparison->getSourceValue()) : '&nbsp;';
                                             }
 
+                                            $entity_exists_in_both_source_and_target = (
+                                                !$entity_missing_in_source &&
+                                                !$entity_missing_in_target
+                                            );
+
+                                            $source_value_same_as_target_value = (
+                                                $entity_exists_in_both_source_and_target &&
+                                                $source_value_to_output === $target_value_to_output
+                                            );
+
+                                            if ($entity_exists_in_both_source_and_target) {
+                                                $match_class = $source_value_same_as_target_value ? 'match-with-target' : 'no-match-with-target';
+                                            } else {
+                                                $match_class = '';
+                                            }
+
                                             ?>
-                                            <td class="source-field comparate-value-field" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
+                                            <td class="source-field comparate-value-field <?= $match_class ?> <?= $entity_missing_in_source ? 'comparate-value-field-missing' : '' ?>" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                                 <span>
                                                     <span class="value">
                                                         <?= ee()->security->xss_clean($source_value_to_output) ?>
                                                     </span>
                                                     <?php
-                                                        if (!$entity_missing_in_source): ?>
+                                                        if (!$entity_missing_in_source && !$entity_comparison_has_only_one_unique_value_or_less && !$source_value_same_as_target_value): ?>
                                                             <span class="decision-checkbox">
                                                                 <input type="checkbox">
                                                             </span>
