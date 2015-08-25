@@ -61,9 +61,9 @@ sort($unique_identifier_values, SORT_STRING);
                         endif ?>
                 </span>
             </th>
-            <th data-col-idx="<?= $col_idx++ ?>">
+            <th class="merge-result-header" data-col-idx="<?= $col_idx++ ?>">
                 <span>
-                    &nbsp;
+                    Merge Result
                 </span>
             </th>
             <?php

@@ -497,6 +497,12 @@
     background: #FFF;
 }
 
+#syncee-page .collection-table.comparison-collection-table .merge-result-header {
+    color: #C9FFC9;
+    font-weight: normal;
+    letter-spacing: 2px;
+}
+
 #syncee-page .collection-table.comparison-collection-table .merge-result > span {
     position: relative;
     padding-left: 30px;
