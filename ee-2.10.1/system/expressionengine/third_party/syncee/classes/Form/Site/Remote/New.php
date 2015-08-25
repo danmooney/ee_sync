@@ -28,7 +28,7 @@ class Syncee_Form_Site_Remote_New extends Syncee_Form_Abstract
         ),
         'remote_site_settings_payload' => array(
             'label'        => 'Settings Payload',
-            'instructions' => 'Copy the settings payload from a local site on another Syncee installation and paste them into here.',
+            'instructions' => 'Copy the settings payload from a local site on another Syncee installation and paste it into here.',
             'type'         => 'textarea',
             'required'     => true
         ),
