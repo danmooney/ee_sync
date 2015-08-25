@@ -121,7 +121,7 @@
 }
 
 .remote-site-settings-payload-container textarea {
-    min-height: 150px;
+    min-height: 230px;
 }
 
 .site-settings-container {
@@ -187,6 +187,15 @@
 
 #syncee-page table tr > * {
     border: 1px solid gray;
+}
+
+#syncee-page table.comparison-collection-table .comparison-details tr > * {
+    border-color: #B56363;
+}
+
+#syncee-page table.comparison-collection-table .comparison-details tr > .comparate-value-field-missing {
+    background: #9C9C9C;
+    border-color: gray;
 }
 
 #syncee-page table tr th {
@@ -258,6 +267,10 @@
 
 #syncee-page .diagnosis-negative {
     color: red;
+}
+
+#syncee-page .diagnosis-neutral {
+    color: #8E8E8E;
 }
 
 #syncee-page .flash-message-container {
@@ -438,8 +451,30 @@
     background: #FFF;
 }
 
+#syncee-page .collection-table.comparison-collection-table .comparison-details td span i {
+    color: #A0A0A0;
+}
+
 #syncee-page .collection-table.comparison-collection-table .source-field {
     background: #FFF;
+}
+
+#syncee-page .collection-table.comparison-collection-table .source-field.comparate-value-field.match-with-target,
+#syncee-page .collection-table.comparison-collection-table .source-field.comparate-value-field.no-match-with-target
+{
+    font-weight: bold;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-details .source-field.comparate-value-field.match-with-target,
+#syncee-page .collection-table.comparison-collection-table .comparison-details .source-field.comparate-value-field.match-with-target i
+{
+    color: green;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-details .source-field.comparate-value-field.no-match-with-target,
+#syncee-page .collection-table.comparison-collection-table .comparison-details .source-field.comparate-value-field.no-match-with-target i
+{
+    color: red;
 }
 
 #syncee-page .collection-table.comparison-collection-table .comparison-details .value {
@@ -460,10 +495,6 @@
 
 #syncee-page .collection-table.comparison-collection-table .comparison-details .merge-result {
     background: #FFF;
-}
-
-#syncee-page .collection-table.comparison-collection-table .comparison-details td span i {
-    color: #A0A0A0;
 }
 
 #syncee-page .collection-table.comparison-collection-table .merge-result > span {
