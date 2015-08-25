@@ -1,4 +1,4 @@
-$(function () {
+$(function ($) {
     var pressed = false,
         $start,
         startX,
