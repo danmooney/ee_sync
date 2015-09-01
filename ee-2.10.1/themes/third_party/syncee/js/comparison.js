@@ -97,11 +97,25 @@ $(function ($) {
     }
 
     $comparisonCollectionTable.find('.comparison-summary').on('click', function (e) {
+        var $comparisonSummary = $(e.currentTarget),
+            $comparisonDetails,
+            comparisonDetailsIsSlidUp
+        ;
+
         if ($(e.target || e.srcElement).is(':input')) {
             return;
         }
 
-        $(e.currentTarget).next('.comparison-details').find('.nested-table-container div').slideToggle();
+        $comparisonDetails        = $comparisonSummary.next('.comparison-details');
+        comparisonDetailsIsSlidUp = $comparisonDetails.find('table').is(':hidden');
+
+        if (comparisonDetailsIsSlidUp) { // corresponding comparison details is about to be exposed; add sticky row data attribute to comparison summary
+            $comparisonSummary.attr('data-sticky-table-row', 1);
+        } else { // remove sticky row data attribute
+            $comparisonSummary.removeAttr('data-sticky-table-row');
+        }
+
+        $comparisonDetails.find('.nested-table-container div').slideToggle();
     });
 
     function calculateMergeResult ($checkbox) {
