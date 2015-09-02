@@ -3,10 +3,12 @@ $(function ($) {
         $start,
         startX,
         startWidth,
+        $tableHeaders = $('[data-resizable-table] > thead > tr > th'),
+        $tableCells = $('[data-resizable-table] > tbody > tr > td'),
         startWidthAsPercentage
     ;
 
-    $("table th")
+    $tableHeaders
         .mousedown(function (e) {
             // if mousedown triggered over something other than th, return;
             if ((e.target || e.srcElement) != e.currentTarget) {
@@ -22,8 +24,8 @@ $(function ($) {
             //console.log(startWidthAsPercentage);
 
             $start
-                .addClass("resizing")
-                .addClass("no-select")
+                .addClass('resizing')
+                .addClass('no-select')
             ;
         })
         .dblclick(function (e) {
@@ -67,7 +69,16 @@ $(function ($) {
         })
     ;
 
-    $(document).mousemove(function (e) {
+    $tableHeaders.each(function () {  // set pixel widths based on percentage assigned
+        $(this).width($(this).width());
+    });
+
+    $tableCells.each(function () {  // set pixel widths based on percentage assigned
+        $(this).width($(this).width());
+    });
+
+
+    $(document).mousemove(function detectResizeStart (e) {
         var mouseMoveDifference = e.pageX - startX;
 
         if (!pressed) {
@@ -82,14 +93,14 @@ $(function ($) {
         //$start.width(startWidth + (e.pageX - startX));
     });
 
-    $(document).mouseup(function () {
+    $(document).mouseup(function detectResizeFinish () {
         if (!pressed) {
             return;
         }
 
         $($start)
-            .removeClass("resizing")
-            .removeClass("no-select")
+            .removeClass('resizing')
+            .removeClass('no-select')
         ;
 
         pressed = false;
