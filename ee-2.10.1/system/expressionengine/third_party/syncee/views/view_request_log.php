@@ -10,7 +10,7 @@ $primary_key_value_map      = $request_log->getPrimaryKeyNamesValuesMap();
 $site_primary_key_value_map = $request_log->site->getPrimaryKeyNamesValuesMap();
 ?>
 <div class="site-settings-container">
-    <table class="entity-table">
+    <table class="entity-table" data-resizable-table>
         <tbody>
             <tr>
                 <td class="label"><span>Site</span></td>

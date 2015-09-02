@@ -60,7 +60,7 @@ class Syncee_Table
 
     public function __toString()
     {
-        $html  = '<table class="collection-table">';
+        $html  = '<table class="collection-table" data-resizable-table>';
         $html .= '<thead><tr>';
 
         /**
