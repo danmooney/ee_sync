@@ -1,4 +1,4 @@
-$(function ($) {
+$(function ($, undefined) {
     var $comparisonCollectionTable = $('.comparison-collection-table'),
         summaryCheckboxesByColIdxAndSummaryRowIdx = [],
         resultCheckboxesByColIdxAndSummaryRowIdx = [],
@@ -106,16 +106,16 @@ $(function ($) {
             return;
         }
 
-        $comparisonDetails        = $comparisonSummary.next('.comparison-details');
+        $comparisonDetails        = $comparisonSummary.nextAll('.comparison-details').first();
         comparisonDetailsIsSlidUp = $comparisonDetails.find('table').is(':hidden');
 
-        if (comparisonDetailsIsSlidUp) { // corresponding comparison details is about to be exposed; add sticky row data attribute to comparison summary
-            $comparisonSummary.attr('data-sticky-table-row', 1);
-        } else { // remove sticky row data attribute
-            $comparisonSummary.removeAttr('data-sticky-table-row');
-        }
-
-        $comparisonDetails.find('.nested-table-container div').slideToggle();
+        $comparisonDetails.find('.nested-table-container div').slideToggle(undefined, function () {
+            if (comparisonDetailsIsSlidUp) { // corresponding comparison details is about to be exposed; add sticky row data attribute to comparison summary
+                $comparisonSummary.attr('data-sticky-table-row', 1);
+            } else { // remove sticky row data attribute
+                $comparisonSummary.removeAttr('data-sticky-table-row');
+            }
+        });
     });
 
     function calculateMergeResult ($checkbox) {
@@ -264,10 +264,10 @@ $(function ($) {
 
         if (isSummaryRow) {
             $comparisonSummaryRow = $checkbox.closest('.comparison-summary');
-            $comparisonResultsRow = $comparisonSummaryRow.next('.comparison-details');
+            $comparisonResultsRow = $comparisonSummaryRow.nextAll('.comparison-details').first();
         } else {
             $comparisonResultsRow = $checkbox.closest('.comparison-details');
-            $comparisonSummaryRow = $comparisonResultsRow.prev('.comparison-summary');
+            $comparisonSummaryRow = $comparisonResultsRow.prevAll('.comparison-summary').first();
         }
 
         $checkbox.prop('checked', isChecked);
