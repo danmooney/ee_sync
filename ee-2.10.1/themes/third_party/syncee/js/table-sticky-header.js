@@ -1,7 +1,10 @@
 $(function ($) {
     var observers = [],
-        $stickyTables = $('[data-sticky-table]'),
-        $stickyRows = $('[data-sticky-table-row]'),
+        stickyTablesSelectorStr = '[data-sticky-table]',
+        stickyRowsSelectorStr = '[data-sticky-table-row]',
+        $stickyTables = $(stickyTablesSelectorStr),
+        $stickyRows = $(stickyRowsSelectorStr),
+        bracketRegex = new RegExp('[\\[|\\]]', 'g'),
         $stuckRows
     ;
 
@@ -24,6 +27,7 @@ $(function ($) {
     function evaluateStickiness () {
         $stickyRows.each(function (idx, stickyRow) {
             var $stickyRow = $(stickyRow),
+                $stickyTable = $stickyRow.closest(stickyTablesSelectorStr),
                 topRelativeToViewport,
                 shouldBeSticky,
                 shouldBeUnsticky
@@ -39,7 +43,13 @@ $(function ($) {
 
             function stickify () {
                 var highestClientRectBottom = evaluateStickyRowHighestBottom(),
-                    $stickyTrPlaceholder = $('<tr class="sticky-placeholder"></tr>')
+
+                    $stickyTrPlaceholder = $stickyRow.clone()
+                ;
+
+                $stickyTrPlaceholder
+                    .removeAttr(stickyRowsSelectorStr.replace(bracketRegex, ''))
+                    .addClass('sticky-placeholder')
                 ;
 
                 $stickyTrPlaceholder.height($stickyRow.height()).insertAfter($stickyRow);
@@ -51,15 +61,23 @@ $(function ($) {
                     .addClass('stuck')
                     .data('unsticky-top-px-trigger', $stickyRow.position().top)
                 ;
+
+                $stickyTable.addClass('table-layout-auto');
             }
 
             function unstickify () {
+                var isLastRowToUnstick = $stickyTable.find(stickyRowsSelectorStr).length === 1;
+
                 $stickyRow.next('.sticky-placeholder').remove();
 
                 $stickyRow
                     .removeData('sticky-table-row-stuck')
                     .removeClass('stuck')
                 ;
+
+                if (isLastRowToUnstick) {
+                    $stickyTable.removeClass('table-layout-auto');
+                }
             }
 
             if (shouldBeSticky) {
@@ -86,21 +104,28 @@ $(function ($) {
 
     // add observers to sticky table row
     $stickyTables.each(function () {
-        var observer,
+        var stickyRowSelectorSansBrackets = stickyRowsSelectorStr.replace(bracketRegex, ''),
+            observer,
             options = {
                 subtree: true,
-                attributeFilter: ['data-sticky-table-row']
+                attributeFilter: [stickyRowSelectorSansBrackets]
             }
         ;
 
          observer = new MutationObserver(function (mutations) {
             [].forEach.call(mutations, function (mutation) {
                 var $targetRow = $(mutation.target),
-                    functionToExecute = typeof $targetRow.attr('data-sticky-table-row') !== 'undefined'
+                    functionToExecute = typeof $targetRow.attr(stickyRowSelectorSansBrackets) !== 'undefined'
                         ? makeRowSticky
                         : makeRowUnsticky
                 ;
 
+                // if row is a dynamically created sticky placeholder, then don't do anything
+                if ($targetRow.hasClass('sticky-placeholder')) {
+                    return;
+                }
+
+                evaluateStickiness();
                 functionToExecute($targetRow);
             });
 
