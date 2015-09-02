@@ -170,6 +170,7 @@
 #syncee-page table tr > *  > span
 {
     display: block;
+    word-wrap: break-word;
 }
 
 
@@ -574,6 +575,15 @@
     border-right: 1px solid #D4D4D4;
 }
 
+#syncee-page tr.stuck {
+    position: fixed;
+    top: 0;
+    z-index: 999;
+}
+
+.table-layout-auto {
+    table-layout: auto !important;
+}
 
 @-moz-document url-prefix() {
     #syncee-page table .nested-table-container table {
