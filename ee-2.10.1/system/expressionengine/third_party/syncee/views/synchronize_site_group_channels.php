@@ -45,7 +45,7 @@ $other_columns_percentage_width            = round(
 sort($unique_identifier_values, SORT_STRING);
 
 ?>
-<table class="collection-table comparison-collection-table" data-sticky-table>
+<table class="collection-table comparison-collection-table" data-sticky-table data-sticky-table-max-rows="2" data-resizable-table>
     <thead>
         <?php $row_idx = 0; $col_idx = 0; ?>
         <tr data-row-idx="<?= $row_idx++ ?>" data-sticky-table-row>
