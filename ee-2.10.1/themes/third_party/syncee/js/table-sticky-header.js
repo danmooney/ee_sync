@@ -29,7 +29,7 @@ $(function ($) {
             var $stickyRow = $(stickyRow),
                 $nextStickyRow,
                 $stickyTable = $stickyRow.closest(stickyTablesSelectorStr),
-                $stickyRowsInTable = $stickyTable.find(stickyRowsSelectorStr),
+                $stickyRowsInTable = $stickyTable.find(stickyRowsSelectorStr)/*.not('.transitioning-to-stuck')*/,
                 stickyRowIndexInTable,
                 stickyTableMaxNumberOfStickyRows = $stickyTable.data('sticky-table-max-rows') || Infinity,
                 maxNumberOfStickyRowsLimitMet = stickyTableMaxNumberOfStickyRows <= $stickyTable.find('.stuck').length,
@@ -45,6 +45,8 @@ $(function ($) {
                 shouldBeUnsticky,
                 differenceBetweenNextStickyRowCurrentOffsetTopAndTriggerOffsetTop
             ;
+
+            assignUnstickyTopPxTriggerToStickyRow($stickyRow);
 
             if (!stickyRow || !stickyRow.getBoundingClientRect) {
                 return true; // continue
@@ -100,15 +102,23 @@ $(function ($) {
                 $stickyRow.next('.sticky-placeholder').remove();
             }
 
+            function assignUnstickyTopPxTriggerToStickyRow($stickyRow) {
+                var $correspondingStickyPlaceholderRow = $stickyRow.next('.sticky-placeholder');
+
+                if (typeof $stickyRow.data('unsticky-top-px-trigger') === 'undefined') {
+                    $stickyRow.data('unsticky-top-px-trigger', $stickyRow.offset().top);
+                } else if ($correspondingStickyPlaceholderRow.length) {
+                    $stickyRow.data('unsticky-top-px-trigger', $correspondingStickyPlaceholderRow.offset().top);
+                }
+            }
+
             function stickify ($stickyRow, isTransitioning, setTopProperty) {
                 var highestClientRectBottom = evaluateStickyRowHighestBottomInTable($stickyTable)
                 ;
 
                 setTopProperty = typeof setTopProperty === 'boolean' ? setTopProperty : true;
 
-                if (typeof $stickyRow.data('unsticky-top-px-trigger') === 'undefined') {
-                    $stickyRow.data('unsticky-top-px-trigger', $stickyRow.offset().top);
-                }
+                assignUnstickyTopPxTriggerToStickyRow($stickyRow);
 
                 addStickyPlaceholder($stickyRow);
 
@@ -160,6 +170,8 @@ $(function ($) {
                 console.log('Time to transition to stuck for NEXT row: ', $nextStickyRow);
                 topToAssignToNextRow = Math.max(nextStickyRowTopRelativeToViewport || 0, evaluateStickyRowHighestBottomInTable($stickyTable));
 
+                assignUnstickyTopPxTriggerToStickyRow($nextStickyRow);
+
                 $nextStickyRow.addClass('transitioning-to-stuck').css({
                     top: topToAssignToNextRow,
                     'z-index': (+$stickyRow.css('z-index') || 0) + 1
@@ -171,7 +183,7 @@ $(function ($) {
                     console.log('Transitioning row should now be stuck', $nextStickyRow);
                     $nextStickyRow.removeClass('transitioning-to-stuck').css('top', stickyRowTopRelativeToViewport);
                     stickify($nextStickyRow, false, false);
-                } else {
+                } else { // simulate scrolling up the row by adjusting top
                     differenceBetweenNextStickyRowCurrentOffsetTopAndTriggerOffsetTop = $nextStickyRow.offset().top - $nextStickyRow.data('unsticky-top-px-trigger');
                     if (differenceBetweenNextStickyRowCurrentOffsetTopAndTriggerOffsetTop > 0) {
                         $nextStickyRow.css('top', parseInt($nextStickyRow.css('top'), 10) + (differenceBetweenNextStickyRowCurrentOffsetTopAndTriggerOffsetTop * -1));
