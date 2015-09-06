@@ -113,12 +113,15 @@ $(function ($) {
             }
 
             function stickify ($stickyRow, isTransitioning, setTopProperty) {
-                var highestClientRectBottom = evaluateStickyRowHighestBottomInTable($stickyTable)
+                var highestClientRectBottom = evaluateStickyRowHighestBottomInTable($stickyTable),
+                    isFirstRowToStick = $stickyTable.find('.stuck').length === 0
                 ;
 
                 setTopProperty = typeof setTopProperty === 'boolean' ? setTopProperty : true;
 
                 assignUnstickyTopPxTriggerToStickyRow($stickyRow);
+
+                $stickyRow.width($stickyTable.width());
 
                 addStickyPlaceholder($stickyRow);
 
@@ -135,11 +138,16 @@ $(function ($) {
                     }
                 }
 
+
                 $stickyTable.addClass('table-layout-auto');
+
+                if (isFirstRowToStick) {
+                    $stickyRow.trigger('stuck');
+                }
             }
 
             function unstickify ($stickyRow, isTransitioning) {
-                var isLastRowToUnstick = $stickyTable.find(stickyRowsSelectorStr).length === 1;
+                var isLastRowToUnstick = $stickyTable.find('.stuck').length === 1;
 
                 removeStickyPlaceholder($stickyRow);
 
@@ -149,7 +157,7 @@ $(function ($) {
                 ;
 
                 if (isLastRowToUnstick) {
-                    $stickyTable.removeClass('table-layout-auto');
+                    $stickyTable/*.removeClass('table-layout-auto')*/.trigger('all-unstuck');
                 }
             }
 
@@ -206,9 +214,11 @@ $(function ($) {
     // add observers to sticky table row
     $stickyTables.each(function () {
         var stickyRowSelectorSansBrackets = stickyRowsSelectorStr.replace(bracketRegex, ''),
+            MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
             observer,
             options = {
                 subtree: true,
+                attributes: true,
                 attributeFilter: [stickyRowSelectorSansBrackets]
             }
         ;
