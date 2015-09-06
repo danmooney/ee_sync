@@ -171,6 +171,7 @@
 {
     display: block;
     word-wrap: break-word;
+    word-break: break-all;
 }
 
 
@@ -579,15 +580,15 @@
     position: fixed;
     top: 0;
     z-index: 999;
+    display: table;
 }
 
 #syncee-page thead tr.stuck {
-    /*z-index: 9999;*/
+    z-index: 9999;
 }
 
 #syncee-page tr.transitioning-to-stuck {
     position: fixed;
-
 }
 
 #syncee-page .collection-table.comparison-collection-table tr.transitioning-to-stuck td {
@@ -602,6 +603,23 @@
     table-layout: auto !important;
 }
 
+/* Chrome is getting table alignment wrong; this is a hacky fix */
+#syncee-page .collection-table.comparison-collection-table.table-layout-auto .target-field-container {
+    padding-right: 3px;
+}
+
+#syncee-page .collection-table.comparison-collection-table.table-layout-auto .comparison-site-collection-merge-result-container  {
+    padding-right: 2px;
+}
+
+#syncee-page .collection-table.comparison-collection-table.table-layout-auto .source-field-container {
+    padding-right: 2px;
+}
+
+#syncee-page .collection-table.comparison-collection-table.table-layout-auto .target-site-header {
+    padding-right: 4px;
+}
+
 @-moz-document url-prefix() {
     #syncee-page table .nested-table-container table {
         margin-left: -1px;
@@ -611,5 +629,41 @@
     #syncee-page .collection-table.comparison-collection-table .merge-result.source > span:after
     {
         top: 4px;
+    }
+
+    /* Firefox doesn't show border left when it's sliding for some reason; this fixes it by increasing the left width by 1px */
+    #syncee-page table.comparison-collection-table .comparison-details.sliding tr > *:first-child {
+        border-left-width: 2px;
+    }
+
+    /* Firefox arrows don't follow the same box model and therefore doesn't center vertically like Chrome... this fixes */
+    #syncee-page .collection-table.comparison-collection-table .merge-result.target .merge-result-summary-target:before,
+    #syncee-page .collection-table.comparison-collection-table .merge-result.source .merge-result-summary-source:after,
+    #syncee-page .collection-table.comparison-collection-table .comparison-details .merge-result.target > span:before,
+    #syncee-page .collection-table.comparison-collection-table .comparison-details .merge-result.source > span:after
+    {
+        top: 3px;
+    }
+
+    /* Default fixed position for firefox is off by one pixel to the right; this moves it to the left by 1px */
+    #syncee-page tr.stuck {
+        margin-left: -1px;
+    }
+
+    /* Firefox actually gets nested table alignment right, so this reverts back to original values */
+    #syncee-page .collection-table.comparison-collection-table.table-layout-auto .target-field-container {
+        padding-right: 1px;
+    }
+
+    #syncee-page .collection-table.comparison-collection-table.table-layout-auto .comparison-site-collection-merge-result-container  {
+        padding-right: 1px;
+    }
+
+    #syncee-page .collection-table.comparison-collection-table.table-layout-auto .source-field-container {
+        padding-right: 1px;
+    }
+
+    #syncee-page .collection-table.comparison-collection-table.table-layout-auto .target-site-header {
+        padding-right: 1px;
     }
 }
