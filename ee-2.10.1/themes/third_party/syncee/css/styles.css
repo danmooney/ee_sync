@@ -392,7 +392,7 @@
 }
 
 #syncee-page .collection-table.comparison-collection-table .comparison-summary td {
-    border-top: 0;
+    border-top-width: 0;
     font-weight: bold;
     background: #ECECEC;
 }
@@ -579,6 +579,23 @@
     position: fixed;
     top: 0;
     z-index: 999;
+}
+
+#syncee-page thead tr.stuck {
+    /*z-index: 9999;*/
+}
+
+#syncee-page tr.transitioning-to-stuck {
+    position: fixed;
+
+}
+
+#syncee-page .collection-table.comparison-collection-table tr.transitioning-to-stuck td {
+    border-top-width: 1px;
+}
+
+#syncee-page .collection-table.comparison-collection-table tr.transitioning-to-stuck td > * {
+    padding-top: 7px;
 }
 
 .table-layout-auto {
