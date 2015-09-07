@@ -5,6 +5,7 @@ $(function ($) {
         $stickyTables = $(stickyTablesSelectorStr),
         $stickyRows = $(stickyRowsSelectorStr),
         bracketRegex = new RegExp('[\\[|\\]]', 'g'),
+        tableLayoutAutoHasWidthBug,
         $stuckRows
     ;
 
@@ -43,6 +44,7 @@ $(function ($) {
                 nextRowShouldStopTransitioningToStuck,
                 topToAssignToNextRow,
                 shouldBeUnsticky,
+                evaluateStickinessAgain = false,
                 differenceBetweenNextStickyRowCurrentOffsetTopAndTriggerOffsetTop
             ;
 
@@ -59,20 +61,28 @@ $(function ($) {
 
             if (maxNumberOfStickyRowsLimitMet) {
                 if (isLastStuckRow) {
-                    $nextStickyRow                        = $stickyRowsInTable.eq(stickyRowIndexInTable + 1);
-                    nextRowIsTransitioningToStuck         = $nextStickyRow.hasClass('transitioning-to-stuck');
+                    $nextStickyRow                         = $stickyRowsInTable.eq(stickyRowIndexInTable + 1);
+                    nextRowIsTransitioningToStuck          = $nextStickyRow.hasClass('transitioning-to-stuck');
 
                     if ($nextStickyRow.length) {
                         nextStickyRowTopRelativeToViewport = $nextStickyRow.get(0).getBoundingClientRect().top;
                     }
 
-                    shouldBeUnsticky                      = $stickyRow.hasClass('stuck') && $stickyRow.offset().top <= $stickyRow.data('unsticky-top-px-trigger');
 
                     // lastStuckRow needs to be unsticky, and next (unstuck) row needs to be sticky
-                    nextRowShouldBeTransitioningToStuck   = !nextRowIsTransitioningToStuck && $nextStickyRow.length && nextStickyRowTopRelativeToViewport <= evaluateStickyRowHighestBottomInTable($stickyTable);
-                    nextRowShouldStopTransitioningToStuck = nextRowIsTransitioningToStuck && $nextStickyRow.offset().top <= $nextStickyRow.data('unsticky-top-px-trigger');
-                    nextRowShouldBeStuck                  = nextStickyRowTopRelativeToViewport <= stickyRowTopRelativeToViewport;
+                    nextRowShouldBeTransitioningToStuck    = !nextRowIsTransitioningToStuck && $nextStickyRow.length && nextStickyRowTopRelativeToViewport <= evaluateStickyRowHighestBottomInTable($stickyTable);
+                    nextRowShouldStopTransitioningToStuck  = nextRowIsTransitioningToStuck && $nextStickyRow.offset().top <= $nextStickyRow.data('unsticky-top-px-trigger');
+                    nextRowShouldBeStuck                   = nextStickyRowTopRelativeToViewport <= stickyRowTopRelativeToViewport;
                 }
+
+                shouldBeUnsticky                           = $stickyRow.hasClass('stuck') && $stickyRow.offset().top <= $stickyRow.data('unsticky-top-px-trigger');
+
+                // unstick first in first out, one at a time
+                if (shouldBeUnsticky && !isLastStuckRow) {
+                    evaluateStickinessAgain = true;
+                    shouldBeUnsticky = false;
+                }
+
             } else {
                 shouldBeSticky        = !$stickyRow.hasClass('stuck') && stickyRowTopRelativeToViewport <= evaluateStickyRowHighestBottomInTable($stickyTable); // need to evaluate most bottom sticky row clientrectbottom for determining the top pixel value of the viewport for triggerring stickiness
                 shouldBeUnsticky      = $stickyRow.hasClass('stuck') && isLastStuckRow && $stickyRow.offset().top <= $stickyRow.data('unsticky-top-px-trigger');
@@ -110,6 +120,9 @@ $(function ($) {
                 } else if ($correspondingStickyPlaceholderRow.length) {
                     $stickyRow.data('unsticky-top-px-trigger', $correspondingStickyPlaceholderRow.offset().top);
                 }
+
+                // redundantly set on visible data-attribute in DOM for debugging purposes
+                $stickyRow.attr('data-unsticky-top-px-trigger', $stickyRow.data('unsticky-top-px-trigger'));
             }
 
             function stickify ($stickyRow, isTransitioning, setTopProperty) {
@@ -147,7 +160,11 @@ $(function ($) {
             }
 
             function unstickify ($stickyRow, isTransitioning) {
-                var isLastRowToUnstick = $stickyTable.find('.stuck').length === 1;
+                var isLastRowToUnstick = $stickyTable.find('.stuck').length === 1,
+                    $cellToTestTableLayoutAutoBug,
+                    cellWidthBeforeRemovingAuto,
+                    cellWidthAfterRemovingAuto
+                ;
 
                 removeStickyPlaceholder($stickyRow);
 
@@ -157,7 +174,24 @@ $(function ($) {
                 ;
 
                 if (isLastRowToUnstick) {
-                    $stickyTable/*.removeClass('table-layout-auto')*/.trigger('all-unstuck');
+                    if (typeof tableLayoutAutoHasWidthBug === 'undefined') {
+                        $cellToTestTableLayoutAutoBug = $stickyTable.find('thead tr th').not('[colspan]').first();
+                        cellWidthBeforeRemovingAuto = $cellToTestTableLayoutAutoBug.width();
+
+                        $stickyTable.removeClass('table-layout-auto');
+
+                        cellWidthAfterRemovingAuto = $cellToTestTableLayoutAutoBug.width();
+
+                        $stickyTable.addClass('table-layout-auto');
+
+                        tableLayoutAutoHasWidthBug = Math.abs(cellWidthBeforeRemovingAuto - cellWidthAfterRemovingAuto) > 3;
+                    }
+
+                    if (!tableLayoutAutoHasWidthBug) {
+                        $stickyTable.removeClass('table-layout-auto');
+                    }
+
+                    $stickyTable.trigger('all-unstuck');
                 }
             }
 
@@ -198,6 +232,10 @@ $(function ($) {
                     }
                 }
             }
+
+            if (evaluateStickinessAgain) {
+                setTimeout(evaluateStickiness, 10); // settimeout required so we can free up the thread in case we need to re-evaluate repeatedly
+            }
         });
     }
 
@@ -223,7 +261,7 @@ $(function ($) {
             }
         ;
 
-         observer = new MutationObserver(function (mutations) {
+        observer = new MutationObserver(function (mutations) {
             [].forEach.call(mutations, function (mutation) {
                 var $targetRow = $(mutation.target),
                     functionToExecute = typeof $targetRow.attr(stickyRowSelectorSansBrackets) !== 'undefined'
