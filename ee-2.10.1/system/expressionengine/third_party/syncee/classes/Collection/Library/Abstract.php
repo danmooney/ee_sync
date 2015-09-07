@@ -158,4 +158,9 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
     {
         return isset($this->_collections[$offset]) ? $this->_collections[$offset] : null;
     }
+
+    public function __sleep()
+    {
+        return Syncee_Helper_Reflection::getAllPropertyNamesOfObject($this);
+    }
 }

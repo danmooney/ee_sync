@@ -246,4 +246,9 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
     {
         return isset($this->_rows[$offset]) ? $this->_rows[$offset] : null;
     }
+
+    public function __sleep()
+    {
+        return Syncee_Helper_Reflection::getAllPropertyNamesOfObject($this);
+    }
 }

@@ -97,4 +97,9 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
     {
         $this->_data[$key] = $val;
     }
+
+    public function __sleep()
+    {
+        return Syncee_Helper_Reflection::getAllPropertyNamesOfObject($this);
+    }
 }
