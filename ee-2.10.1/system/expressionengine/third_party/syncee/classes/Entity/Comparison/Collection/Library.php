@@ -139,8 +139,8 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
          */
         foreach ($this->_collections as $collection_to_test) {
             $collection_found = (
-                $collection_to_test->getSource()->getSite() === $source_site &&
-                (!$target_site || $collection_to_test->getTarget()->getSite() === $target_site)
+                $collection_to_test->getSource()->getSite()->toArray() === $source_site->toArray() &&
+                (!$target_site || $collection_to_test->getTarget()->getSite()->toArray() === $target_site->toArray())
             );
 
             if ($collection_found) {
