@@ -109,7 +109,9 @@ $(function ($, undefined) {
         $comparisonDetails        = $comparisonSummary.nextAll('.comparison-details').first();
         comparisonDetailsIsSlidUp = $comparisonDetails.find('table').is(':hidden');
 
-        $comparisonDetails.find('.nested-table-container div').slideToggle(undefined, function () {
+        $comparisonDetails.addClass('sliding').find('.nested-table-container div').slideToggle(undefined, function () {
+            $comparisonDetails.removeClass('sliding');
+
             if (comparisonDetailsIsSlidUp) { // corresponding comparison details is about to be exposed; add sticky row data attribute to comparison summary
                 $comparisonSummary.attr('data-sticky-table-row', 1);
             } else { // remove sticky row data attribute
