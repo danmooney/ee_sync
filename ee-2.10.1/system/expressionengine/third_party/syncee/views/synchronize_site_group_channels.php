@@ -45,10 +45,35 @@ $other_columns_percentage_width            = round(
 sort($unique_identifier_values, SORT_STRING);
 
 ?>
-<table class="collection-table comparison-collection-table" data-sticky-table data-sticky-table-max-rows="2" data-resizable-table>
+
+<div class="summary"> <?php // Possibly duplicate below table ?>
+    <ul>
+        <li>
+            <a href="#" <?php // anchor is for going to ?>></a>
+            Meteors channel is being merged into local site from EE Remote 3
+        </li>
+        <li>Planets requires your input</li>
+    </ul>
+</div>
+
+<table class="collection-table comparison-collection-table" data-sticky-table data-sticky-table-max-rows="3" data-resizable-table>
     <thead>
         <?php $row_idx = 0; $col_idx = 0; ?>
+        <tr data-sticky-table-row>
+            <th colspan="<?= $total_columns ?>">
+                <label for="a">Only show rows where action can be taken</label>
+                <input type="checkbox" name="a" id="a">
+
+                <label for="b">Only show rows where action still needs to be taken</label>
+                <input type="checkbox" name="b" id="b">
+
+                Back to Top
+
+                Collapse All
+            </th>
+        </tr>
         <tr data-row-idx="<?= $row_idx++ ?>" data-sticky-table-row>
+
             <th class="comparate-column-header" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $unique_identifier_key ?></span></th>
             <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= htmlentities($local_site->title) ?>">
                 <span>
@@ -173,7 +198,7 @@ sort($unique_identifier_values, SORT_STRING);
                                     count($entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name, false)) > 1
                                 );
 
-                                if (null === $entity_comparison->getTargetValue()) {
+                                if (!$entity_missing_in_target && null === $entity_comparison->getTargetValue()) {
                                     $target_value_to_output = '<i>(NULL)</i>';
                                 } else {
                                     $target_value_to_output = strlen(trim($entity_comparison->getTargetValue())) > 0 ? trim($entity_comparison->getTargetValue()) : '&nbsp;';
@@ -206,7 +231,7 @@ sort($unique_identifier_values, SORT_STRING);
                                             $entity_comparison        = $entity_comparison_collection->getComparisonEntityByComparateColumnName($comparate_column_name);
                                             $entity_missing_in_source = $entity_comparison->isMissingInSource();
 
-                                            if (null === $entity_comparison->getSourceValue()) {
+                                            if (!$entity_missing_in_source && null === $entity_comparison->getSourceValue()) {
                                                 $source_value_to_output = '<i>(NULL)</i>';
                                             } else {
                                                 $source_value_to_output = strlen(trim($entity_comparison->getSourceValue())) > 0 ? trim($entity_comparison->getSourceValue()) : '&nbsp;';
@@ -256,3 +281,5 @@ sort($unique_identifier_values, SORT_STRING);
         endforeach ?>
     </tbody>
 </table>
+
+<button type="submit" class="btn">Synchronize</button>
