@@ -36,18 +36,18 @@ class Syncee_Upd_Site_Synchronization_Profile_Request_Log extends Syncee_Upd_Abs
 //            'unsigned'      => true,
 //            'null'          => false,
 //        ),
-        'remote_site_id' => array(
-            'type'       => 'VARCHAR',
-            'constraint' => 100,
-            'null'       => false,
-        ),
+//        'remote_site_id' => array(
+//            'type'       => 'VARCHAR',
+//            'constraint' => 100,
+//            'null'       => false,
+//        ),
     );
 
     public function install()
     {
         ee()->dbforge->drop_table($this->getTableName());
         ee()->dbforge->add_field($this->_fields);
-        ee()->dbforge->add_key('synchronization_profile_id', true);
+        ee()->dbforge->add_key(array('synchronization_profile_id', 'request_log_id'), true);
         ee()->dbforge->create_table($this->getTableName(), true);
     }
 }
