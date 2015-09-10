@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Site_Collection extends Syncee_Collection_Abstract
+class Syncee_Site_Collection extends Syncee_Collection_Abstract implements Syncee_Site_Container_Interface
 {
     /**
      * @var Syncee_Site_Request_Log_Collection
@@ -36,6 +36,11 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract
     {
         parent::__construct($rows);
         $this->_request_log_collection = new Syncee_Site_Request_Log_Collection();
+    }
+
+    public function getSiteCollection()
+    {
+        return $this;
     }
 
     /**

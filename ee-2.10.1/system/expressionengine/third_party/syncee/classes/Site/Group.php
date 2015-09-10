@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract
+class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract implements Syncee_Site_Container_Interface
 {
     const TABLE_NAME = 'syncee_site_group';
 
