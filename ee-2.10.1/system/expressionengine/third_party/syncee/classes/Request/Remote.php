@@ -95,10 +95,18 @@ class Syncee_Request_Remote
         }
 
         // get the data for the entity requested
-        $collection = $entity->getCollection();
 
-        $site->rsa->getCrypt()->loadKey($site->rsa->getPublicKey());
-        $data = base64_encode($site->rsa->getCrypt()->encrypt(json_encode($collection->toArray(false))));
+        $collection       = $entity->getCollection();
+        $data             = json_encode($collection->toArray(false));
+
+        $needs_encryption = !$is_local_internal_request;
+
+        if ($needs_encryption) {
+            $crypt = $site->rsa->getCrypt();
+            $crypt->loadKey($site->rsa->getPublicKey());
+
+            $data = base64_encode($crypt->encrypt($data));
+        }
 
         if (!$data) {
             $code = 500;
@@ -164,7 +172,7 @@ class Syncee_Request_Remote
             $crypt = $site->rsa->getCrypt();
             $crypt->loadKey($site->rsa->getPrivateKey());
 
-            $meta['decryption_works']     = @$crypt->decrypt(base64_decode($data['data'])) !== false;
+//            $meta['decryption_works']     = @$crypt->decrypt(base64_decode($data['data'])) !== false;
         }
 
 		if ($meta) {
