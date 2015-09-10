@@ -18,9 +18,11 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Site_Synchronization_Profile_Request_Log extends Syncee_Site_Request_Log
+class Syncee_Site_Synchronization_Profile_Request_Log extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site_synchronization_profile_request_log';
 
     protected $_collection_model = 'Syncee_Site_Synchronization_Profile_Request_Log_Collection';
+
+    protected static $_cols;
 }
