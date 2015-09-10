@@ -15,6 +15,11 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
     private $_remote_site;
 
     /**
+     * @var Syncee_Site
+     */
+    private $_local_site;
+
+    /**
      * @var Syncee_Request
      */
     private $_request;
@@ -36,7 +41,7 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
         $this->_site_collection = Syncee_Site_Group::findByPk(1)->getSiteCollection();
 
         $this->_remote_site     = $this->_site_collection->filterByCondition('isRemote', true);
-        $current_local_site     = $this->_site_collection->filterByCondition('isLocal', true);
+        $current_local_site     = $this->_local_site = $this->_site_collection->filterByCondition('isLocal', true);
         $_SERVER['HTTP_HOST']   = $current_local_site->site_host;
         $this->_request         = new Syncee_Request();
     }
@@ -62,6 +67,11 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
 
         $remote_site->public_key = 'some bs';
         $remote_site->save();
+
+        $this->_switchToDatabaseBasedOnSite($this->_local_site);
+
+        // get local site's interpretation of remote site again
+        $remote_site = $this->_remote_site;
 
         $request   = $this->_request;
 
