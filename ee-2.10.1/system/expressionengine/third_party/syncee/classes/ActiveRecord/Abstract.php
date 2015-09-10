@@ -111,7 +111,11 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
                     $condition_able_to_be_employed = true;
                 }
 
-                ee()->db->where($column, $value);
+                if (is_array($value)) {
+                    ee()->db->where_in($column, $value);
+                } else {
+                    ee()->db->where($column, $value);
+                }
             }
 
             if (!$condition_able_to_be_employed) {
