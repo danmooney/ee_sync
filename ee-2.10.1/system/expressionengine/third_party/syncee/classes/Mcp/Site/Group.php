@@ -45,13 +45,18 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
         ), $this);
     }
 
-    // TODO - this has to be ajaxified (possibly with websockets to show progress to user)
     public function synchronizeSiteGroupChannels()
     {
-        $site_group_id     = ee()->input->get('site_group_id');
-        $syncee_site_group = Syncee_Site_Group::findByPk($site_group_id);
+        $synchronization_profile_id = ee()->input->get('synchronization_profile_id');
 
-        $channel_comparison_library = $syncee_site_group->getSiteCollection()->getChannelComparisonCollectionLibrary();
+        $synchronization_profile    = Syncee_Site_Synchronization_Profile::findByPk($synchronization_profile_id);
+
+        if ($synchronization_profile->isEmptyRow()) {
+            die('Could not find synchronization profile'); // TODO
+        }
+
+        $site_collection            = $synchronization_profile->getSiteContainer();
+        $channel_comparison_library = $synchronization_profile->getComparisonCollectionLibrary();
 
         // sort collections alphabetically by source site primary key.
         // this is to have a known and predictable way to iterate over collections and get everything in the right order.
@@ -59,12 +64,29 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
             return $a->getSource()->getSite()->getPrimaryKeyValues(true) - $b->getSource()->getSite()->getPrimaryKeyValues(true);
         });
 
-        $request_log_collection = $syncee_site_group->getSiteCollection()->getRequestLogCollection();
-
         return Syncee_View::render(__FUNCTION__, array(
-            'syncee_site_group'          => $syncee_site_group,
-            'entity_comparison_library' => $channel_comparison_library,
-            'request_log_collection'     => $request_log_collection
+            'site_collection'            => $site_collection,
+            'entity_comparison_library'  => $channel_comparison_library,
+        ), $this);
+    }
+
+    // TODO - this has to be ajaxified (possibly with websockets to show progress to user)
+    public function synchronizeSiteGroupChannelsPOST()
+    {
+        $site_group_id                   = ee()->input->get_post('site_group_id');
+        $site_group                      = Syncee_Site_Group::findByPk($site_group_id);
+
+        if ($site_group->isEmptyRow()) {
+            // TODO
+        }
+
+        $synchronization_profile_factory = new Syncee_Site_Synchronization_Profile_Factory($site_group);
+        $synchronization_profile         = $synchronization_profile_factory->getNewSynchronizationProfile();
+
+        $synchronization_profile->save();
+
+        Syncee_Helper::redirect('synchronizeSiteGroupChannels', array(
+            'synchronization_profile_id' => $synchronization_profile->getPrimaryKeyValues(true)
         ), $this);
     }
 
