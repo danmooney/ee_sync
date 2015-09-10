@@ -1,6 +1,6 @@
 <?php
 /**
- * @var $syncee_site_group Syncee_Site_Group
+ * @var $site_collection Syncee_Site_Collection
  * @var $entity_comparison_library Syncee_Entity_Comparison_Collection_Library
  * @var $entity_comparison_collection Syncee_Entity_Comparison_Collection
  * @var $entity_comparison Syncee_Entity_Comparison
@@ -8,7 +8,6 @@
  * @var $remote_site Syncee_Site
  */
 
-$site_collection        = $syncee_site_group->getSiteCollection();
 $remote_site_collection = $site_collection->filterByCondition(array('is_local' => false));
 $local_site             = $site_collection->filterByCondition(array('is_local' => true), true);
 
