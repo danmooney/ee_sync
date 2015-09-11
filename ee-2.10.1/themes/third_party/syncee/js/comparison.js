@@ -6,7 +6,9 @@ $(function ($, undefined) {
         resultCheckboxesBySummaryRowIdx = [],
         summaryRowIdxs = [],
         siteNamesByColIdx = [],
-        colIdxCount = $comparisonCollectionTable.children('thead').find('tr th').length
+        siteIdsByColIdx = [],
+        colIdxCount = $comparisonCollectionTable.children('thead').find('tr th').length,
+        $payloadHiddenInput = $comparisonCollectionTable.next('form').find('[name="payload"]')
     ;
 
     // TODO - if values are all the same in the comparison detail row, then check off the local column for that row, or mark it as a completely matching row and maybe have checkbox to show/hide those rows
@@ -19,9 +21,10 @@ $(function ($, undefined) {
     summaryRowIdxs = $.unique(summaryRowIdxs);
 
 
-    // get list of site names by col index
+    // get list of site names and ids by col index
     $('[data-site-title]').each(function () {
         siteNamesByColIdx[$(this).data('col-idx')] = $(this).data('site-title');
+        siteIdsByColIdx[$(this).data('col-idx')] = $(this).data('site-id');
     });
 
     function getSummaryCheckboxesByColIdxAndSummaryRowIdx (colIdx, summaryRowIdx) {
@@ -231,9 +234,8 @@ $(function ($, undefined) {
         +   '<span class="merge-result-summary-source">'
         +       summaryCellSourceHtmlArr.join('<br>')
         +   '<span>'
-
-
         );
+
 
         if (hasAllDetailedRowsChecked) {
             $summaryMergeCell.addClass('positive');
@@ -332,7 +334,66 @@ $(function ($, undefined) {
         }
     }
 
-    $comparisonCollectionTable.find('.decision-checkbox :checkbox').on('change', updateCheckbox);
+    function updatePayloadData () {
+        var payloadData = {},
+            numCols,
+            $resultCheckboxes,
+            i,
+            j,
+            colIdx,
+            summaryRowIdx,
+            uniqueIdentifierKey,
+            fieldName,
+            siteId
+        ;
+
+        for (i = 0; i < resultCheckboxesByColIdxAndSummaryRowIdx.length; i += 1) {
+            if (!resultCheckboxesByColIdxAndSummaryRowIdx[i]) {
+                continue;
+            }
+
+            colIdx = i;
+            siteId = siteIdsByColIdx[colIdx];
+
+            for (j = 0; j < resultCheckboxesByColIdxAndSummaryRowIdx[i].length; j += 1) {
+                if (!resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][j]) {
+                    continue;
+                }
+
+                summaryRowIdx       = j;
+                $resultCheckboxes   = resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
+                uniqueIdentifierKey = $('[data-row-idx="' + summaryRowIdx + '"] [data-col-idx="0"]').text().trim();
+
+                $resultCheckboxes.each(function (idx) {
+                    var $resultCheckbox = $(this),
+                        $row = $(this).closest('[data-row-idx]'),
+                        //rowIdx = $(this).data('row-idx'),
+                        isChecked = $resultCheckbox.prop('checked')
+                    ;
+
+                    if (!isChecked) {
+                        return true; // continue
+                    }
+
+                    fieldName = $row.find('[data-col-idx="0"]').text().trim();
+
+                    if (typeof payloadData[uniqueIdentifierKey] === 'undefined') {
+                        payloadData[uniqueIdentifierKey] = {};
+                    }
+
+                    payloadData[uniqueIdentifierKey][fieldName] = siteId;
+                });
+            }
+        }
+
+        console.dir(payloadData);
+        $payloadHiddenInput.val(JSON.stringify(payloadData));
+    }
+
+    $comparisonCollectionTable.find('.decision-checkbox :checkbox').on('change', function (e) {
+        updateCheckbox(e);
+        updatePayloadData();
+    });
 
     (function checkOffCellsThatHaveNoOtherOption() {
         $comparisonCollectionTable.find('.comparison-summary').each(function () {
@@ -359,6 +420,7 @@ $(function ($, undefined) {
             }
 
             updateCheckbox($checkboxes, true);
+            updatePayloadData();
 
             getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).prop('disabled', 'disabled');
         });
