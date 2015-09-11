@@ -73,9 +73,8 @@ sort($unique_identifier_values, SORT_STRING);
             </th>
         </tr>
         <tr data-row-idx="<?= $row_idx++ ?>" data-sticky-table-row>
-
             <th class="comparate-column-header" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $unique_identifier_key ?></span></th>
-            <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= htmlentities($local_site->title) ?>">
+            <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= ee()->security->xss_clean($local_site->title) ?>" data-site-id="<?= $local_site->getPrimaryKeyValues(true) ?>">
                 <span>
                     <?= $local_site->title ?> - <em>(Local Site)</em>
                     <?php
@@ -93,7 +92,7 @@ sort($unique_identifier_values, SORT_STRING);
             </th>
             <?php
                 foreach ($remote_site_collection as $remote_site): ?>
-                    <th class="source-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= htmlentities($remote_site->title) ?>">
+                    <th class="source-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= ee()->security->xss_clean($remote_site->title) ?>" data-site-id="<?= $remote_site->getPrimaryKeyValues(true) ?>">
                         <span>
                             <?= $remote_site->title ?>
                             <?php
