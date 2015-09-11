@@ -254,4 +254,21 @@ class Syncee_Helper
             return $plural_str;
         }
     }
+
+    public static function getBytesFromPossibleShorthand($val)
+    {
+        $val         = trim($val);
+        $last_letter = strtolower(substr($val, -1, 1));
+
+        switch ($last_letter) {
+            case 'g':
+                $val *= 1024;
+            case 'm':
+                $val *= 1024;
+            case 'k':
+                $val *= 1024;
+        }
+
+        return $val;
+    }
 }
