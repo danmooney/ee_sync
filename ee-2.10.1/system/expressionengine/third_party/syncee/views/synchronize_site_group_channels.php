@@ -6,6 +6,7 @@
  * @var $entity_comparison Syncee_Entity_Comparison
  * @var $local_site Syncee_Site
  * @var $remote_site Syncee_Site
+ * @var $synchronization_profile Syncee_Site_Synchronization_Profile
  */
 
 $remote_site_collection = $site_collection->filterByCondition(array('is_local' => false));
@@ -281,4 +282,11 @@ sort($unique_identifier_values, SORT_STRING);
     </tbody>
 </table>
 
-<button type="submit" class="btn">Synchronize</button>
+<form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronizeSiteGroupChannelsFix', $synchronization_profile->getPrimaryKeyNamesValuesMap()) ?>">
+    <button type="submit" class="btn">Synchronize</button>
+    <input type="hidden" name="payload"> <?php // TODO - populate this nonsense with json so we don't hit input_max_vars ?>
+    <input type="hidden" name="post_max_size" value="<?= @Syncee_Helper::getBytesFromPossibleShorthand(ini_get('post_max_size')) ?>">
+    <input type="hidden" name="max_input_vars" value="<?= @ini_get('max_input_vars') ?>">
+    <input type="hidden" name="XID" value="<?= ee()->csrf->get_user_token() ?>">
+    <input type="hidden" name="csrf_token" value="<?= ee()->csrf->get_user_token() ?>">
+</form>
