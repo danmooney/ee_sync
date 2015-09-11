@@ -57,6 +57,11 @@ class Syncee_Site_Rsa
         return $this->_crypt;
     }
 
+    public function __sleep()
+    {
+        return array();
+    }
+
     private function _createKey()
     {
         list($this->private_key, $this->public_key, $partial_key) = array_values($this->_crypt->createKey());
