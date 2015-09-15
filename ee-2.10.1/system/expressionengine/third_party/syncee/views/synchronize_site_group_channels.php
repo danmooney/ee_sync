@@ -77,12 +77,6 @@ sort($unique_identifier_values, SORT_STRING);
             <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= ee()->security->xss_clean($local_site->title) ?>" data-site-id="<?= $local_site->getPrimaryKeyValues(true) ?>">
                 <span>
                     <?= $local_site->title ?> - <em>(Local Site)</em>
-                    <?php
-                        if (!$local_site->last_request_log->isSuccess()): ?>
-                            <br><br>
-                            <a class="warning" href="<?= Syncee_Helper::createModuleCpUrl('viewRequestLog', $remote_site->last_request_log->getPrimaryKeyNamesValuesMap()) ?>">Requests to this site contained errors!</a>
-                    <?php
-                        endif ?>
                 </span>
             </th>
             <th class="merge-result-header" data-col-idx="<?= $col_idx++ ?>">
