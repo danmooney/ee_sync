@@ -44,4 +44,19 @@ abstract class Syncee_Entity_Comparate_Collection_Abstract extends Syncee_Collec
     {
         return $this->_site;
     }
+
+    public function getComparatorCollectionLibraryName()
+    {
+        return get_class($this) . '_Library';
+    }
+
+    /**
+     * @return Syncee_Collection_Library_Comparator_Abstract
+     */
+    public function getComparatorCollectionLibrary()
+    {
+        $comparator_collection_library_str = $this->getComparatorCollectionLibraryName();
+
+        return new $comparator_collection_library_str();
+    }
 }
