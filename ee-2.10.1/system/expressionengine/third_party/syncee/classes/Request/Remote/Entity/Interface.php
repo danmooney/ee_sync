@@ -28,8 +28,7 @@ interface Syncee_Request_Remote_Entity_Interface
 
     /**
      * Fetch data and return collection
-     * TODO - separate into two distinct functions?
-     * @return Syncee_Collection_Interface
+     * @return Syncee_Entity_Comparate_Collection_Abstract
      */
     public function getCollection();
 
