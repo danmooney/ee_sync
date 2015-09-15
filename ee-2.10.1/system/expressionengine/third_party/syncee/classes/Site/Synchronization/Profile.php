@@ -41,12 +41,10 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
      */
     private $_comparison_collection_library;
 
+    /**
+     * @var string
+     */
     private $_entity = 'Syncee_Request_Remote_Entity_Channel';
-
-    public function __construct(array $row = array(), $is_new = true)
-    {
-        parent::__construct($row, $is_new);
-    }
 
     public function save()
     {
@@ -56,7 +54,7 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
             return;
         }
 
-        // save request log collection/synchronization_profile_id map... TODO - this could probably be used in a has_many_map reference or something of the sort
+        // save request log collection/synchronization_profile_id map
         foreach ($this->_request_log_collection as $request_log) {
             $synchronization_profile_request_log = new Syncee_Site_Synchronization_Profile_Request_Log(array(
                 'synchronization_profile_id' => $this->getPrimaryKeyValues(true),
@@ -67,9 +65,19 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
         }
     }
 
-    public function getEntity()
+    public function getEntityName()
     {
         return $this->_entity;
+    }
+
+    /**
+     * @return Syncee_Request_Remote_Entity_Abstract
+     */
+    public function getEntity()
+    {
+        $entity_str = $this->_entity;
+
+        return new $entity_str();
     }
 
     public function setRequestLogCollection(Syncee_Site_Request_Log_Collection $request_log_collection)
@@ -135,13 +143,13 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
     public function getComparisonCollectionLibrary()
     {
         if (!isset($this->_comparison_collection_library)) {
-            // TODO - abstract out this variable and extend
-            $site_channel_library   = new Syncee_Entity_Channel_Collection_Library();
 
-            $request_log_collection = $this->getRequestLogCollection();
-            $site_container         = $this->getSiteContainer();
-            $entity_str             = $this->_entity;
-            $entity                 = new $entity_str();
+            $request_log_collection          = $this->getRequestLogCollection();
+            $site_container                  = $this->getSiteContainer();
+            $entity                          = $this->getEntity();
+            $comparator_collection_library   = $entity->getCollection()->getComparatorCollectionLibrary();
+
+            $entity->getCollection()->getComparatorCollectionLibraryName();
 
             $local_site_is_in_request_log_collection = false;
 
@@ -164,10 +172,10 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
 
                 $collection->setSite($site);
 
-                $site_channel_library->appendToLibraryAsCollection($collection);
+                $comparator_collection_library->appendToLibraryAsCollection($collection);
             }
 
-            // get local site data // TODO -  refactor this so we don't need to repeat this collection appending nonsense
+            // get local site data
             if (!$local_site_is_in_request_log_collection) {
                 $local_site  = $site_container->filterByCondition(array('is_local' => true), true);
                 $request     = new Syncee_Request();
@@ -175,12 +183,11 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
 
                 $collection  = $response->getResponseDataDecodedAsCollection();
 
+                $comparator_collection_library->appendToLibraryAsCollection($collection);
                 $collection->setSite($local_site);
-
-                $site_channel_library->appendToLibraryAsCollection($collection);
             }
 
-            $this->_comparison_collection_library = $site_channel_library->compareCollections();
+            $this->_comparison_collection_library = $comparator_collection_library->compareCollections();
         }
 
         return $this->_comparison_collection_library;
