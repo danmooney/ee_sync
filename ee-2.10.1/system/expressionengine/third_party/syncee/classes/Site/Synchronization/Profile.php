@@ -117,24 +117,46 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
         return $this;
     }
 
-    public function getSiteContainer()
+    public function getSiteIdsInvolvedInSynchronizationProfile()
+    {
+        $request_log_collection = $this->getRequestLogCollection();
+
+        $site_ids_involved_in_synchronization_profile = array();
+
+        foreach ($request_log_collection as $request_log) {
+            $site_ids_involved_in_synchronization_profile[] = $request_log->site_id;
+        }
+
+        $site_ids_involved_in_synchronization_profile = array_unique($site_ids_involved_in_synchronization_profile);
+
+        $site_ids_involved_in_synchronization_profile[] = $this->local_site_id;
+
+        return $site_ids_involved_in_synchronization_profile;
+    }
+
+    public function getSiteContainer($populate_empty_sites_if_missing = true)
     {
         if (!isset($this->_site_container)) {
-            $request_log_collection = $this->getRequestLogCollection();
-
-            $site_ids_involved_in_synchronization_profile = array();
-
-            foreach ($request_log_collection as $request_log) {
-                $site_ids_involved_in_synchronization_profile[] = $request_log->site_id;
-            }
-
-            $site_ids_involved_in_synchronization_profile = array_unique($site_ids_involved_in_synchronization_profile);
-
-            $site_ids_involved_in_synchronization_profile[] = $this->local_site_id;
+            $site_ids_involved_in_synchronization_profile = $this->getSiteIdsInvolvedInSynchronizationProfile();
 
             $this->_site_container = Syncee_Site::findAllByCondition(array(
                 'site_id' => $site_ids_involved_in_synchronization_profile
             ));
+
+            // populate site ids that may have been removed by user since
+            if ($populate_empty_sites_if_missing) {
+                $site_container =& $this->_site_container;
+
+                foreach ($site_ids_involved_in_synchronization_profile as $site_id) {
+                    $site_missing = $site_container->filterByCondition(array('site_id' => $site_id), true)->isEmptyRow();
+
+                    if ($site_missing) {
+                        $placeholder_site = Syncee_Site::getRemoteSitePlaceholderInstance();
+                        $placeholder_site->site_id = $site_id;
+                        $site_container->appendToCollectionAsEntity($placeholder_site);
+                    }
+                }
+            }
         }
 
         return $this->_site_container;
