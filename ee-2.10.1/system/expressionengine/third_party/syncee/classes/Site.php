@@ -26,6 +26,8 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
 
+    const REMOTE_SITE_PLACEHOLDER_TITLE = '(DELETED REMOTE SITE)';
+
     private $_default_ip_whitelist_separator = "\n";
 
     protected static $_cols;
@@ -62,6 +64,17 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
         return static::findAllByCondition(array('is_local' => false), $paginator);
     }
 
+    public static function getRemoteSitePlaceholderInstance()
+    {
+        return new static(array(
+            'title'                 => static::REMOTE_SITE_PLACEHOLDER_TITLE,
+            'is_local'              => false,
+            'ee_site_id'            => 0,
+            'action_id'             => 0,
+            'is_remote_placeholder' => true
+        ));
+    }
+
     public static function getByDecodingRemoteSiteSettingsPayload($remote_site_settings_payload)
     {
         $decoded_payload = @unserialize(base64_decode($remote_site_settings_payload));
@@ -95,6 +108,12 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
     {
         return !$this->is_local;
     }
+
+    public function isRemotePlaceholder()
+    {
+        return $this->is_remote_placeholder;
+    }
+
 
     public function getSiteUrl()
     {
