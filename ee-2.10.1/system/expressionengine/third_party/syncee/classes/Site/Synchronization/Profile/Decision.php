@@ -21,6 +21,8 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_Abstract
 {
+    const TABLE_NAME = 'syncee_site_synchronization_profile_decision';
+
     /**
      * @var Syncee_Site_Synchronization_Profile
      */
@@ -28,7 +30,8 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
 
     public function setSynchronizationProfile(Syncee_Site_Synchronization_Profile $synchronization_profile)
     {
-        $this->_synchronization_profile = $synchronization_profile;
+        $this->_synchronization_profile   = $synchronization_profile;
+        $this->synchronization_profile_id = $synchronization_profile->getPrimaryKeyValues(true);
         return $this;
     }
 
