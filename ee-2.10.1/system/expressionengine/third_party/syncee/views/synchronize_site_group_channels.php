@@ -88,8 +88,14 @@ sort($unique_identifier_values, SORT_STRING);
                 foreach ($remote_site_collection as $remote_site): ?>
                     <th class="source-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= ee()->security->xss_clean($remote_site->title) ?>" data-site-id="<?= $remote_site->getPrimaryKeyValues(true) ?>">
                         <span>
-                            <?= $remote_site->title ?>
                             <?php
+                                $remote_site_title = $remote_site->isRemotePlaceholder()
+                                    ? "<i>{$remote_site->title}</i>"
+                                    : $remote_site->title
+                                ;
+
+                                echo ee()->security->xss_clean($remote_site_title);
+
                                 if (!$remote_site->last_request_log->isSuccess()): ?>
                                     <br><br>
                                     <a class="warning" href="<?= Syncee_Helper::createModuleCpUrl('viewRequestLog', $remote_site->last_request_log->getPrimaryKeyNamesValuesMap()) ?>">Requests to this site contained errors!</a>
