@@ -53,14 +53,14 @@ class Test_Comparison_Channel extends Syncee_Unit_Test_Case_Abstract
 
     public function testTwoSitesWithCompletelySimilarChannelGivesEmptyComparisonLibrary()
     {
-        $channel_comparison_library = $this->_site_collection->getChannelComparisonCollectionLibrary();
+        $channel_comparison_library = $this->_site_collection->getComparisonCollectionLibrary(new Syncee_Entity_Channel_Collection_Library(), new Syncee_Request_Remote_Entity_Channel());
 
         $this->assertTrue($channel_comparison_library->hasNoDifferingComparisons(), 'Two sites have no comparisons; they are the same');
     }
 
     public function testTwoSitesWithDifferingChannelLangGivesOneResultInComparisonLibrary()
     {
-        $channel_comparison_library           = $this->_site_collection->getChannelComparisonCollectionLibrary();
+        $channel_comparison_library           = $this->_site_collection->getComparisonCollectionLibrary(new Syncee_Entity_Channel_Collection_Library(), new Syncee_Request_Remote_Entity_Channel());
         $non_empty_channel_comparison_library = $channel_comparison_library->getDifferingComparisonCollectionLibrary();
 
         $this->assertEqual($non_empty_channel_comparison_library->getTotalComparisonEntityCountAcrossAllCollections(), 1, 'Number of non-empty channel comparison collections is 1: %s');
@@ -83,7 +83,7 @@ class Test_Comparison_Channel extends Syncee_Unit_Test_Case_Abstract
 
     public function testTargetSiteWithMoreChannelsThanSourceSiteGivesComparisons()
     {
-        $channel_comparison_library = $this->_site_collection->getChannelComparisonCollectionLibrary();
+        $channel_comparison_library = $this->_site_collection->getComparisonCollectionLibrary(new Syncee_Entity_Channel_Collection_Library(), new Syncee_Request_Remote_Entity_Channel());
 
         $this->assertFalse($channel_comparison_library->hasNoDifferingComparisons(), 'Two sites are not exactly the same');
 
