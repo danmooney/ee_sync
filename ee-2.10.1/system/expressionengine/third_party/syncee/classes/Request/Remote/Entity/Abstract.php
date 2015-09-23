@@ -18,10 +18,16 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_Remote_Entity_Interface
+abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_Remote_Entity_Chain_Interface
 {
+    /**
+     * @var string
+     */
     protected $_requested_ee_site_id;
 
+    /**
+     * @var Syncee_Entity_Channel_Collection
+     */
     protected $_collection_class_name;
 
     public function getName()
@@ -43,5 +49,21 @@ abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_R
     public function getCollectionClassName()
     {
         return $this->_collection_class_name;
+    }
+
+    public function getCollectionClass()
+    {
+        $collection_class_name = $this->_collection_class_name;
+        return new $collection_class_name();
+    }
+
+    public function getNextRemoteEntityRequestInChain()
+    {
+        return false;
+    }
+
+    public function appendRemoteEntityRequestToChain(Syncee_Request_Remote_Entity_Chain_Interface $remote_entity_request)
+    {
+        return false;
     }
 }
