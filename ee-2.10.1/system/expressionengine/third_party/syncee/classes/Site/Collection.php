@@ -44,18 +44,16 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract implements Synce
     }
 
     /**
+     * @param Syncee_Collection_Library_Comparator_Abstract $comparator_library
+     * @param Syncee_Request_Remote_Entity_Chain_Interface $remote_entity
      * @return Syncee_Entity_Comparison_Collection_Library
+     * @throws Syncee_Exception
      */
-    public function getChannelComparisonCollectionLibrary()
+    public function getComparisonCollectionLibrary(Syncee_Collection_Library_Comparator_Abstract $comparator_library, Syncee_Request_Remote_Entity_Chain_Interface $remote_entity)
     {
-        $site_channel_library = new Syncee_Entity_Channel_Collection_Library();
-
-        // get channels/fields first
-        $channel_remote_request_entity = new Syncee_Request_Remote_Entity_Channel();
-
         /**
          * @var $row Syncee_Site
-         * @var $collection Syncee_Entity_Channel_Collection
+         * @var $collection Syncee_Entity_Comparate_Collection_Abstract
          */
         foreach ($this->_rows as $row) {
             $request     = new Syncee_Request();
@@ -63,25 +61,38 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract implements Synce
             // don't log incoming requests on local site
             $request_log = $row->isRemote() ? new Syncee_Site_Request_Log() : null;
 
-            $response    = $request->makeEntityCallToSite($row, $channel_remote_request_entity, $request_log);
+            $response    = $request->makeEntityCallToSite($row, $remote_entity, $request_log);
+
+            // TODO - this obviously isn't that great...
+            while ($remote_entity_override = $remote_entity->getNextRemoteEntityRequestInChain()) {
+                $response->setEntity($remote_entity_override);
+            }
 
             $collection            = $response->getResponseDataDecodedAsCollection();
             $row->last_request_log = $request_log;
 
             $collection->setSite($row);
 
-            $site_channel_library->appendToLibraryAsCollection($collection);
+            if (!$comparator_library->collectionAlreadyExistsInLibrary($collection)) {
+                $comparator_library->appendToLibraryAsCollection($collection);
+            }
 
             if ($request_log) {
                 $this->_request_log_collection->appendToCollectionAsEntity($request_log);
             }
         }
 
-        $site_channel_comparison_library = $site_channel_library->compareCollections();
+        $entity_comparison_library = $comparator_library->compareCollections();
 
-        return $site_channel_comparison_library;
+        return $entity_comparison_library;
     }
 
+    /**
+     * TODO - deprecate... but how?  This function has some added functionality that separates it from \Syncee_Site_Collection::getComparisonCollectionLibrary.  Maybe add function on arguments passed to it?
+     * @deprecated
+     * @return Syncee_Entity_Comparison_Collection_Library
+     * @throws Syncee_Exception
+     */
     public function getChannelFieldComparisonCollectionLibrary()
     {
         $site_channel_field_library    = new Syncee_Entity_Channel_Field_Collection_Library();
@@ -101,6 +112,7 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract implements Synce
             $channel_collection = $response->getResponseDataDecodedAsCollection();
 
             // get fields from channel collection and add to channel field collection
+
             foreach ($channel_collection as $channel_entity) {
                 $channel_field_collection = $channel_entity->getFieldCollection();
                 $channel_field_collection->setSite($row);
