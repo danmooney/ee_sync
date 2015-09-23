@@ -171,6 +171,11 @@ class Syncee_Response
         return new $class_name((array) $this->getResponseDataDecoded());
     }
 
+    public function setEntity(Syncee_Request_Remote_Entity_Interface $entity)
+    {
+        $this->_entity = $entity;
+    }
+
     public function __toString()
     {
         return $this->_raw_response;
