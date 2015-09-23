@@ -56,15 +56,17 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
         }
 
         $site_collection            = $synchronization_profile->getSiteContainer();
+
         $channel_comparison_library = $synchronization_profile->getComparisonCollectionLibrary();
 
-        // sort collections alphabetically by source site primary key.
+        // sort collections by source site primary key.
         // this is to have a known and predictable way to iterate over collections and get everything in the right order.
         $channel_comparison_library->sortByCallback(function (Syncee_Entity_Comparison_Collection $a, Syncee_Entity_Comparison_Collection $b) {
             return $a->getSource()->getSite()->getPrimaryKeyValues(true) - $b->getSource()->getSite()->getPrimaryKeyValues(true);
         });
 
         return Syncee_View::render(__FUNCTION__, array(
+            'synchronization_profile'    => $synchronization_profile,
             'site_collection'            => $site_collection,
             'entity_comparison_library'  => $channel_comparison_library,
         ), $this);
@@ -80,7 +82,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
             // TODO
         }
 
-        $synchronization_profile_factory = new Syncee_Site_Synchronization_Profile_Factory($site_group);
+        $synchronization_profile_factory = new Syncee_Site_Synchronization_Profile_Factory($site_group, new Syncee_Entity_Channel_Collection_Library(), new Syncee_Request_Remote_Entity_Channel());
         $synchronization_profile         = $synchronization_profile_factory->getNewSynchronizationProfile();
 
         $synchronization_profile->save();
@@ -88,6 +90,34 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
         Syncee_Helper::redirect('synchronizeSiteGroupChannels', array(
             'synchronization_profile_id' => $synchronization_profile->getPrimaryKeyValues(true)
         ), $this);
+    }
+
+    public function synchronizeSiteGroupChannelsFixPOST()
+    {
+        $synchronization_profile_id = ee()->input->get_post('synchronization_profile_id');
+        $synchronization_profile    = Syncee_Site_Synchronization_Profile::findByPk($synchronization_profile_id);
+
+        if ($synchronization_profile->isEmptyRow()) {
+            die('Could not find synchronization profile'); // TODO
+        }
+
+        $payload                    = json_decode(ee()->input->post('payload'), true);
+
+        if (!$payload) {
+            die('no payload'); // TODO
+        }
+
+        $synchronization_profile_decision_factory = new Syncee_Site_Synchronization_Profile_Decision_Factory($synchronization_profile, $payload);
+        $synchronization_profile_decision         = $synchronization_profile_decision_factory->getNewProfileDecision();
+
+        $synchronization_profile_decision->save();
+
+        // $decision->loadProfile(); // ect
+
+
+        $site_collection            = $synchronization_profile->getSiteContainer();
+        $channel_comparison_library = $synchronization_profile->getComparisonCollectionLibrary();
+        die('ok');
     }
 
     public function newSiteGroup()
