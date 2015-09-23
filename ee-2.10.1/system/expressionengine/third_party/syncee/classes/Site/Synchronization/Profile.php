@@ -44,7 +44,7 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
     /**
      * @var string
      */
-    private $_entity = 'Syncee_Request_Remote_Entity_Channel';
+    protected $_entity_name = 'Syncee_Request_Remote_Entity_Channel';
 
     public function save()
     {
@@ -67,7 +67,7 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
 
     public function getEntityName()
     {
-        return $this->_entity;
+        return $this->_entity_name;
     }
 
     /**
@@ -75,7 +75,7 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
      */
     public function getEntity()
     {
-        $entity_str = $this->_entity;
+        $entity_str = $this->_entity_name;
 
         return new $entity_str();
     }
