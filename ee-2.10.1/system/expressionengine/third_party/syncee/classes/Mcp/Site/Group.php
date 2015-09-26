@@ -112,12 +112,8 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
         $synchronization_profile_decision->save();
 
-        // $decision->loadProfile(); // ect
-
-
-        $site_collection            = $synchronization_profile->getSiteContainer();
-        $channel_comparison_library = $synchronization_profile->getComparisonCollectionLibrary();
-        die('ok');
+        // Execute the merge!
+        $synchronization_profile_decision->execute();
     }
 
     public function newSiteGroup()
