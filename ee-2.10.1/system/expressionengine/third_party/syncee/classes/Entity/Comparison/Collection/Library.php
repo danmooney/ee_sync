@@ -139,8 +139,8 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
          */
         foreach ($this->_collections as $collection_to_test) {
             $collection_found = (
-                $collection_to_test->getSource()->getSite()->toArray() === $source_site->toArray() &&
-                (!$target_site || $collection_to_test->getTarget()->getSite()->toArray() === $target_site->toArray())
+                $collection_to_test->getSource()->getSite()->getPrimaryKeyValues(true) === $source_site->getPrimaryKeyValues(true) &&
+                (!$target_site || $collection_to_test->getTarget()->getSite()->getPrimaryKeyValues(true) === $target_site->getPrimaryKeyValues(true))
             );
 
             if ($collection_found) {
@@ -176,6 +176,38 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
         }
 
         return new $this($matching_collections, $this->_target_site, $this->_unique_identifier_key_override);
+    }
+
+    /**
+     * @param Syncee_Site $site
+     * @param $unique_identifier_key
+     * @param $unique_identifier_value
+     * @return Syncee_Entity_Comparate_Abstract
+     */
+    public function getComparateEntityBySiteAndUniqueIdentifierKeyAndValue(Syncee_Site $site, $unique_identifier_key, $unique_identifier_value)
+    {
+        $matching_comparison_entity = null;
+
+        /**
+         * @var $collection Syncee_Entity_Comparison_Collection
+         */
+        foreach ($this->_collections as $collection) {
+            if ($unique_identifier_key === $collection->getUniqueIdentifierKey() &&
+                $unique_identifier_value === $collection->getUniqueIdentifierValue()
+            ) {
+                if ($collection->getSource()->getSite()->getPrimaryKeyValues(true) === $site->getPrimaryKeyValues(true)) {
+                    $matching_comparison_entity = $collection->getSource();
+                } elseif ($collection->getTarget()->getSite()->getPrimaryKeyValues(true) === $site->getPrimaryKeyValues(true)) {
+                    $matching_comparison_entity = $collection->getTarget();
+                }
+
+                if ($matching_comparison_entity) {
+                    break;
+                }
+            }
+        }
+
+        return $matching_comparison_entity;
     }
 
     public function getAllValuesByComparateColumnName($comparate_column_name, $unique_only = false)
