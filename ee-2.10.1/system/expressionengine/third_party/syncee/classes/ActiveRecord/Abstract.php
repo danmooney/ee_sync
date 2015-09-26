@@ -25,7 +25,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
     /**
      * @var string
      */
-    protected $_collection_model;
+    protected $_collection_model = 'Syncee_Collection_Generic';
 
     protected $_is_empty_row = false;
 
@@ -129,9 +129,20 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
 
         $rows             = ee()->db->get()->result_array();
 
+        /**
+         * @var $collection_model Syncee_Collection_Abstract
+         */
         $collection_model = $empty_row->getCollectionModel();
 
-        return new $collection_model($rows);
+        if ($is_generic = !$collection_model->getRowModel()) {
+            $collection_model->setRowModel($empty_row);
+        }
+
+        foreach ($rows as $row) {
+            $collection_model->appendToCollectionAsArray($row);
+        }
+
+        return $collection_model;
     }
 
     public static function findByPk($primary_key_value)
