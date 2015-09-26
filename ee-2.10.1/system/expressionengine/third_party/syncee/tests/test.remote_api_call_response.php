@@ -80,7 +80,11 @@ class Test_Remote_Api_Call_Response extends Syncee_Unit_Test_Case_Abstract
 
         $this->assertEqual($response->getStatusCode(), 500, 'Response code is 500: %s');
 
-        $this->fail('Need to assert bad public key message returned in ' . __METHOD__);
+        $this->assertEqual(
+            Syncee_Lang::resolveTranslationToConstant($response->getMessage()),
+            'BAD_PUBLIC_KEY',
+            'Bad public key message returned in remote response and resolved to constant by language parser.'
+        );
     }
 
     public function testWrongActionIdOnRemoteSiteReturnsSomethingOrOther()
