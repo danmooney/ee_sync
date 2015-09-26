@@ -128,3 +128,9 @@ $module_autoloader = function ($class_name) {
 };
 
 spl_autoload_register($module_autoloader);
+
+if (isset($idiom)) {
+    Syncee_Lang::setLanguage($idiom);
+} elseif (is_object($GLOBALS['LANG']) && isset($GLOBALS['LANG']->user_lang)) {
+    Syncee_Lang::setLanguage($GLOBALS['LANG']->user_lang);
+}
