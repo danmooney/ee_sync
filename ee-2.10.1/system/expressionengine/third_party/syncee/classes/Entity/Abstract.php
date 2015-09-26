@@ -77,6 +77,11 @@ abstract class Syncee_Entity_Abstract /*extends Syncee_ActiveRecord_Abstract*/ i
         ;
     }
 
+    public function existsInRow($key)
+    {
+        return array_key_exists($key, $this->_data);
+    }
+
     public function setSite(Syncee_Site $site)
     {
         $this->_site = $site;
