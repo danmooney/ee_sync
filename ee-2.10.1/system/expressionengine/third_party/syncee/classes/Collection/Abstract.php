@@ -66,6 +66,11 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
         return $this->_row_model;
     }
 
+    public function setRowModel($row_model)
+    {
+        $this->_row_model = $row_model;
+    }
+
     public function getEntityByUniqueIdentifierValue($identifier_value, $identifier_key_override = null)
     {
         /**
