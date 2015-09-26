@@ -25,13 +25,15 @@ class Syncee_Entity_Channel extends Syncee_Entity_Comparate_Abstract
      */
     private $_field_collection;
 
+    protected $_active_record_class_name = 'Syncee_Channel';
+
     protected $_unique_identifier_key = 'channel_name';
 
     protected $_ignored_columns_in_comparison = array(
         'channel_url'
     );
 
-    public function __construct(array $row = array(), $is_new = true) // TODO - is entity going to really extend active record.  It sorta makes sense.  But channel logic is way more complicated and is based in multiple tables.
+    public function __construct(array $row = array(), $is_new = true) // TODO - is entity going to really extend active record??  It sorta makes sense.  But channel logic is way more complicated and is based in multiple tables.
     {
         if (isset($row['fields'])) {
             $this->_field_collection = new Syncee_Entity_Channel_Field_Collection($row['fields']);
