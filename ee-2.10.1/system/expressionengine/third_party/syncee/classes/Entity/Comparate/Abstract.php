@@ -20,10 +20,26 @@ if (!defined('SYNCEE_PATH')) {
 
 abstract class Syncee_Entity_Comparate_Abstract extends Syncee_Entity_Abstract implements Syncee_Entity_Comparate_Ignore_Interface
 {
+    protected $_active_record_class_name;
+
     protected $_ignored_columns_in_comparison = array();
 
     public function getIgnoredColumnsFromComparison()
     {
         return $this->_ignored_columns_in_comparison;
+    }
+
+    /**
+     * @return Syncee_ActiveRecord_Abstract
+     */
+    public function getActiveRecord()
+    {
+        $active_record_class_name = $this->getActiveRecordClassName();
+        return new $active_record_class_name();
+    }
+
+    public function getActiveRecordClassName()
+    {
+        return $this->_active_record_class_name;
     }
 }
