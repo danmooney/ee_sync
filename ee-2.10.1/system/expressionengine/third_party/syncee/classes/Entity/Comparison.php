@@ -233,10 +233,21 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
     public function comparateColumnIsIgnoredInComparison()
     {
         if (!isset($this->_column_is_ignored_in_comparison)) {
-            $this->_column_is_ignored_in_comparison = in_array($this->getComparateColumnName(), $this->_source->getIgnoredColumnsFromComparison());
+            $this->_column_is_ignored_in_comparison = in_array(
+                $this->getComparateColumnName(),
+                $this->_source->getIgnoredColumnsFromComparison()
+            );
         }
 
         return $this->_column_is_ignored_in_comparison;
+    }
+
+    public function comparateColumnIsPrimaryKey()
+    {
+        return in_array(
+            $this->getComparateColumnName(),
+            $this->_source->getActiveRecord()->getPrimaryKeyNames()
+        );
     }
 
     public function isMissingInTarget()
