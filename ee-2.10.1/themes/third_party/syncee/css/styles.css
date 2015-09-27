@@ -411,7 +411,7 @@
     /*color: #FFF;*/
 }
 
-#syncee-page .collection-table.comparison-collection-table .comparate-key-field span:before {
+#syncee-page .collection-table.comparison-collection-table .comparate-key-field > span:before {
     content: "\21B2";
     -moz-transform: scaleX(-1);
     -webkit-transform: scaleX(-1);
@@ -599,25 +599,43 @@
     padding-top: 7px;
 }
 
+#syncee-page .collection-table.comparison-collection-table .comparate-column-ignored > * {
+    background: #DADADA;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparate-key-field span {
+    position: relative;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparate-column-ignored .comparate-key-field .comparate-column-ignored-symbol {
+    content: "";
+    background: url('../img/no_symbol.png') no-repeat;
+    background-size: 77%;
+    width: 19px;
+    height: 19px;
+    position: absolute;
+    right: 0;
+}
+
 .table-layout-auto {
     table-layout: auto !important;
 }
 
 /* Chrome is getting table alignment wrong; this is a hacky fix */
 #syncee-page .collection-table.comparison-collection-table.table-layout-auto .target-field-container {
-    padding-right: 3px;
+    /*padding-right: 3px;*/
 }
 
 #syncee-page .collection-table.comparison-collection-table.table-layout-auto .comparison-site-collection-merge-result-container  {
-    padding-right: 2px;
+    /*padding-right: 2px;*/
 }
 
 #syncee-page .collection-table.comparison-collection-table.table-layout-auto .source-field-container {
-    padding-right: 2px;
+    /*padding-right: 2px;*/
 }
 
 #syncee-page .collection-table.comparison-collection-table.table-layout-auto .target-site-header {
-    padding-right: 4px;
+    /*padding-right: 4px;*/
 }
 
 @-moz-document url-prefix() {
