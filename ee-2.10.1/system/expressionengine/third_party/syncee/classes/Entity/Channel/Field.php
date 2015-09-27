@@ -24,5 +24,7 @@ class Syncee_Entity_Channel_Field extends Syncee_Entity_Comparate_Abstract
 
     );
 
+    protected $_active_record_class_name = 'Syncee_Channel_Field';
+
     protected $_unique_identifier_key = 'field_name';
 }
