@@ -122,7 +122,7 @@ class Syncee_Helper
     {
         if (is_string($flash_message)) {
             Syncee_Helper_Flashdata::setFlashData($flash_message);
-        } elseif (is_bool($flash_message) && $_SERVER['REQUEST_METHOD'] === 'POST' && !AJAX_REQUEST) {
+        } elseif (is_bool($flash_message) && $flash_message && $_SERVER['REQUEST_METHOD'] === 'POST' && !AJAX_REQUEST) {
             $called_method          = $mcp->getCalledMethod();
             $called_method_exploded = explode('_', Syncee_Helper::convertCamelCaseToUnderscore($called_method));
             $action                 = array_shift($called_method_exploded);
@@ -141,16 +141,15 @@ class Syncee_Helper
                 case 'delete':
                     $verb = 'deleted';
                     break;
+                case 'synchronize':
+                    $verb = 'synchronized';
+                    break;
                 default:
                     $verb = 'saved';
                     break;
             }
 
-            if (true === $flash_message) {
-                $flash_message = $called_method_words . ' ' . $verb;
-            } else {
-                $flash_message = $called_method_words . ' ' . $verb;
-            }
+            $flash_message = $called_method_words . ' ' . $verb;
 
             Syncee_Helper_Flashdata::setFlashData($flash_message);
         }
