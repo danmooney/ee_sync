@@ -89,7 +89,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
         Syncee_Helper::redirect('synchronizeSiteGroupChannels', array(
             'synchronization_profile_id' => $synchronization_profile->getPrimaryKeyValues(true)
-        ), $this);
+        ), $this, false);
     }
 
     public function synchronizeSiteGroupChannelsFixPOST()
@@ -113,7 +113,16 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
         $synchronization_profile_decision->save();
 
         // Execute the merge!
-        $synchronization_profile_decision->execute();
+
+        try {
+            $synchronization_profile_decision->execute();
+        } catch (Exception $e) {
+            // TODO
+        }
+
+        Syncee_Helper::redirect('synchronizeSiteGroupChannels', array(
+            'synchronization_profile_id' => $synchronization_profile->getPrimaryKeyValues(true)
+        ), $this);
     }
 
     public function newSiteGroup()
