@@ -600,7 +600,7 @@
 }
 
 #syncee-page .collection-table.comparison-collection-table .comparate-column-ignored > * {
-    background: #DADADA;
+    /*background: #DADADA;*/
 }
 
 #syncee-page .collection-table.comparison-collection-table .comparate-key-field span {
@@ -612,10 +612,23 @@
     background: url('../img/no_symbol.png') no-repeat;
     background-size: 77%;
     width: 19px;
-    height: 19px;
+    height: 14px;
     position: absolute;
-    right: 0;
+    right: 3px;
+    background-position: center;
 }
+
+#syncee-page .collection-table.comparison-collection-table .comparate-column-primary-key .comparate-key-field .comparate-column-primary-key-symbol {
+    content: "";
+    background: url('../img/key_symbol.png') no-repeat;
+    background-size: 79%;
+    width: 26px;
+    height: 12px;
+    position: absolute;
+    right: 3px;
+    background-position: center;
+}
+
 
 .table-layout-auto {
     table-layout: auto !important;

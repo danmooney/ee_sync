@@ -206,17 +206,36 @@ sort($unique_identifier_values, SORT_STRING);
                                 }
 
                                 $comparate_column_is_ignored_in_comparison = $entity_comparison->comparateColumnIsIgnoredInComparison();
+                                $comparate_column_is_primary_key           = $entity_comparison->comparateColumnIsPrimaryKey();
 
-                                $comparate_column_ignore_class = $comparate_column_is_ignored_in_comparison ? 'comparate-column-ignored' : '';
+                                $comparate_column_class = '';
+
+                                if ($comparate_column_is_ignored_in_comparison) {
+                                    $comparate_column_class .= 'comparate-column-ignored';
+                                }
+
+                                if ($comparate_column_is_primary_key) {
+                                    $comparate_column_class .= 'comparate-column-primary-key';
+                                }
+
+                                if ($comparate_column_class) {
+                                    $comparate_column_class = sprintf('class="%s"', $comparate_column_class);
+                                }
 
                                 ?>
-                                <tr class="<?= $comparate_column_ignore_class ?>" data-row-idx="<?= $row_idx++ ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>" <?= $comparate_column_is_ignored_in_comparison ? 'data-comparate-column-ignored' : '' ?>>
+                                <tr <?= $comparate_column_class ?> data-row-idx="<?= $row_idx++ ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>" <?= $comparate_column_is_ignored_in_comparison ? 'data-comparate-column-ignored' : '' ?>>
                                     <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                         <span>
                                             <?= $comparate_column_name ?>
                                             <?php
                                                 if ($comparate_column_is_ignored_in_comparison): ?>
                                                     <span title="This column is being ignored in comparison." class="comparate-column-ignored-symbol"></span>
+                                            <?php
+                                                endif ?>
+
+                                            <?php
+                                                if ($comparate_column_is_primary_key): ?>
+                                                    <span title="This column is a primary key." class="comparate-column-primary-key-symbol"></span>
                                             <?php
                                                 endif ?>
                                         </span>
