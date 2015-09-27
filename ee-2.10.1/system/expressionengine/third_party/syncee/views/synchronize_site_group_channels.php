@@ -171,7 +171,7 @@ sort($unique_identifier_values, SORT_STRING);
                                     endif ?>
                             </span>
                         <?php
-                            if (!$source_has_entity_missing): ?>
+                            if (!$source_has_entity_missing /* && (!isset($percentage_difference) || $percentage_difference < 100) */): ?>
                                 <span class="decision-checkbox">
                                     <input type="checkbox">
                                 </span>
@@ -182,6 +182,8 @@ sort($unique_identifier_values, SORT_STRING);
             <?php
                 endforeach ?>
         </tr>
+
+        <?php // BEGIN Comparison Details ?>
         <tr class="comparison-details" data-row-idx="<?= $row_idx++ ?>">
             <td colspan="<?= $total_columns ?>" class="nested-table-container">
                 <div style="display: none;">
@@ -203,9 +205,22 @@ sort($unique_identifier_values, SORT_STRING);
                                     $target_value_to_output = strlen(trim($entity_comparison->getTargetValue())) > 0 ? trim($entity_comparison->getTargetValue()) : '&nbsp;';
                                 }
 
+                                $comparate_column_is_ignored_in_comparison = $entity_comparison->comparateColumnIsIgnoredInComparison();
+
+                                $comparate_column_ignore_class = $comparate_column_is_ignored_in_comparison ? 'comparate-column-ignored' : '';
+
                                 ?>
-                                <tr data-row-idx="<?= $row_idx++ ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>">
-                                    <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $comparate_column_name ?></span></td>
+                                <tr class="<?= $comparate_column_ignore_class ?>" data-row-idx="<?= $row_idx++ ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>" <?= $comparate_column_is_ignored_in_comparison ? 'data-comparate-column-ignored' : '' ?>>
+                                    <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
+                                        <span>
+                                            <?= $comparate_column_name ?>
+                                            <?php
+                                                if ($comparate_column_is_ignored_in_comparison): ?>
+                                                    <span title="This column is being ignored in comparison." class="comparate-column-ignored-symbol"></span>
+                                            <?php
+                                                endif ?>
+                                        </span>
+                                    </td>
                                     <td class="target-field comparate-value-field <?= $entity_missing_in_target ? 'comparate-value-field-missing' : '' ?>" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                         <span>
                                             <span class="value">
@@ -259,7 +274,7 @@ sort($unique_identifier_values, SORT_STRING);
                                                         <?= ee()->security->xss_clean($source_value_to_output) ?>
                                                     </span>
                                                     <?php
-                                                        if (!$entity_missing_in_source && !$entity_comparison_has_only_one_unique_value_or_less && !$source_value_same_as_target_value): ?>
+                                                        if (!$entity_missing_in_source && !$entity_comparison_has_only_one_unique_value_or_less /*&& !$comparate_column_is_ignored_in_comparison*/ && !$source_value_same_as_target_value): ?>
                                                             <span class="decision-checkbox">
                                                                 <input type="checkbox">
                                                             </span>
