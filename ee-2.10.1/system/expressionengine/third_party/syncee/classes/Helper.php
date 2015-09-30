@@ -118,11 +118,18 @@ class Syncee_Helper
         return $class_name;
     }
 
-    public static function redirect($url, array $vars = array(), Syncee_Mcp_Abstract $mcp, $flash_message = true)
+    /**
+     * @param $url
+     * @param array $vars
+     * @param Syncee_Mcp_Abstract $mcp
+     * @param string|bool $flash_message Hardcoded string or boolean true (true to make generic one, false to not set any flash message)
+     * @param string $flash_message_type
+     */
+    public static function redirect($url, array $vars = array(), Syncee_Mcp_Abstract $mcp, $flash_message = true, $flash_message_type = 'success')
     {
         if (is_string($flash_message)) {
-            Syncee_Helper_Flashdata::setFlashData($flash_message);
-        } elseif (is_bool($flash_message) && $flash_message && $_SERVER['REQUEST_METHOD'] === 'POST' && !AJAX_REQUEST) {
+            Syncee_Helper_Flashdata::setFlashData($flash_message, $flash_message_type);
+        } elseif ($flash_message === true && $_SERVER['REQUEST_METHOD'] === 'POST' && !AJAX_REQUEST) {
             $called_method          = $mcp->getCalledMethod();
             $called_method_exploded = explode('_', Syncee_Helper::convertCamelCaseToUnderscore($called_method));
             $action                 = array_shift($called_method_exploded);
@@ -151,7 +158,7 @@ class Syncee_Helper
 
             $flash_message = $called_method_words . ' ' . $verb;
 
-            Syncee_Helper_Flashdata::setFlashData($flash_message);
+            Syncee_Helper_Flashdata::setFlashData($flash_message, $flash_message_type);
         }
 
         ee()->functions->redirect(static::createModuleCpUrl($url, $vars));
