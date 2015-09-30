@@ -194,7 +194,7 @@ sort($unique_identifier_values, SORT_STRING);
                                 $entity_comparison        = $entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name);
                                 $entity_missing_in_target = $entity_comparison->isMissingInTarget();
 
-                                $entity_comparison_has_only_one_unique_value_or_less = (
+                                $entity_comparison_has_only_one_unique_value_or_less_across_all_sites = (
                                     count($entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name, true)) <= 1 &&
                                     count($entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name, false)) > 1
                                 );
@@ -293,8 +293,9 @@ sort($unique_identifier_values, SORT_STRING);
                                                         <?= ee()->security->xss_clean($source_value_to_output) ?>
                                                     </span>
                                                     <?php
-                                                        if (!$entity_missing_in_source && !$entity_comparison_has_only_one_unique_value_or_less /*&& !$comparate_column_is_ignored_in_comparison*/ && !$source_value_same_as_target_value): ?>
-                                                            <span class="decision-checkbox">
+                                                        $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites;
+                                                        if (!$entity_missing_in_source /*&& !$entity_comparison_has_only_one_unique_value_or_less_across_all_sites*/ /*&& !$comparate_column_is_ignored_in_comparison*/ && !$source_value_same_as_target_value): ?>
+                                                            <span class="decision-checkbox" <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'style="display:none"' : '' ?>>
                                                                 <input type="checkbox">
                                                             </span>
                                                     <?php
