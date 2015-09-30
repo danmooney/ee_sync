@@ -62,7 +62,7 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
 
         if (count($local_sites_with_same_values)) {
             Syncee_Helper_Flashdata::setFlashData('The remote site you\'re trying to save exists as a local site on this machine.', 'error');
-            Syncee_Helper::redirect('viewRemoteSiteList', array(), $this, null);
+            Syncee_Helper::redirect('viewRemoteSiteList', array(), $this, false);
         }
 
         $syncee_site->save();

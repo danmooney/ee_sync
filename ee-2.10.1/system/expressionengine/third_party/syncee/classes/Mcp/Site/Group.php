@@ -122,7 +122,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
         Syncee_Helper::redirect('synchronizeSiteGroupChannels', array(
             'synchronization_profile_id' => $synchronization_profile->getPrimaryKeyValues(true)
-        ), $this);
+        ), $this, 'Site Group Channels have been merged into local site');
     }
 
     public function newSiteGroup()
