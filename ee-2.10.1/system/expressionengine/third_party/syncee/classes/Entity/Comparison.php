@@ -144,8 +144,12 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         return $this;
     }
 
-    public function getSourceValue()
+    public function getSourceValue($type_prepended = false)
     {
+        if ($type_prepended) {
+            return gettype($this->_source_value) . $this->_source_value;
+        }
+
         return $this->_source_value;
     }
 
@@ -155,8 +159,12 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         return $this;
     }
 
-    public function getTargetValue()
+    public function getTargetValue($type_prepended = false)
     {
+        if ($type_prepended) {
+            return gettype($this->_target_value) . $this->_target_value;
+        }
+
         return $this->_target_value;
     }
 
