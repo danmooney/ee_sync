@@ -210,7 +210,7 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
         return $matching_comparison_entity;
     }
 
-    public function getAllValuesByComparateColumnName($comparate_column_name, $unique_only = false)
+    public function getAllValuesByComparateColumnName($comparate_column_name, $type_prepended = false)
     {
         $values = array();
 
@@ -222,16 +222,12 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
             $comparison_entity = $collection->getComparisonEntityByComparateColumnName($comparate_column_name);
 
             if (!$comparison_entity->isMissingInSource()) {
-                $values[] = $comparison_entity->getSourceValue();
+                $values[] = $comparison_entity->getSourceValue($type_prepended);
             }
 
             if (!$comparison_entity->isMissingInTarget()) {
-                $values[] = $comparison_entity->getTargetValue();
+                $values[] = $comparison_entity->getTargetValue($type_prepended);
             }
-        }
-
-        if ($unique_only) {
-            $values = array_unique($values);
         }
 
         return $values;
