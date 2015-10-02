@@ -196,12 +196,12 @@ $(function ($) {
             }
 
             if (shouldBeSticky) {
-                console.log('Time to stickify: ', stickyRow);
+                //console.log('Time to stickify: ', stickyRow);
                 stickify($stickyRow);
             }
 
             if (shouldBeUnsticky) {
-                console.log('Time to UNstickify: ', stickyRow);
+                //console.log('Time to UNstickify: ', stickyRow);
                 unstickify($stickyRow);
             }
 
@@ -209,7 +209,7 @@ $(function ($) {
                 unstickify($nextStickyRow, true);
                 $nextStickyRow.removeClass('transitioning-to-stuck');
             } else if (nextRowShouldBeTransitioningToStuck) {
-                console.log('Time to transition to stuck for NEXT row: ', $nextStickyRow);
+                //console.log('Time to transition to stuck for NEXT row: ', $nextStickyRow);
                 topToAssignToNextRow = Math.max(nextStickyRowTopRelativeToViewport || 0, evaluateStickyRowHighestBottomInTable($stickyTable));
 
                 assignUnstickyTopPxTriggerToStickyRow($nextStickyRow);
@@ -222,7 +222,7 @@ $(function ($) {
                 stickify($nextStickyRow, true);
             } else if (nextRowIsTransitioningToStuck) { // adjust position top based on scroll position
                 if (nextRowShouldBeStuck) {
-                    console.log('Transitioning row should now be stuck', $nextStickyRow);
+                    //console.log('Transitioning row should now be stuck', $nextStickyRow);
                     $nextStickyRow.removeClass('transitioning-to-stuck').css('top', stickyRowTopRelativeToViewport);
                     stickify($nextStickyRow, false, false);
                 } else { // simulate scrolling up the row by adjusting top
@@ -278,7 +278,7 @@ $(function ($) {
                 functionToExecute($targetRow);
             });
 
-            console.dir(mutations);
+            //console.dir(mutations);
         });
 
         observer.observe(this, options);
