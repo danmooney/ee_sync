@@ -194,10 +194,22 @@ sort($unique_identifier_values, SORT_STRING);
                                 $entity_comparison        = $entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name);
                                 $entity_missing_in_target = $entity_comparison->isMissingInTarget();
 
-                                $entity_comparison_has_only_one_unique_value_or_less_across_all_sites = (
-                                    count($entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name, true)) <= 1 &&
-                                    count($entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name, false)) > 1
+                                $all_values_for_this_comparate          = $entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name);
+
+                                // get all unique values from $all_values_for_this_comparate, but prepend primitive type to value so null doesn't get casted to empty string and such
+                                $unique_values_for_this_comparate       = array_unique($entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name, true));
+
+                                $comparate_output_count_by_unique_value = array_combine(
+                                    $unique_values_for_this_comparate,
+                                    array_fill(0, count($unique_values_for_this_comparate), 0)
                                 );
+
+                                $entity_comparison_has_only_one_unique_value_or_less_across_all_sites = (
+                                    count($unique_values_for_this_comparate) <= 1 &&
+                                    count($all_values_for_this_comparate) > 1
+                                );
+
+                                $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites;
 
                                 if (!$entity_missing_in_target && null === $entity_comparison->getTargetValue()) {
                                     $target_value_to_output = '<i>(NULL)</i>';
@@ -220,6 +232,11 @@ sort($unique_identifier_values, SORT_STRING);
 
                                 if ($comparate_column_class) {
                                     $comparate_column_class = sprintf('class="%s"', $comparate_column_class);
+                                }
+
+                                // increment unique value output counter
+                                if (!$entity_comparison->isMissingInTarget()) {
+                                    $comparate_output_count_by_unique_value[$entity_comparison->getTargetValue(true)] += 1;
                                 }
 
                                 ?>
@@ -247,7 +264,7 @@ sort($unique_identifier_values, SORT_STRING);
                                             </span>
                                             <?php
                                                 if (!$entity_missing_in_target): ?>
-                                                    <span class="decision-checkbox">
+                                                    <span class="decision-checkbox <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'checkbox-no-action-needed' : '' ?>" <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'data-no-action' : '' ?>>
                                                         <input type="checkbox">
                                                     </span>
                                             <?php
@@ -286,6 +303,16 @@ sort($unique_identifier_values, SORT_STRING);
                                                 $match_class = '';
                                             }
 
+
+                                            // increment unique value output counter
+
+                                            if (!$entity_comparison->isMissingInSource()) {
+                                                $comparate_output_count_by_unique_value[$entity_comparison->getSourceValue(true)] += 1;
+                                                $unique_value_already_output_in_row = $comparate_output_count_by_unique_value[$entity_comparison->getSourceValue(true)] > 1;
+                                            } else {
+                                                $unique_value_already_output_in_row = false;
+                                            }
+
                                             ?>
                                             <td class="source-field comparate-value-field <?= $match_class ?> <?= $entity_missing_in_source ? 'comparate-value-field-missing' : '' ?>" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                                 <span>
@@ -293,9 +320,8 @@ sort($unique_identifier_values, SORT_STRING);
                                                         <?= ee()->security->xss_clean($source_value_to_output) ?>
                                                     </span>
                                                     <?php
-                                                        $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites;
-                                                        if (!$entity_missing_in_source /*&& !$entity_comparison_has_only_one_unique_value_or_less_across_all_sites*/ /*&& !$comparate_column_is_ignored_in_comparison*/ && !$source_value_same_as_target_value): ?>
-                                                            <span class="decision-checkbox" <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'style="display:none"' : '' ?>>
+                                                        if (!$entity_missing_in_source && !$unique_value_already_output_in_row /*&& !$entity_comparison_has_only_one_unique_value_or_less_across_all_sites*/ /*&& !$comparate_column_is_ignored_in_comparison*/ && !$source_value_same_as_target_value): ?>
+                                                            <span class="decision-checkbox <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'checkbox-no-action-needed' : '' ?>" <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'data-no-action' : '' ?>>
                                                                 <input type="checkbox">
                                                             </span>
                                                     <?php
