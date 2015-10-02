@@ -1,5 +1,6 @@
 $(function ($, undefined) {
     var $comparisonCollectionTable = $('.comparison-collection-table'),
+        totalEntityComparateColumnNames = $comparisonCollectionTable.data('total-entity-comparate-column-names'),
         summaryCheckboxesByColIdxAndSummaryRowIdx = [],
         resultCheckboxesByColIdxAndSummaryRowIdx = [],
         resultCheckboxesByRowIdx = [],
@@ -8,7 +9,8 @@ $(function ($, undefined) {
         siteNamesByColIdx = [],
         siteIdsByColIdx = [],
         colIdxCount = $comparisonCollectionTable.children('thead').find('tr th').length,
-        $payloadHiddenInput = $comparisonCollectionTable.next('form').find('[name="payload"]')
+        $form = $comparisonCollectionTable.next('form'),
+        $payloadHiddenInput = $form.find('[name="payload"]')
     ;
 
     // TODO - if values are all the same in the comparison detail row, then check off the local column for that row, or mark it as a completely matching row and maybe have checkbox to show/hide those rows
@@ -148,7 +150,7 @@ $(function ($, undefined) {
             detailCellHtml = $.trim($cell.find('.value').html()) ? '<span>' + $cell.find('.value').html() + '</span>' : '<span>&nbsp;</span>',
             summaryCellTargetHtmlArr = [],
             summaryCellSourceHtmlArr = [],
-            totalCheckboxInColumnCount = getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).length,
+            totalCheckboxInColumnCount = totalEntityComparateColumnNames/*getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).length*/,
             hasAllDetailedRowsChecked = getResultCheckboxesBySummaryRowIdx(summaryRowIdx).filter(':checked').length === totalCheckboxInColumnCount,
             checkboxesCheckedInDetailResultsByColIdx = [],
             i
@@ -274,7 +276,9 @@ $(function ($, undefined) {
             $comparisonSummaryRow = $comparisonResultsRow.prevAll('.comparison-summary').first();
         }
 
-        $checkbox.prop('checked', isChecked);
+        if (!$checkbox.prop('disabled')) {
+            $checkbox.prop('checked', isChecked);
+        }
 
         if (isChecked) {
             $cell.addClass('clicked');
@@ -296,7 +300,7 @@ $(function ($, undefined) {
         $rowCheckboxes = resultCheckboxesByRowIdx[rowIdx];
 
         if (isSummaryRow && triggerOtherCheckboxesOnSummaryRow) { // trigger entire column of checkboxes
-            $otherCheckboxesToTrigger = $colCheckboxes;
+            $otherCheckboxesToTrigger = $colCheckboxes.not(':disabled');
             $otherCheckboxesToTrigger.each(function () {
                 updateCheckbox($(this), isChecked, triggerOtherCheckboxesOnSummaryRow);
             });
@@ -304,7 +308,13 @@ $(function ($, undefined) {
 
         if (isChecked) {
             if (isSummaryRow) { // all checkboxes in all adjacent columns must be unchecked
-                $checkboxesToUncheck = $comparisonResultsRow.find('[data-col-idx]').not('[data-col-idx="' + colIdx + '"]').find(':checked');
+                $checkboxesToUncheck = $();
+
+                getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).each(function getOnlyCheckboxesFromRowsThatExistInThisColumn() {
+                    var rowIdx = $(this).data('row-idx');
+
+                    $checkboxesToUncheck = $checkboxesToUncheck.add($comparisonResultsRow.find('[data-row-idx="' + rowIdx + '"] td')).not('[data-col-idx="' + colIdx + '"]').find(':checked');
+                });
             } else { // uncheck corresponding checkboxes in row
                 $checkboxesToUncheck = $rowCheckboxes.filter(':checked').not($checkbox);
 
@@ -336,15 +346,17 @@ $(function ($, undefined) {
 
     function updatePayloadData () {
         var payloadData = {},
-            numCols,
             $resultCheckboxes,
+            $summaryCheckbox,
             i,
             j,
             colIdx,
             summaryRowIdx,
             uniqueIdentifierKey,
             fieldName,
-            siteId
+            siteId,
+            isTargetColumn,
+            checkboxesOnlyExistInTarget
         ;
 
         for (i = 0; i < resultCheckboxesByColIdxAndSummaryRowIdx.length; i += 1) {
@@ -360,14 +372,20 @@ $(function ($, undefined) {
                     continue;
                 }
 
-                summaryRowIdx       = j;
-                $resultCheckboxes   = resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
-                uniqueIdentifierKey = $('[data-row-idx="' + summaryRowIdx + '"] [data-col-idx="0"]').text().trim();
+                summaryRowIdx               = j;
+                $resultCheckboxes           = resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
+                $summaryCheckbox            = summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
+                uniqueIdentifierKey         = $comparisonCollectionTable.find('tr[data-row-idx="' + summaryRowIdx + '"] .comparate-key-field-container').text().trim();
+                isTargetColumn              = colIdx === 1;
+                checkboxesOnlyExistInTarget = isTargetColumn && $summaryCheckbox.prop('disabled');
+
+                if (isTargetColumn) { // no need to merge in anything that exists in target!
+                    continue;
+                }
 
                 $resultCheckboxes.each(function (idx) {
                     var $resultCheckbox = $(this),
-                        $row = $(this).closest('[data-row-idx]'),
-                        //rowIdx = $(this).data('row-idx'),
+                        $row = $(this).closest('tr[data-row-idx]'),
                         isChecked = $resultCheckbox.prop('checked')
                     ;
 
@@ -375,7 +393,7 @@ $(function ($, undefined) {
                         return true; // continue
                     }
 
-                    fieldName = $row.find('[data-col-idx="0"]').text().trim();
+                    fieldName = $row.children('.comparate-key-field').text().trim();
 
                     if (typeof payloadData[uniqueIdentifierKey] === 'undefined') {
                         payloadData[uniqueIdentifierKey] = {};
@@ -390,23 +408,25 @@ $(function ($, undefined) {
         $payloadHiddenInput.val(JSON.stringify(payloadData));
     }
 
-    $comparisonCollectionTable.find('.decision-checkbox :checkbox').on('change', function (e) {
+    $comparisonCollectionTable.find('.decision-checkbox :checkbox').on('click', function (e) {
         updateCheckbox(e);
         updatePayloadData();
     });
 
-    (function checkOffCellsThatHaveNoOtherOption() {
+    (function checkOffAndDisableCellsThatHaveNoOtherOption() {
+
+        // check off summary rows that have no other option
         $comparisonCollectionTable.find('.comparison-summary').each(function () {
             var $row = $(this),
                 $checkboxes = $row.find(':checkbox'),
                 $cell,
-                hasOnlyOneCheckbox = $checkboxes.length === 1,// if only one checkbox in summary, no other option exists
+                hasOnlyOneCheckbox = $checkboxes.filter(':visible').length === 1,// if only one checkbox in summary, no other option exists
                 colIdx,
                 summaryRowIdx = $row.data('row-idx'),
                 isInTargetColumnOnly
             ;
 
-            if (!hasOnlyOneCheckbox) {
+            if (!hasOnlyOneCheckbox) { // if summary row has more than one checkbox in it, continue
                 return true; // continue
             }
 
@@ -415,14 +435,45 @@ $(function ($, undefined) {
 
             isInTargetColumnOnly = parseInt(summaryRowIdx, 10) === 1;
 
+            updateCheckbox($checkboxes, true);
+
             if (isInTargetColumnOnly) { // don't allow unchecking of local checkbox with no other option
                 $checkboxes.prop('disabled', 'disabled');
             }
 
-            updateCheckbox($checkboxes, true);
             updatePayloadData();
 
             getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).prop('disabled', 'disabled');
         });
+
+        $('[data-no-action] :checkbox').each(function () {
+            $(this)
+                .prop('checked', true)
+                .prop('disabled', 'disabled')
+            ;
+
+            updateCheckbox($(this));
+        });
+
+        // check off detail rows that have no other option
+        $comparisonCollectionTable.find('.comparison-details [data-row-idx]').each(function () {
+            var $resultCheckboxes = $(this).find(':checkbox');
+
+            if ($resultCheckboxes.filter(':visible').length === 1) {
+                $resultCheckboxes.prop('checked', 'checked');
+
+                updateCheckbox($resultCheckboxes);
+
+                $resultCheckboxes.prop('disabled', 'disabled');
+            }
+        });
+
+        updatePayloadData();
     }());
+
+    $form.on('submit', function (e) {
+        e.preventDefault();
+        updatePayloadData();
+        $form.submit();
+    });
 });
