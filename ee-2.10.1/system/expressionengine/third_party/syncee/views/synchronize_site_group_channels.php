@@ -56,7 +56,7 @@ sort($unique_identifier_values, SORT_STRING);
     </ul>
 </div>
 
-<table class="collection-table comparison-collection-table" data-sticky-table data-sticky-table-max-rows="3" data-resizable-table>
+<table class="collection-table comparison-collection-table" data-sticky-table data-sticky-table-max-rows="3" data-resizable-table data-total-entity-comparate-column-names="<?= count($entity_comparate_column_names) ?>">
     <thead>
         <?php $row_idx = 0; $col_idx = 0; ?>
         <tr data-sticky-table-row>
