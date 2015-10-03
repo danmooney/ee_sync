@@ -12,7 +12,7 @@ $(function ($) {
 
     $tableHeaders
         .mousedown(function (e) {
-            // if mousedown triggered over something other than th, return;
+            // if mousedown triggered over something other than th, return
             if ((e.target || e.srcElement) != e.currentTarget) {
                 return;
             }
@@ -37,6 +37,11 @@ $(function ($) {
                 $correspondingTdsInColumn = $th.closest(resizableTableSelectorStr).find('tbody tr td:nth-child(' + (thIdx + 1) + ')'),
                 maxWidthOfCellInColumn
             ;
+
+            // if dblclick triggered over something other than th, return
+            if ((e.target || e.srcElement) != e.currentTarget) {
+                return;
+            }
 
             $thChild.css('display', 'inline-block');
             maxWidthOfCellInColumn = $thChild.outerWidth();
