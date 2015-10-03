@@ -472,10 +472,10 @@ $(function ($, undefined) {
         updatePayloadData();
     }());
 
-    $form.on('submit', function (e) {
+    $form.on('submit', function updatePayloadDataAndSubmit (e) {
         e.preventDefault();
         updatePayloadData();
-        $form.submit();
+        $form.off().submit();
     });
 
     // These inputs are hidden from the server side template because EE indiscriminately binds listeners to th :checkbox which alter the state of other checkboxes through triggering random events.
