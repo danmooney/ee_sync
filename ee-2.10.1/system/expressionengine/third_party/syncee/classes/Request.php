@@ -72,7 +72,8 @@ class Syncee_Request implements Syncee_Request_Interface
                 'errors'            => $response->getErrors(),
                 'raw_response'      => $response->getRawResponse(),
                 'ip_address'        => $ch->primary_ip,
-                'request_direction' => $log::REQUEST_DIRECTION_OUTBOUND
+                'request_direction' => $log::REQUEST_DIRECTION_OUTBOUND,
+                'url'               => $remote_site_url
             ));
 
             $log->save();

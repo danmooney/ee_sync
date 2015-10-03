@@ -101,6 +101,11 @@ class Syncee_Upd_Site_Request_Log extends Syncee_Upd_Abstract
             'type'  => 'LONGTEXT',
             'null'  => true,
         ),
+        'url' => array(
+            'type'       => 'VARCHAR',
+            'constraint' => 1000,
+            'null'       => true
+        ),
         'create_datetime' => array(
             'type'  => 'DATETIME',
             'null'  => false,
