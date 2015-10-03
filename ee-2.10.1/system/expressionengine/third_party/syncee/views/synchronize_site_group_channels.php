@@ -59,13 +59,15 @@ sort($unique_identifier_values, SORT_STRING);
 <table class="collection-table comparison-collection-table" data-sticky-table data-sticky-table-max-rows="3" data-resizable-table data-total-entity-comparate-column-names="<?= count($entity_comparate_column_names) ?>">
     <thead>
         <?php $row_idx = 0; $col_idx = 0; ?>
-        <tr data-sticky-table-row>
+        <tr class="display-options" data-sticky-table-row>
             <th colspan="<?= $total_columns ?>">
-                <label for="a">Only show rows where action can be taken</label>
-                <input type="checkbox" name="a" id="a">
+                <label for="data-no-action">Only show rows where action can be taken</label>
+
+                <?php // These inputs need to be hidden because EE indiscriminately binds listeners to th :checkbox which alter the state of other checkboxes through triggering random events ?>
+                <input type="hidden" name="data-no-action" id="data-no-action">
 
                 <label for="b">Only show rows where action still needs to be taken</label>
-                <input type="checkbox" name="b" id="b">
+                <input type="hidden" name="b" id="b">
 
                 Back to Top
 
@@ -240,7 +242,7 @@ sort($unique_identifier_values, SORT_STRING);
                                 }
 
                                 ?>
-                                <tr <?= $comparate_column_class ?> data-row-idx="<?= $row_idx++ ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>" <?= $comparate_column_is_ignored_in_comparison ? 'data-comparate-column-ignored' : '' ?>>
+                                <tr <?= $comparate_column_class ?> data-row-idx="<?= $row_idx++ ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>" <?= $comparate_column_is_ignored_in_comparison ? 'data-comparate-column-ignored' : '' ?> <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'data-no-action' : '' ?>>
                                     <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                         <span>
                                             <?= $comparate_column_name ?>
@@ -264,8 +266,8 @@ sort($unique_identifier_values, SORT_STRING);
                                             </span>
                                             <?php
                                                 if (!$entity_missing_in_target): ?>
-                                                    <span class="decision-checkbox <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'checkbox-no-action-needed' : '' ?>" <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'data-no-action' : '' ?>>
-                                                        <input type="checkbox">
+                                                    <span class="decision-checkbox">
+                                                        <input type="checkbox" <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'class="checkbox-no-action-needed"' : '' ?>">
                                                     </span>
                                             <?php
                                                 endif ?>
@@ -321,8 +323,8 @@ sort($unique_identifier_values, SORT_STRING);
                                                     </span>
                                                     <?php
                                                         if (!$entity_missing_in_source && !$unique_value_already_output_in_row /*&& !$entity_comparison_has_only_one_unique_value_or_less_across_all_sites*/ /*&& !$comparate_column_is_ignored_in_comparison*/ && !$source_value_same_as_target_value): ?>
-                                                            <span class="decision-checkbox <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'checkbox-no-action-needed' : '' ?>" <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'data-no-action' : '' ?>>
-                                                                <input type="checkbox">
+                                                            <span class="decision-checkbox">
+                                                                <input type="checkbox" <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'class="checkbox-no-action-needed"' : '' ?>">
                                                             </span>
                                                     <?php
                                                         endif ?>

@@ -10,7 +10,8 @@ $(function ($, undefined) {
         siteIdsByColIdx = [],
         colIdxCount = $comparisonCollectionTable.children('thead').find('tr th').length,
         $form = $comparisonCollectionTable.next('form'),
-        $payloadHiddenInput = $form.find('[name="payload"]')
+        $payloadHiddenInput = $form.find('[name="payload"]'),
+        $displayOptionInputs = $comparisonCollectionTable.find('.display-options input')
     ;
 
     // TODO - if values are all the same in the comparison detail row, then check off the local column for that row, or mark it as a completely matching row and maybe have checkbox to show/hide those rows
@@ -446,7 +447,7 @@ $(function ($, undefined) {
             getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).prop('disabled', 'disabled');
         });
 
-        $('[data-no-action] :checkbox').each(function () {
+        $('.checkbox-no-action-needed').each(function () {
             $(this)
                 .prop('checked', true)
                 .prop('disabled', 'disabled')
@@ -475,5 +476,23 @@ $(function ($, undefined) {
         e.preventDefault();
         updatePayloadData();
         $form.submit();
+    });
+
+    // These inputs are hidden from the server side template because EE indiscriminately binds listeners to th :checkbox which alter the state of other checkboxes through triggering random events.
+    // So we change them to checkboxes afterwards here so no EE events get bound to them, and then we bind display option row toggling event
+    $displayOptionInputs.prop('type', 'checkbox').on('click', function (e) {
+        var $optionCheckbox = $(e.currentTarget),
+            dataAttribute = $optionCheckbox.attr('id'),
+            $checkboxesToChange = $comparisonCollectionTable.find('tbody tr[' + dataAttribute + ']')
+        ;
+
+        if ($optionCheckbox.is(':checked')) {
+            $checkboxesToChange.show();
+        } else {
+            $checkboxesToChange.hide();
+        }
+
+        // TODO - determine when all checkboxes in a column have no action required and either lock or hide the parent row
+
     });
 });
