@@ -105,6 +105,7 @@ $(function ($, undefined) {
     $comparisonCollectionTable.find('.comparison-summary').on('click', function (e) {
         var $comparisonSummary = $(e.currentTarget),
             $comparisonDetails,
+            noActionableRowsExistInComparisonDetails,
             comparisonDetailsIsSlidUp
         ;
 
@@ -113,6 +114,13 @@ $(function ($, undefined) {
         }
 
         $comparisonDetails        = $comparisonSummary.nextAll('.comparison-details').first();
+
+        noActionableRowsExistInComparisonDetails = !$comparisonDetails.find('tr').not('.data-no-action').length;
+
+        if (noActionableRowsExistInComparisonDetails) {
+            return;
+        }
+
         comparisonDetailsIsSlidUp = $comparisonDetails.find('table').is(':hidden');
 
         $comparisonDetails.addClass('sliding').find('.nested-table-container div').slideToggle(undefined, function () {
@@ -415,7 +423,6 @@ $(function ($, undefined) {
     });
 
     (function checkOffAndDisableCellsThatHaveNoOtherOption() {
-
         // check off summary rows that have no other option
         $comparisonCollectionTable.find('.comparison-summary').each(function () {
             var $row = $(this),
@@ -480,19 +487,48 @@ $(function ($, undefined) {
 
     // These inputs are hidden from the server side template because EE indiscriminately binds listeners to th :checkbox which alter the state of other checkboxes through triggering random events.
     // So we change them to checkboxes afterwards here so no EE events get bound to them, and then we bind display option row toggling event
-    $displayOptionInputs.prop('type', 'checkbox').on('click', function (e) {
+    $displayOptionInputs.prop('type', 'checkbox').on('click init', function (e) {
         var $optionCheckbox = $(e.currentTarget),
             dataAttribute = $optionCheckbox.attr('id'),
-            $checkboxesToChange = $comparisonCollectionTable.find('tbody tr[' + dataAttribute + ']')
+            $rowsToChange = $comparisonCollectionTable.find('tbody tr[' + dataAttribute + ']'),
+            dataSummaryRowIdxsEvaluated = []
         ;
 
         if ($optionCheckbox.is(':checked')) {
-            $checkboxesToChange.show();
+            $rowsToChange.addClass(dataAttribute);
         } else {
-            $checkboxesToChange.hide();
+            $rowsToChange.removeClass(dataAttribute);
         }
 
-        // TODO - determine when all checkboxes in a column have no action required and either lock or hide the parent row
+        // determine when all checkboxes in a column have no action required and either lock or hide the parent row
+        $rowsToChange.each(function evaluateWhetherEntireRecordHasNoAction () {
+            var $row = $(this),
+                dataSummaryRowIdx = $row.data('summary-row-idx'),
+                $summaryRow,
+                recordAlreadyEvaluated = $.inArray(dataSummaryRowIdx, dataSummaryRowIdxsEvaluated) !== -1,
+                $comparisonDetailsRow,
+                entireRecordHasNoAction,
+                $nestedContainerDiv
+            ;
 
-    });
+            if (recordAlreadyEvaluated) {
+                return true; // continue
+            }
+
+            dataSummaryRowIdxsEvaluated.push(dataSummaryRowIdx);
+
+            $comparisonDetailsRow = $row.closest('.comparison-details');
+            entireRecordHasNoAction = $comparisonDetailsRow.find('[data-no-action]').length >= $comparisonDetailsRow.find('[data-summary-row-idx="' + dataSummaryRowIdx + '"]').length;
+
+            $nestedContainerDiv = $comparisonDetailsRow.find('.nested-table-container div').hide();
+
+            if (entireRecordHasNoAction) {
+                $summaryRow = $('[data-row-idx="' + dataSummaryRowIdx + '"]');
+                $summaryRow.addClass('comparison-summary-no-action-needed');
+                $nestedContainerDiv.hide();
+            } else {
+                $nestedContainerDiv.show();
+            }
+        });
+    }).trigger('init');
 });
