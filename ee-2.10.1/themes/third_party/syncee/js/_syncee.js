@@ -1,0 +1,1 @@
+window.Syncee = window.Syncee || {};
