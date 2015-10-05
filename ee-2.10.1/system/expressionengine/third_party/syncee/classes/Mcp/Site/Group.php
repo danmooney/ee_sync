@@ -103,7 +103,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
         $payload                    = json_decode(ee()->input->post('payload'), true);
 
-        if (!$payload) {
+        if (!is_array($payload)) {
             die('no payload'); // TODO
         }
 
@@ -118,6 +118,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
             $synchronization_profile_decision->execute();
         } catch (Exception $e) {
             // TODO
+            throw $e;
         }
 
         Syncee_Helper::redirect('synchronizeSiteGroupChannels', array(
