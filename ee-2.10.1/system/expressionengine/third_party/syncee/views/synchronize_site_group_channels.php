@@ -66,8 +66,8 @@ sort($unique_identifier_values, SORT_STRING);
                 <?php // These inputs need to be hidden because EE indiscriminately binds listeners to th :checkbox which alter the state of other checkboxes through triggering random events ?>
                 <input type="hidden" name="data-no-action" id="data-no-action">
 
-                <label for="b">Only show rows where action still needs to be taken</label>
-                <input type="hidden" name="b" id="b">
+                <label for="data-action-taken">Dim rows where action has been chosen</label>
+                <input type="hidden" name="data-action-taken" id="data-action-taken">
 
                 Back to Top
 

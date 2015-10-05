@@ -115,7 +115,7 @@ $(function ($, undefined) {
 
         $comparisonDetails        = $comparisonSummary.nextAll('.comparison-details').first();
 
-        noActionableRowsExistInComparisonDetails = !$comparisonDetails.find('tr').not('.data-no-action').length;
+        noActionableRowsExistInComparisonDetails = !$comparisonDetails.find('tr').not('.display-option-data-no-action').length;
 
         if (noActionableRowsExistInComparisonDetails) {
             return;
@@ -128,8 +128,10 @@ $(function ($, undefined) {
 
             if (comparisonDetailsIsSlidUp) { // corresponding comparison details is about to be exposed; add sticky row data attribute to comparison summary
                 $comparisonSummary.attr('data-sticky-table-row', 1);
+                $comparisonDetails.addClass('slid-down').removeClass('slid-up');
             } else { // remove sticky row data attribute
                 $comparisonSummary.removeAttr('data-sticky-table-row');
+                $comparisonDetails.addClass('slid-up').removeClass('slid-down');
             }
         });
     });
@@ -212,9 +214,14 @@ $(function ($, undefined) {
             if ($checkbox.is(':checked')) {
                 $correspondingMergeCell.addClass('merged').addClass('positive');
                 $correspondingMergeCell.html(detailCellHtml);
+
+                $row.attr('data-action-taken', 1);
+
             } else if (!$row.find(':checked').length) {
                 $correspondingMergeCell.removeClass('merged').removeClass('positive');
                 $correspondingMergeCell.html($correspondingMergeCell.data('original-content'));
+
+                $row.removeAttr('data-action-taken');
             }
         }
 
@@ -351,6 +358,8 @@ $(function ($, undefined) {
                 updateCheckbox($(this), false, triggerOtherCheckboxesOnSummaryRow);
             });
         }
+
+        $displayOptionInputs.trigger('checkboxes:changed');
     }
 
     function updatePayloadData () {
@@ -487,18 +496,22 @@ $(function ($, undefined) {
 
     // These inputs are hidden from the server side template because EE indiscriminately binds listeners to th :checkbox which alter the state of other checkboxes through triggering random events.
     // So we change them to checkboxes afterwards here so no EE events get bound to them, and then we bind display option row toggling event
-    $displayOptionInputs.prop('type', 'checkbox').on('click init', function (e) {
+    $displayOptionInputs.prop('type', 'checkbox').on('click init checkboxes:changed', function (e) {
         var $optionCheckbox = $(e.currentTarget),
             dataAttribute = $optionCheckbox.attr('id'),
+            displayOptionClass = 'display-option-' + dataAttribute,
             $rowsToChange = $comparisonCollectionTable.find('tbody tr[' + dataAttribute + ']'),
-            dataSummaryRowIdxsEvaluated = []
+            dataSummaryRowIdxsEvaluated = [],
+            $rowsThatHaveDisplayOptionClassButMissingCorrespondingDataAttribute = $('.' + displayOptionClass).not('[' + dataAttribute + ']')
         ;
 
         if ($optionCheckbox.is(':checked')) {
-            $rowsToChange.addClass(dataAttribute);
+            $rowsToChange.addClass(displayOptionClass);
         } else {
-            $rowsToChange.removeClass(dataAttribute);
+            $rowsToChange.removeClass(displayOptionClass);
         }
+
+        $rowsThatHaveDisplayOptionClassButMissingCorrespondingDataAttribute.removeClass(displayOptionClass);
 
         // determine when all checkboxes in a column have no action required and either lock or hide the parent row
         $rowsToChange.each(function evaluateWhetherEntireRecordHasNoAction () {
@@ -518,16 +531,16 @@ $(function ($, undefined) {
             dataSummaryRowIdxsEvaluated.push(dataSummaryRowIdx);
 
             $comparisonDetailsRow = $row.closest('.comparison-details');
-            entireRecordHasNoAction = $comparisonDetailsRow.find('[data-no-action]').length >= $comparisonDetailsRow.find('[data-summary-row-idx="' + dataSummaryRowIdx + '"]').length;
+            entireRecordHasNoAction = $comparisonDetailsRow.find('tr[class^="display-option-data-"],tr[class*=" display-option-data-"]'/*'[data-no-action]'*/).length >= $comparisonDetailsRow.find('[data-summary-row-idx="' + dataSummaryRowIdx + '"]').length;
 
-            $nestedContainerDiv = $comparisonDetailsRow.find('.nested-table-container div').hide();
+            $nestedContainerDiv = $comparisonDetailsRow.find('.nested-table-container div');
 
             if (entireRecordHasNoAction) {
                 $summaryRow = $('[data-row-idx="' + dataSummaryRowIdx + '"]');
                 $summaryRow.addClass('comparison-summary-no-action-needed');
-                $nestedContainerDiv.hide();
+                //$nestedContainerDiv.hide();
             } else {
-                $nestedContainerDiv.show();
+                //$nestedContainerDiv.show();
             }
         });
     }).trigger('init');
