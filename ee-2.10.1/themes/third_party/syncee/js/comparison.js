@@ -148,7 +148,8 @@ $(function ($, undefined) {
             isSourceField = !isTargetField,
             isExistenceSummaryCell = $cell.hasClass('comparison-site-collection-existence-container'),
             $summaryCheckbox = getSummaryCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx),
-            $summaryMergeCell = $summaryCheckbox.closest('tr').find('.merge-result'),
+            $summaryRow = $summaryCheckbox.closest('tr'),
+            $summaryMergeCell = $summaryRow.find('.merge-result'),
             $summaryMergeCellSpan = $summaryMergeCell.children('span'),
             checkedCheckboxesExistInTarget = (
                 getSummaryCheckboxesByColIdxAndSummaryRowIdx(1, summaryRowIdx).filter(':checked').length ||
@@ -207,10 +208,7 @@ $(function ($, undefined) {
                     $correspondingMergeCell.removeClass('source');
                 }
             }
-        }
 
-        // TODO - update result text
-        if (!isExistenceSummaryCell) {
             if ($checkbox.is(':checked')) {
                 $correspondingMergeCell.addClass('merged').addClass('positive');
                 $correspondingMergeCell.html(detailCellHtml);
@@ -260,6 +258,8 @@ $(function ($, undefined) {
         } else {
             $summaryMergeCell.removeClass('positive');
         }
+
+        Syncee.updateSummaryBasedOnRow($summaryRow, $summaryMergeCell.hasClass('positive'));
     }
 
     function updateCheckbox (e, state, triggerOtherCheckboxesOnSummaryRow) {
