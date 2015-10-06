@@ -3449,3 +3449,9 @@ CHECKS.ie6 = {
 };
 ;}));
 }( window, document ));
+
+jQuery.fn.changeQtipContent = function (content) {
+    var attrToChange = $(this).is('[oldtitle]') ? 'oldtitle' : 'title';
+
+    $(this).attr(attrToChange, content);
+};
