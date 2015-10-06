@@ -120,7 +120,10 @@ sort($unique_identifier_values, SORT_STRING);
         ?>
         <tr class="comparison-summary" data-row-idx="<?= $comparison_summary_row_idx ?>">
             <td class="comparate-field-container comparate-key-field-container" data-col-idx="<?= $col_idx++ ?>">
-                <span><?= $unique_identifier_value ?></span>
+                <span>
+                    <?= $unique_identifier_value ?>
+                    <span class="question-mark"></span>
+                </span>
             </td>
             <td class="comparison-site-collection-existence-container target-field-container target-field" data-col-idx="<?= $col_idx++ ?>">
                 <span>
