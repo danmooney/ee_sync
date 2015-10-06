@@ -192,7 +192,7 @@
 }
 
 #syncee-page table.comparison-collection-table .comparison-details tr > * {
-    border-color: #B56363;
+    border-color: #A5A5A5/*#B56363*/;
 }
 
 #syncee-page table.comparison-collection-table .comparison-details tr > .comparate-value-field-missing {
@@ -390,6 +390,7 @@
 
 #syncee-page .comparison-collection-table .comparison-summary {
     cursor: pointer;
+    border-top: 1px solid #FFF;
 }
 
 #syncee-page .collection-table.comparison-collection-table .comparison-summary td {
@@ -404,6 +405,51 @@
 
 #syncee-page .collection-table.comparison-collection-table .comparison-summary .comparate-key-field-container {
     background: #C8D4FF;
+    position: relative;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-summary:hover .comparate-key-field-container {
+    background: #DDE4FF;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-summary .comparate-key-field-container > span {
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-summary .comparate-key-field-container .question-mark {
+    /*-webkit-transition: opacity .1s ease-in-out;*/
+    /*-moz-transition: opacity .1s ease-in-out;*/
+    /*-ms-transition: opacity .1s ease-in-out;*/
+    /*-o-transition: opacity .1s ease-in-out;*/
+    /*transition: opacity .1s ease-in-out;*/
+
+    opacity: 0;
+
+    background: #000;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 5px;
+    border-radius: 100%;
+    text-align: center;
+    line-height: 20px;
+    margin-top: -3px;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-summary:hover .comparate-key-field-container .question-mark {
+    opacity: 1;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-summary .comparate-key-field-container .question-mark:after {
+    color: #FFF;
+    content: "?";
+    font-weight: normal;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-summary:hover .comparate-key-field-container .question-mark:after {
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-summary .comparate-key-field-container .question-mark:hover {
+    background-color: red;
 }
 
 #syncee-page .collection-table.comparison-collection-table .comparate-key-field {
@@ -489,6 +535,31 @@
 {
     position: absolute;
     right: 8px;
+}
+
+#syncee-page .collection-table.comparison-collection-table .decision-checkbox.checkbox-no-action-needed {
+    /*display: none;*/
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-details .display-option-data-no-action
+{
+    display: none;
+}
+
+/* Chrome 45 has trouble redrawing linear gradients on table rows/cells after sliding them up and down.  Need to browser hack in the meantime so it can be redrawn after slide down is complete */
+.syncee-chrome #syncee-page .collection-table.comparison-collection-table .comparison-details.slid-up .display-option-data-action-taken
+{
+    background: transparent;
+    opacity: 1;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-details .display-option-data-action-taken {
+    background: repeating-linear-gradient( 45deg, #FFF 12px, #BBB 10px, #FFF 25px);
+    opacity: .7;
+}
+
+#syncee-page .collection-table.comparison-collection-table .comparison-details .display-option-data-action-taken td {
+    opacity: .75;
 }
 
 #syncee-page .collection-table.comparison-collection-table .target-site-header {
