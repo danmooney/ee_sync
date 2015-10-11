@@ -73,6 +73,13 @@ $(function ($) {
                     nextRowShouldBeTransitioningToStuck    = !nextRowIsTransitioningToStuck && $nextStickyRow.length && nextStickyRowTopRelativeToViewport <= evaluateStickyRowHighestBottomInTable($stickyTable);
                     nextRowShouldStopTransitioningToStuck  = nextRowIsTransitioningToStuck && $nextStickyRow.offset().top <= $nextStickyRow.data('unsticky-top-px-trigger');
                     nextRowShouldBeStuck                   = nextStickyRowTopRelativeToViewport <= stickyRowTopRelativeToViewport;
+
+                    // hide last row if next another row needs to be appended and overlap the last row
+                    if (nextRowShouldBeStuck) {
+                        $stickyRow.addClass('sticky-row-underlapped');
+                    } else { // else, show it again
+                        $stickyRow.removeClass('sticky-row-underlapped');
+                    }
                 }
 
                 shouldBeUnsticky                           = $stickyRow.hasClass('stuck') && $stickyRow.offset().top <= $stickyRow.data('unsticky-top-px-trigger');
@@ -112,7 +119,7 @@ $(function ($) {
                 $stickyRow.next('.sticky-placeholder').remove();
             }
 
-            function assignUnstickyTopPxTriggerToStickyRow($stickyRow) {
+            function assignUnstickyTopPxTriggerToStickyRow ($stickyRow) {
                 var $correspondingStickyPlaceholderRow = $stickyRow.next('.sticky-placeholder');
 
                 if (typeof $stickyRow.data('unsticky-top-px-trigger') === 'undefined') {

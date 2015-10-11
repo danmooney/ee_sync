@@ -1,3 +1,8 @@
 .sticky-placeholder {
     visibility: hidden;
 }
+
+.sticky-row-underlapped {
+    visibility: hidden;
+    top: -999px !important; /* Just to get the row out of the way so user can click underneath it */
+}
