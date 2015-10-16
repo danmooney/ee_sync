@@ -136,7 +136,7 @@ $(function ($, undefined) {
         });
     });
 
-    function calculateMergeResult ($checkbox) {
+    function calculateAndGetMergeResult ($checkbox) {
         var $cell = $checkbox.closest('td'),
             $row  = $cell.closest('tr'),
             colIdx = $cell.data('col-idx'),
@@ -262,6 +262,8 @@ $(function ($, undefined) {
         }
 
         Syncee.updateSummaryBasedOnRow($summaryRow, $summaryMergeCell.hasClass('positive'));
+
+        return $summaryMergeCell.hasClass('positive');
     }
 
     function updateCheckbox (e, state, triggerOtherCheckboxesOnSummaryRow) {
@@ -312,7 +314,7 @@ $(function ($, undefined) {
 
         getSummaryCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx);
 
-        calculateMergeResult($checkbox);
+        calculateAndGetMergeResult($checkbox);
 
         $colCheckboxes = resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
         $rowCheckboxes = resultCheckboxesByRowIdx[rowIdx];
@@ -376,7 +378,9 @@ $(function ($, undefined) {
             fieldName,
             siteId,
             isTargetColumn,
-            checkboxesOnlyExistInTarget
+            checkboxesOnlyExistInTarget,
+            mergeResultsBySummaryRowIdx = [],
+            uniqueIdentifierIsFullyMerged
         ;
 
         for (i = 0; i < resultCheckboxesByColIdxAndSummaryRowIdx.length; i += 1) {
@@ -395,7 +399,18 @@ $(function ($, undefined) {
                 summaryRowIdx               = j;
                 $resultCheckboxes           = resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
                 $summaryCheckbox            = summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
-                uniqueIdentifierKey         = $comparisonCollectionTable.find('tr[data-row-idx="' + summaryRowIdx + '"] .comparate-key-field-container').text().trim();
+
+                if (typeof mergeResultsBySummaryRowIdx[summaryRowIdx] === 'undefined') {
+                    mergeResultsBySummaryRowIdx[summaryRowIdx] = calculateAndGetMergeResult($summaryCheckbox);
+                }
+
+                uniqueIdentifierIsFullyMerged = !!mergeResultsBySummaryRowIdx[summaryRowIdx];
+
+                if (!uniqueIdentifierIsFullyMerged) {
+                    continue;
+                }
+
+                uniqueIdentifierKey         = $comparisonCollectionTable.find('tr:not(".sticky-placeholder")[data-row-idx="' + summaryRowIdx + '"] .comparate-key-field-container').text().trim();
                 isTargetColumn              = colIdx === 1;
                 checkboxesOnlyExistInTarget = isTargetColumn && $summaryCheckbox.prop('disabled');
 
