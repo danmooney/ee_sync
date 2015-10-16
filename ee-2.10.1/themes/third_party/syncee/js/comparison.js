@@ -9,7 +9,7 @@ $(function ($, undefined) {
         siteNamesByColIdx = [],
         siteIdsByColIdx = [],
         colIdxCount = $comparisonCollectionTable.children('thead').find('tr th').length,
-        $form = $comparisonCollectionTable.next('form'),
+        $form = $comparisonCollectionTable.siblings('form'),
         $payloadHiddenInput = $form.find('[name="payload"]'),
         $displayOptionInputs = $comparisonCollectionTable.find('.display-options input')
     ;
@@ -235,10 +235,12 @@ $(function ($, undefined) {
             if (value === null || parseInt(value, 10) == 0) {
 
             } else {
-                if (isTargetColIdx || hasOnlyTwoColumns) { // if there's only one site being compared on either side or if comparing target, then forgo outpuuting the site name
+                if (isTargetColIdx || hasOnlyTwoColumns) { // if there's only one site being compared on either side or if comparing target, then forgo outputting the site name
                     arrToPushOnto.push(value + '/' + totalCheckboxInColumnCount);
                 } else {
-                    arrToPushOnto.push(siteNamesByColIdx[idx] + ': ' + value + '/' + totalCheckboxInColumnCount);
+                    arrToPushOnto.push(
+                        '<span class="merge-result-summary-source-site">' + siteNamesByColIdx[idx] + ': ' + value + '/' + totalCheckboxInColumnCount + '</span>'
+                    );
                 }
             }
         });
