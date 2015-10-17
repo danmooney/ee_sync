@@ -44,38 +44,70 @@ Syncee.updateSummaryBasedOnRow = function ($row, isMerged) {
 
 // bind summary name event click to bring summary row to top of viewport
 $(function ($) {
-    $('#syncee').find('.summary-table [data-name] a').on('click', function scrollToSummaryRow (e) {
-        var uniqueIdentifierValue = $(this).closest('[data-name]').data('name'),
-            $summaryRowToScrollTo = $('.comparison-summary[data-name="' + uniqueIdentifierValue + '"]'),
-            $summaryRowIsStuck = $summaryRowToScrollTo.hasClass('stuck'),
-            combinedStuckRowHeight = 0
-        ;
+    $('#syncee').find('.summary-table [data-name] a').on('click', (function scrollToSummaryRow() {
+        var isCurrentlyScrollingToSummaryRow = false;
 
-        e.preventDefault();
+        return function (e) {
+            var uniqueIdentifierValue = $(this).closest('[data-name]').data('name'),
+                $summaryRowToScrollTo = $('.comparison-summary[data-name="' + uniqueIdentifierValue + '"]'),
+                summaryRowIsStuck = $summaryRowToScrollTo.hasClass('stuck'),
+                combinedStuckRowHeight = 0,
+                summaryRowToScrollToIsCollapsedAndIsInViewportAlready
+            ;
 
-        if ($summaryRowToScrollTo.length > 1) {
-            $summaryRowToScrollTo = $summaryRowToScrollTo.filter('.sticky-placeholder');
-        }
+            e.preventDefault();
 
-        $('.stuck')
-            .filter(function () {
-                var isInViewport = $(this).get(0).getBoundingClientRect().top >= 0,
-                    isNotComparisonSummary = !$(this).hasClass('comparison-summary')
-                ;
+            if (isCurrentlyScrollingToSummaryRow) {
+                return;
+            }
 
-                if ($summaryRowIsStuck) {
-                    return isInViewport && isNotComparisonSummary;
-                } else {
-                    return isInViewport;
+            isCurrentlyScrollingToSummaryRow = true;
+
+            $summaryRowToScrollTo.find('.syncee-highlight').removeClass('syncee-highlight');
+
+            function highlightRow () {
+                if (!isCurrentlyScrollingToSummaryRow) {
+                    return;
                 }
 
-            }).each(function () {
-                combinedStuckRowHeight += $(this).outerHeight();
-            })
-        ;
+                isCurrentlyScrollingToSummaryRow = false;
+                $('.comparison-summary[data-name="' + uniqueIdentifierValue + '"]').children('.comparate-field-container').addClass('syncee-highlight');
+            }
 
-        $('html, body').animate({
-            scrollTop: $summaryRowToScrollTo.offset().top - combinedStuckRowHeight
-        }, 1000);
-    });
+            if ($summaryRowToScrollTo.length > 1) {
+                $summaryRowToScrollTo = $summaryRowToScrollTo.filter('.sticky-placeholder');
+            }
+
+            summaryRowToScrollToIsCollapsedAndIsInViewportAlready = !summaryRowIsStuck && $summaryRowToScrollTo.get(0).getBoundingClientRect().top >= 0;
+
+            if (summaryRowToScrollToIsCollapsedAndIsInViewportAlready) {
+                highlightRow();
+                return;
+            }
+
+            $('.stuck')
+                .filter(function () {
+                    var isInViewport = $(this).get(0).getBoundingClientRect().top >= 0,
+                        isNotComparisonSummary = !$(this).hasClass('comparison-summary')
+                    ;
+
+                    if (summaryRowIsStuck) {
+                        return isInViewport && isNotComparisonSummary;
+                    } else {
+                        return isInViewport;
+                    }
+
+                }).each(function () {
+                    combinedStuckRowHeight += $(this).outerHeight();
+                })
+            ;
+
+            $('html, body').animate({
+                scrollTop: $summaryRowToScrollTo.offset().top - combinedStuckRowHeight
+            }, {
+                duration: 1000,
+                complete: highlightRow
+            });
+        };
+    }()));
 });

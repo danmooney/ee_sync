@@ -37,6 +37,10 @@
     color: #000;
 }
 
+#syncee a {
+    /*color: inherit;*/
+}
+
 #syncee .menu {
     display: table;
     width: 100%;
@@ -391,6 +395,7 @@
 #syncee-page .comparison-collection-table .comparison-summary {
     cursor: pointer;
     border-top: 1px solid #FFF;
+    background: #C8D4FF;
 }
 
 #syncee-page .collection-table.comparison-collection-table .comparison-summary td {
@@ -768,4 +773,26 @@
     #syncee-page .collection-table.comparison-collection-table.table-layout-auto .target-site-header {
         padding-right: 1px;
     }
+}
+
+#syncee-page .summary-table tr > * {
+    padding: 8px;
+}
+
+#syncee-page .site-name {
+    font-weight: bold;
+    font-style: oblique;
+}
+
+@keyframes highlight-after-scrolling-to {
+    0% {
+        background: #FFFDBA;
+    }
+    100% {
+        background: inherit;
+    }
+}
+
+.syncee-highlight {
+  animation: highlight-after-scrolling-to 1s;
 }
