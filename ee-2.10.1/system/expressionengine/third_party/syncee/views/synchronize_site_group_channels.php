@@ -46,16 +46,6 @@ sort($unique_identifier_values, SORT_STRING);
 
 ?>
 
-<div class="summary"> <?php // Possibly duplicate below table ?>
-    <ul>
-        <li>
-            <a href="#" <?php // anchor is for going to ?>></a>
-            Meteors channel is being merged into local site from EE Remote 3
-        </li>
-        <li>Planets requires your input</li>
-    </ul>
-</div>
-
 <table class="collection-table comparison-collection-table" data-sticky-table data-sticky-table-max-rows="3" data-resizable-table data-total-entity-comparate-column-names="<?= count($entity_comparate_column_names) ?>">
     <thead>
         <?php $row_idx = 0; $col_idx = 0; ?>
@@ -118,7 +108,7 @@ sort($unique_identifier_values, SORT_STRING);
             $col_idx = 0;
             $comparison_summary_row_idx = $row_idx++;
         ?>
-        <tr class="comparison-summary" data-row-idx="<?= $comparison_summary_row_idx ?>">
+        <tr class="comparison-summary" data-row-idx="<?= $comparison_summary_row_idx ?>" data-name="<?= ee()->security->xss_clean($unique_identifier_value) ?>">
             <td class="comparate-field-container comparate-key-field-container" data-col-idx="<?= $col_idx++ ?>">
                 <span>
                     <?= $unique_identifier_value ?>
@@ -344,6 +334,28 @@ sort($unique_identifier_values, SORT_STRING);
         </tr>
     <?php
         endforeach ?>
+    </tbody>
+</table>
+
+<table class="summary-table">
+    <thead>
+        <tr>
+            <th colspan="2">
+                Action Summary
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php
+    foreach ($unique_identifier_values as $unique_identifier_value): ?>
+        <tr>
+            <td class="site-name" data-name="<?= ee()->security->xss_clean($unique_identifier_value) ?>">
+                <a href="#"><?= $unique_identifier_value ?></a>
+            </td>
+            <td class="summary">&nbsp;</td>
+        </tr>
+    <?php
+    endforeach ?>
     </tbody>
 </table>
 
