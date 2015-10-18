@@ -167,8 +167,8 @@ class Syncee_Response
             return false;
         }
 
-        $class_name = $this->_entity->getCollectionClassName();
-        return new $class_name((array) $this->getResponseDataDecoded());
+        $collection_class_name = $this->_entity->getCollectionClassName();
+        return new $collection_class_name((array) $this->getResponseDataDecoded());
     }
 
     public function setEntity(Syncee_Request_Remote_Entity_Interface $entity)
