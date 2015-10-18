@@ -26,7 +26,7 @@ abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_R
     protected $_requested_ee_site_id;
 
     /**
-     * @var Syncee_Entity_Channel_Collection
+     * @var Syncee_Entity_Comparate_Collection_Abstract
      */
     protected $_collection_class_name;
 
@@ -51,7 +51,7 @@ abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_R
         return $this->_collection_class_name;
     }
 
-    public function getCollectionClass()
+    public function getEmptyCollectionInstance()
     {
         $collection_class_name = $this->_collection_class_name;
         return new $collection_class_name();
