@@ -112,6 +112,16 @@ class Syncee_Mcp
         new Syncee_Request_Remote($site, $entity, new Syncee_Site_Request_Log());
     }
 
+    /**
+     * Run discrepancy checks between local ee tables and syncee tables (in the cases where a database dump gets executed on another machine)
+     * This method runs through several checks:
+     *
+     * - Iterate through local sites that don't exist as syncee sites yet and create them
+     * - Delete duplicate local syncee sites belonging to same EE site id
+     *
+     * @TODO - more scenarios and edge cases need to be thought of and executed inside this method
+     *
+     */
     private function _runLocalSiteCleanup()
     {
         $syncee_site_collection        = Syncee_Site::findAll();
