@@ -33,20 +33,20 @@ class Syncee_Mcp_Site_Group_Synchronize_Channel extends Syncee_Mcp_Abstract
             die('Could not find synchronization profile'); // TODO
         }
 
-        $site_collection            = $synchronization_profile->getSiteContainer();
+        $site_collection    = $synchronization_profile->getSiteContainer();
 
-        $channel_comparison_library = $synchronization_profile->getComparisonCollectionLibrary();
+        $comparison_library = $synchronization_profile->getComparisonCollectionLibrary();
 
         // sort collections by source site primary key.
         // this is to have a known and predictable way to iterate over collections and get everything in the right order.
-        $channel_comparison_library->sortByCallback(function (Syncee_Entity_Comparison_Collection $a, Syncee_Entity_Comparison_Collection $b) {
+        $comparison_library->sortByCallback(function (Syncee_Entity_Comparison_Collection $a, Syncee_Entity_Comparison_Collection $b) {
             return $a->getSource()->getSite()->getPrimaryKeyValues(true) - $b->getSource()->getSite()->getPrimaryKeyValues(true);
         });
 
         return Syncee_View::render(__FUNCTION__, array(
             'synchronization_profile'    => $synchronization_profile,
             'site_collection'            => $site_collection,
-            'entity_comparison_library'  => $channel_comparison_library,
+            'entity_comparison_library'  => $comparison_library,
         ), $this);
     }
 
@@ -63,7 +63,12 @@ class Syncee_Mcp_Site_Group_Synchronize_Channel extends Syncee_Mcp_Abstract
             // TODO
         }
 
-        $synchronization_profile_factory = new Syncee_Site_Synchronization_Profile_Factory($site_group, new Syncee_Entity_Channel_Collection_Library(), new Syncee_Request_Remote_Entity_Channel());
+        $synchronization_profile_factory = new Syncee_Site_Synchronization_Profile_Factory(
+            $site_group,
+            new Syncee_Entity_Channel_Collection_Library(),
+            new Syncee_Request_Remote_Entity_Channel()
+        );
+
         $synchronization_profile         = $synchronization_profile_factory->getNewSynchronizationProfile();
 
         $synchronization_profile->save();
