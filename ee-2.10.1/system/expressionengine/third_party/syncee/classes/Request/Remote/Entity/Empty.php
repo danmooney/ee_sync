@@ -29,7 +29,7 @@ class Syncee_Request_Remote_Entity_Empty extends Syncee_Request_Remote_Entity_Ab
         return 'ping';
     }
 
-    public function getCollection()
+    public function queryDatabaseAndGenerateCollection()
     {
         return new Syncee_Collection_Empty();
     }

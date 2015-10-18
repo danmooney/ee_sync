@@ -22,7 +22,7 @@ class Syncee_Request_Remote_Entity_Channel extends Syncee_Request_Remote_Entity_
 {
     protected $_collection_class_name = 'Syncee_Entity_Channel_Collection';
 
-    public function getCollection()
+    public function queryDatabaseAndGenerateCollection()
     {
         $channels     = ee()->db->get('channels');
         $field_groups = ee()->db->get('field_groups');

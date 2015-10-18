@@ -27,10 +27,10 @@ interface Syncee_Request_Remote_Entity_Interface
     public function getName();
 
     /**
-     * Fetch data and return collection
+     * Fetch data from the database on the remote/local instance and return collection
      * @return Syncee_Entity_Comparate_Collection_Abstract
      */
-    public function getCollection();
+    public function queryDatabaseAndGenerateCollection();
 
     /**
      * @param $ee_site_id
@@ -46,4 +46,9 @@ interface Syncee_Request_Remote_Entity_Interface
      * @return string
      */
     public function getCollectionClassName();
+
+    /**
+     * @return Syncee_Entity_Comparate_Collection_Abstract
+     */
+    public function getEmptyCollectionInstance();
 }
