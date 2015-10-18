@@ -74,6 +74,15 @@ class Syncee_View
         );
     }
 
+    public static function outputCsrfHiddenFormInputs()
+    {
+        return sprintf(
+            '<input type="hidden" name="XID" value="%s"><input type="hidden" name="csrf_token" value="%s">',
+            ee()->csrf->get_user_token(),
+            ee()->csrf->get_user_token()
+        );
+    }
+
     public static function setPageTitle($title)
     {
         $ee = ee();

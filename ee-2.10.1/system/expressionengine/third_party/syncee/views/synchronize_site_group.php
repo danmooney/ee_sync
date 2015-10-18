@@ -37,10 +37,8 @@ $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
     endif ?>
 <br><br>
 <form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronizeSiteGroupChannels', $syncee_site_group->getPrimaryKeyNamesValuesMap()) ?>">
-<!--    <a href="--><?//= Syncee_Helper::createModuleCpUrl('synchronizeSiteGroupChannels', $syncee_site_group->getPrimaryKeyNamesValuesMap()) ?><!--">Synchronize Channels</a>-->
     <button type="submit">Synchronize Channels</button>
-    <input type="hidden" name="XID" value="<?= ee()->csrf->get_user_token() ?>">
-    <input type="hidden" name="csrf_token" value="<?= ee()->csrf->get_user_token() ?>">
+    <?= Syncee_View::outputCsrfHiddenFormInputs() ?>
 </form>
 <p>Synchronize Channel Fields</p>
 <p>Synchronize Channel Data</p>

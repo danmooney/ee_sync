@@ -9,6 +9,5 @@ require_once dirname(__FILE__) . '/../_init.php';
 <br>
 <form method="post">
     <button class="btn" type="submit">Delete Site Group</button>
-    <input type="hidden" name="XID" value="<?= ee()->csrf->get_user_token() ?>">
-    <input type="hidden" name="csrf_token" value="<?= ee()->csrf->get_user_token() ?>">
+    <?= Syncee_View::outputCsrfHiddenFormInputs() ?>
 </form>

@@ -364,6 +364,5 @@ sort($unique_identifier_values, SORT_STRING);
     <input type="hidden" name="payload">
     <input type="hidden" name="post_max_size" value="<?= @Syncee_Helper::getBytesFromPossibleShorthand(ini_get('post_max_size')) ?>">
     <input type="hidden" name="max_input_vars" value="<?= @ini_get('max_input_vars') ?>">
-    <input type="hidden" name="XID" value="<?= ee()->csrf->get_user_token() ?>">
-    <input type="hidden" name="csrf_token" value="<?= ee()->csrf->get_user_token() ?>">
+    <?= Syncee_View::outputCsrfHiddenFormInputs() ?>
 </form>
