@@ -87,6 +87,34 @@ class Syncee_View
         }
     }
 
+    public static function addStylesheets()
+    {
+        $module_theme_path = static::_getThemePath();
+
+        foreach (glob($module_theme_path . '/css/*') as $stylesheet_pathname) {
+            if (pathinfo($stylesheet_pathname, PATHINFO_EXTENSION) !== 'css') {
+                continue;
+            }
+
+            $stylesheet_url = static::_getThemeUrl() . '/css/' . basename($stylesheet_pathname);
+            ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $stylesheet_url . '">');
+        }
+    }
+
+    public static function addScripts()
+    {
+        $module_theme_path = static::_getThemePath();
+
+        foreach (glob($module_theme_path . '/js/*') as $script_pathname) {
+            if (is_dir($script_pathname)) {
+                continue;
+            }
+
+            $script_url = static::_getThemeUrl() . '/js/' . basename($script_pathname);
+            ee()->cp->add_to_foot('<script src="' . $script_url . '"></script>');
+        }
+    }
+
     private static function _getPageTitleByMcpAndVars(Syncee_Mcp_Abstract $mcp, array $vars)
     {
         $view_method          = $mcp->getCalledMethod();
@@ -124,34 +152,6 @@ class Syncee_View
         }
 
         return $page_title;
-    }
-
-    public static function addStylesheets()
-    {
-        $module_theme_path = static::_getThemePath();
-
-        foreach (glob($module_theme_path . '/css/*') as $stylesheet_pathname) {
-            if (pathinfo($stylesheet_pathname, PATHINFO_EXTENSION) !== 'css') {
-                continue;
-            }
-
-            $stylesheet_url = static::_getThemeUrl() . '/css/' . basename($stylesheet_pathname);
-            ee()->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $stylesheet_url . '">');
-        }
-    }
-
-    public static function addScripts()
-    {
-        $module_theme_path = static::_getThemePath();
-
-        foreach (glob($module_theme_path . '/js/*') as $script_pathname) {
-            if (is_dir($script_pathname)) {
-                continue;
-            }
-
-            $script_url = static::_getThemeUrl() . '/js/' . basename($script_pathname);
-            ee()->cp->add_to_foot('<script src="' . $script_url . '"></script>');
-        }
     }
 
     private static function _getThemeUrl()
