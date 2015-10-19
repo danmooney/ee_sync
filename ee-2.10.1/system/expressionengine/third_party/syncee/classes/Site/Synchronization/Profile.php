@@ -44,7 +44,7 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
     /**
      * @var string
      */
-    protected $_entity_name = 'Syncee_Request_Remote_Entity_Channel';
+    protected $_entity_name;
 
     public function save()
     {
@@ -70,11 +70,20 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
         return $this->_entity_name;
     }
 
+    public function setEntityName($entity_name)
+    {
+        $this->_entity_name = $entity_name;
+    }
+
     /**
      * @return Syncee_Request_Remote_Entity_Abstract
      */
     public function getEntity()
     {
+        if (!$this->_entity_name) {
+            $this->determineAndSetEntityNameOnInstance();
+        }
+
         $entity_str = $this->_entity_name;
 
         return new $entity_str();
@@ -169,9 +178,7 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
             $request_log_collection          = $this->getRequestLogCollection();
             $site_container                  = $this->getSiteContainer();
             $entity                          = $this->getEntity();
-            $comparator_collection_library   = $entity->getCollection()->getComparatorCollectionLibrary();
-
-            $entity->getCollection()->getComparatorCollectionLibraryName();
+            $comparator_collection_library   = $entity->queryDatabaseAndGenerateCollection()->getComparatorCollectionLibrary();
 
             $local_site_is_in_request_log_collection = false;
 
@@ -219,5 +226,16 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
     {
         $this->_comparison_collection_library = $comparison_collection_Library;
         return $this;
+    }
+
+    public function determineAndSetEntityNameOnInstance()
+    {
+        /**
+         * @var $request_log Syncee_Site_Request_Log
+         */
+        foreach ($this->getRequestLogCollection() as $request_log) {
+            $this->_entity_name = get_class($request_log->request_entity);
+            break;
+        }
     }
 }
