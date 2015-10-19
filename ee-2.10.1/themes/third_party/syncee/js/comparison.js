@@ -472,7 +472,7 @@ $(function ($, undefined) {
             $cell = $checkboxes.closest('td');
             colIdx = $cell.data('col-idx');
 
-            isInTargetColumnOnly = parseInt(summaryRowIdx, 10) === 1;
+            isInTargetColumnOnly = parseInt(colIdx, 10) === 1;
 
             updateCheckbox($checkboxes, true);
 
