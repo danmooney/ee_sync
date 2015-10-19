@@ -64,7 +64,7 @@ sort($unique_identifier_values, SORT_STRING);
                 Collapse All
             </th>
         </tr>
-        <tr data-row-idx="<?= $row_idx++ ?>" data-sticky-table-row>
+        <tr class="comparison-table-header-row" data-row-idx="<?= $row_idx++ ?>" data-sticky-table-row>
             <th class="comparate-column-header" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $unique_identifier_key ?></span></th>
             <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= ee()->security->xss_clean($local_site->title) ?>" data-site-id="<?= $local_site->getPrimaryKeyValues(true) ?>">
                 <span>
