@@ -8,7 +8,7 @@ $(function ($, undefined) {
         summaryRowIdxs = [],
         siteNamesByColIdx = [],
         siteIdsByColIdx = [],
-        colIdxCount = $comparisonCollectionTable.children('thead').find('tr th').length,
+        colIdxCount = $comparisonCollectionTable.children('thead').find('tr.comparison-table-header-row').children('th').length,
         $form = $comparisonCollectionTable.siblings('form'),
         $payloadHiddenInput = $form.find('[name="payload"]'),
         $displayOptionInputs = $comparisonCollectionTable.find('.display-options input')
@@ -164,6 +164,7 @@ $(function ($, undefined) {
             summaryCellSourceHtmlArr = [],
             totalCheckboxInColumnCount = totalEntityComparateColumnNames/*getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).length*/,
             hasAllDetailedRowsChecked = getResultCheckboxesBySummaryRowIdx(summaryRowIdx).filter(':checked').length === totalCheckboxInColumnCount,
+            hasSummaryCheckboxChecked = $summaryCheckbox.is(':checked'),
             checkboxesCheckedInDetailResultsByColIdx = [],
             i
         ;
@@ -255,7 +256,7 @@ $(function ($, undefined) {
         );
 
 
-        if (hasAllDetailedRowsChecked) {
+        if (hasAllDetailedRowsChecked && hasSummaryCheckboxChecked) {
             $summaryMergeCell.addClass('positive');
         } else {
             $summaryMergeCell.removeClass('positive');
@@ -399,6 +400,10 @@ $(function ($, undefined) {
                 summaryRowIdx               = j;
                 $resultCheckboxes           = resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
                 $summaryCheckbox            = summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
+
+                if (!$summaryCheckbox.length) {
+                    continue;
+                }
 
                 if (typeof mergeResultsBySummaryRowIdx[summaryRowIdx] === 'undefined') {
                     mergeResultsBySummaryRowIdx[summaryRowIdx] = calculateAndGetMergeResult($summaryCheckbox);
