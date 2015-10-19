@@ -40,5 +40,10 @@ $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
     <button type="submit">Synchronize Channels</button>
     <?= Syncee_View::outputCsrfHiddenFormInputs() ?>
 </form>
-<p>Synchronize Channel Fields</p>
+
+<form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronizeSiteGroupChannelFields', $syncee_site_group->getPrimaryKeyNamesValuesMap()) ?>">
+    <button type="submit">Synchronize Channel Fields</button>
+    <?= Syncee_View::outputCsrfHiddenFormInputs() ?>
+</form>
+
 <p>Synchronize Channel Data</p>
