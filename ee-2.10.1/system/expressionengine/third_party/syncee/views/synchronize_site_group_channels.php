@@ -189,8 +189,6 @@ sort($unique_identifier_values, SORT_STRING);
                                 $entity_comparison        = $entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name);
                                 $entity_missing_in_target = $entity_comparison->isMissingInTarget();
 
-                                $all_values_for_this_comparate          = $entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name);
-
                                 // get all unique values from $all_values_for_this_comparate, but prepend primitive type to value so null doesn't get casted to empty string and such
                                 $unique_values_for_this_comparate       = array_unique($entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name, true));
 
@@ -200,8 +198,7 @@ sort($unique_identifier_values, SORT_STRING);
                                 );
 
                                 $entity_comparison_has_only_one_unique_value_or_less_across_all_sites = (
-                                    count($unique_values_for_this_comparate) <= 1 &&
-                                    count($all_values_for_this_comparate) > 1
+                                    count($unique_values_for_this_comparate) <= 1
                                 );
 
                                 $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites;
