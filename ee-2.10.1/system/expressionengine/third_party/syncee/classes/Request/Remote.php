@@ -96,7 +96,7 @@ class Syncee_Request_Remote
 
         // get the data for the entity requested
 
-        $collection       = $entity->getCollection();
+        $collection       = $entity->queryDatabaseAndGenerateCollection();
         $data             = json_encode($collection->toArray(false));
 
         $needs_encryption = !$is_local_internal_request;
