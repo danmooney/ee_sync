@@ -203,7 +203,7 @@ $(function ($) {
             return;
         }
 
-        $($start)
+        $start
             .removeClass('resizing')
             .removeClass('no-select')
         ;
