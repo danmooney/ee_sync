@@ -136,12 +136,13 @@ $(function ($, undefined) {
         });
     });
 
-    function calculateAndGetMergeResult ($checkbox) {
+    function calculateAndGetMergeResult ($checkbox, triggeredByClickEvent) {
         var $cell = $checkbox.closest('td'),
             $row  = $cell.closest('tr'),
             colIdx = $cell.data('col-idx'),
             rowIdx = $row.data('row-idx'),
-            summaryRowIdx = $row.data('summary-row-idx') || rowIdx,
+            isSummaryRow = !$row.data('summary-row-idx'), // lack of data-summary-row-idx indicates summary row
+            summaryRowIdx = isSummaryRow ? rowIdx : $row.data('summary-row-idx'),
             $correspondingMergeCell = $cell.siblings('.merge-result'),
             $correspondingMergeCellSpan = $correspondingMergeCell.children('span'),
             isTargetField = $cell.hasClass('target-field'),
@@ -168,6 +169,11 @@ $(function ($, undefined) {
             checkboxesCheckedInDetailResultsByColIdx = [],
             i
         ;
+
+        if (!triggeredByClickEvent) {
+            Syncee.updateSummaryBasedOnRow($summaryRow, $summaryMergeCell.hasClass('positive'));
+            return $summaryMergeCell.hasClass('positive');
+        }
 
         // calculate number of checkboxes checked for this deatail result in each column
         for (i = 1; i < colIdxCount; i += 1) {
@@ -227,7 +233,8 @@ $(function ($, undefined) {
         $.each(checkboxesCheckedInDetailResultsByColIdx, function (idx, value) {
             var isTargetColIdx = idx === 1,
                 hasOnlyTwoColumns = $('.source-site-header').length === 1,
-                arrToPushOnto = isTargetColIdx ? summaryCellTargetHtmlArr : summaryCellSourceHtmlArr;
+                arrToPushOnto = isTargetColIdx ? summaryCellTargetHtmlArr : summaryCellSourceHtmlArr
+            ;
 
             if (typeof idx === 'undefined' || typeof value === 'undefined') {
                 return true;
@@ -256,7 +263,7 @@ $(function ($, undefined) {
         );
 
 
-        if (hasAllDetailedRowsChecked && hasSummaryCheckboxChecked) {
+        if (hasAllDetailedRowsChecked && triggeredByClickEvent && (!isSummaryRow || (isSummaryRow && hasSummaryCheckboxChecked))) {
             $summaryMergeCell.addClass('positive');
         } else {
             $summaryMergeCell.removeClass('positive');
@@ -315,7 +322,7 @@ $(function ($, undefined) {
 
         getSummaryCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx);
 
-        calculateAndGetMergeResult($checkbox);
+        calculateAndGetMergeResult($checkbox, isEvent);
 
         $colCheckboxes = resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
         $rowCheckboxes = resultCheckboxesByRowIdx[rowIdx];
@@ -364,10 +371,12 @@ $(function ($, undefined) {
             });
         }
 
+        calculateAndGetMergeResult($checkbox, isEvent);
+
         $displayOptionInputs.trigger('checkboxes:changed');
     }
 
-    function updatePayloadData () {
+    function updatePayloadData (triggerCalculationOfMergeResultAsAClickEvent) {
         var payloadData = {},
             $resultCheckboxes,
             $summaryCheckbox,
@@ -406,7 +415,7 @@ $(function ($, undefined) {
                 }
 
                 if (typeof mergeResultsBySummaryRowIdx[summaryRowIdx] === 'undefined') {
-                    mergeResultsBySummaryRowIdx[summaryRowIdx] = calculateAndGetMergeResult($summaryCheckbox);
+                    mergeResultsBySummaryRowIdx[summaryRowIdx] = calculateAndGetMergeResult($summaryCheckbox, triggerCalculationOfMergeResultAsAClickEvent);
                 }
 
                 uniqueIdentifierIsFullyMerged = !!mergeResultsBySummaryRowIdx[summaryRowIdx];
@@ -507,7 +516,7 @@ $(function ($, undefined) {
             }
         });
 
-        updatePayloadData();
+        updatePayloadData(true);
     }());
 
     $form.on('submit', function updatePayloadDataAndSubmit (e) {
