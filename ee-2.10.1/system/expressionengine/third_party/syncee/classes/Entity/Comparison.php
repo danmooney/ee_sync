@@ -101,9 +101,16 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
     private $_fix;
 
     /**
+     * TODO - these bools are simply for ease of inspection when debugging
      * @var bool
      */
     private $_column_is_ignored_in_comparison;
+
+    /**
+     * TODO - these bools are simply for ease of inspection when debugging
+     * @var bool
+     */
+    private $_column_is_hidden_in_comparison;
 
     public function __construct(Syncee_Entity_Abstract $source, Syncee_Entity_Abstract $target)
     {
@@ -144,13 +151,16 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         return $this;
     }
 
-    public function getSourceValue($type_prepended = false)
+    public function getSourceValue($prepend_type_and_coerce_to_string_if_necessary = false)
     {
-        if ($type_prepended) {
-            return gettype($this->_source_value) . $this->_source_value;
+        $source_value = $this->_source_value;
+
+        if ($prepend_type_and_coerce_to_string_if_necessary) {
+            $source_value_str = is_array($source_value) ? serialize($source_value) : $source_value;
+            return gettype($source_value) . $source_value_str;
         }
 
-        return $this->_source_value;
+        return $source_value;
     }
 
     public function setTargetValue($target_value)
@@ -159,13 +169,16 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         return $this;
     }
 
-    public function getTargetValue($type_prepended = false)
+    public function getTargetValue($prepend_type_and_coerce_to_string_if_necessary = false)
     {
-        if ($type_prepended) {
-            return gettype($this->_target_value) . $this->_target_value;
+        $target_value = $this->_target_value;
+
+        if ($prepend_type_and_coerce_to_string_if_necessary) {
+            $target_value_str = is_array($target_value) ? serialize($target_value) : $target_value;
+            return gettype($target_value) . $target_value_str;
         }
 
-        return $this->_target_value;
+        return $target_value;
     }
 
     /**
@@ -248,6 +261,18 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         }
 
         return $this->_column_is_ignored_in_comparison;
+    }
+
+    public function comparateColumnIsHiddenInComparison()
+    {
+        if (!isset($this->_column_is_hidden_in_comparison)) {
+            $this->_column_is_hidden_in_comparison = in_array(
+                $this->getComparateColumnName(),
+                $this->_source->getHiddenColumnsFromComparison()
+            );
+        }
+
+        return $this->_column_is_hidden_in_comparison;
     }
 
     public function comparateColumnIsPrimaryKey()
