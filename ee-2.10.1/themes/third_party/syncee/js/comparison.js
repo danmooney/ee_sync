@@ -170,11 +170,6 @@ $(function ($, undefined) {
             i
         ;
 
-        if (!triggeredByClickEvent) {
-            Syncee.updateSummaryBasedOnRow($summaryRow, $summaryMergeCell.hasClass('positive'));
-            return $summaryMergeCell.hasClass('positive');
-        }
-
         // calculate number of checkboxes checked for this deatail result in each column
         for (i = 1; i < colIdxCount; i += 1) {
             if (!getResultCheckboxesByColIdxAndSummaryRowIdx(i, summaryRowIdx).length) { // if no checkboxes in column, assign null
@@ -263,10 +258,12 @@ $(function ($, undefined) {
         );
 
 
-        if (hasAllDetailedRowsChecked && triggeredByClickEvent && (!isSummaryRow || (isSummaryRow && hasSummaryCheckboxChecked))) {
-            $summaryMergeCell.addClass('positive');
-        } else {
-            $summaryMergeCell.removeClass('positive');
+        if (triggeredByClickEvent) {
+            if (hasAllDetailedRowsChecked && (!isSummaryRow || (isSummaryRow && hasSummaryCheckboxChecked))) {
+                $summaryMergeCell.addClass('positive');
+            } else {
+                $summaryMergeCell.removeClass('positive');
+            }
         }
 
         Syncee.updateSummaryBasedOnRow($summaryRow, $summaryMergeCell.hasClass('positive'));
