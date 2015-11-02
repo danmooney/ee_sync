@@ -20,6 +20,10 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Entity_Channel_Field extends Syncee_Entity_Comparate_Abstract
 {
+    protected $_hidden_columns_in_comparison = array(
+        'field_formats',
+    );
+
     protected $_ignored_columns_in_comparison = array(
 
     );

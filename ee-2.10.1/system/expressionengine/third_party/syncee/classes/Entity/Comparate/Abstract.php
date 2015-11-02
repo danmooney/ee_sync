@@ -22,11 +22,18 @@ abstract class Syncee_Entity_Comparate_Abstract extends Syncee_Entity_Abstract i
 {
     protected $_active_record_class_name;
 
+    protected $_hidden_columns_in_comparison  = array();
+
     protected $_ignored_columns_in_comparison = array();
 
     public function getIgnoredColumnsFromComparison()
     {
         return $this->_ignored_columns_in_comparison;
+    }
+
+    public function getHiddenColumnsFromComparison()
+    {
+        return $this->_hidden_columns_in_comparison;
     }
 
     /**
