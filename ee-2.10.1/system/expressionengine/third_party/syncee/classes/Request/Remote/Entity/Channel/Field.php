@@ -29,13 +29,18 @@ class Syncee_Request_Remote_Entity_Channel_Field extends Syncee_Request_Remote_E
 
     public function queryDatabaseAndGenerateCollection()
     {
-        $fields = ee()->db->get('channel_fields');
-        $rows   = array();
+        $fields        = ee()->db->get('channel_fields')->result_array();
+        $field_formats = ee()->db->select('field_id, field_fmt')->from('field_formatting')->get()->result_array();
+        $rows          = array();
 
-        foreach ($fields->result_array() as $field) {
+        foreach ($fields as $field) {
             if ($field['site_id'] !== $this->getRequestedEeSiteId()) {
                 continue;
             }
+
+            $field['field_formats'] = array_filter($field_formats, function ($field_format) use ($field) {
+                return $field_format['field_id'] === $field['field_id'];
+            });
 
             $rows[] = $field;
         }
