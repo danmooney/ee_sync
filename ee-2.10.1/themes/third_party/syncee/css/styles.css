@@ -675,6 +675,10 @@
     padding-top: 7px;
 }
 
+#syncee-page .collection-table.comparison-collection-table .comparate-column-ignored {
+    /*display: none;*/
+}
+
 #syncee-page .collection-table.comparison-collection-table .comparate-column-ignored > * {
     /*background: #DADADA;*/
 }
@@ -777,6 +781,10 @@
 
 #syncee-page .summary-table tr > * {
     padding: 8px;
+}
+
+#syncee-page .summary-table tr td {
+    background: #ECECEC;
 }
 
 #syncee-page .site-name {

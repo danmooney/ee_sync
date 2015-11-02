@@ -36,7 +36,14 @@ Syncee.updateSummaryBasedOnRow = function ($row, isMerged) {
     $questionMark.changeQtipContent(questionMarkHtml);
 
     if (isMerged) {
-        $summarizationRow.removeClass('negative').addClass('positive');
+        $summarizationRow.removeClass('negative');
+
+        // if merge is all from target site, then leave row in 'unstyled' neutral state
+        if (mergeIsAllFromTargetSite) {
+            $summarizationRow.removeClass('positive');
+        } else {
+            $summarizationRow.addClass('positive');
+        }
     } else {
         $summarizationRow.removeClass('positive').addClass('negative');
     }
