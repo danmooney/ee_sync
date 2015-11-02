@@ -187,9 +187,14 @@ sort($unique_identifier_values, SORT_STRING);
                             foreach ($entity_comparate_column_names as $comparate_column_name):
                                 $col_idx = 0;
                                 $entity_comparison        = $entity_comparison_library_with_unique_identifier_value[0]->getComparisonEntityByComparateColumnName($comparate_column_name);
+
+                                if ($entity_comparison->comparateColumnIsHiddenInComparison()) {
+                                    continue;
+                                }
+
                                 $entity_missing_in_target = $entity_comparison->isMissingInTarget();
 
-                                // get all unique values from $all_values_for_this_comparate, but prepend primitive type to value so null doesn't get casted to empty string and such
+                                // get all unique values from this comparate, but prepend primitive type to value so null doesn't get casted to empty string and such
                                 $unique_values_for_this_comparate       = array_unique($entity_comparison_library_with_unique_identifier_value->getAllValuesByComparateColumnName($comparate_column_name, true));
 
                                 $comparate_output_count_by_unique_value = array_combine(
