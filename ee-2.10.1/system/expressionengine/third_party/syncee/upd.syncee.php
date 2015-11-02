@@ -4,6 +4,8 @@ require_once dirname(__FILE__) . '/_init.php';
 
 class Syncee_Upd
 {
+    private static $_latest_version;
+
     const VERSION = SYNCEE_VERSION;
 
     const MODULE_NAME = 'Syncee';
@@ -16,6 +18,17 @@ class Syncee_Upd
     public $version = self::VERSION;
 
     public $module_name = 'Syncee';  // distinguished from self::MODULE_NAME when free version is being used; this is the property EE looks for
+
+    public static function updateIsAvailable()
+    {
+        static::_getLatestVersion();
+        return static::$_latest_version !== SYNCEE_VERSION;
+    }
+
+    public static function getLatestVersion()
+    {
+        return static::$_latest_version;
+    }
 
     public function install()
     {
@@ -130,5 +143,19 @@ class Syncee_Upd
     public function update()
     {
         return true; // TODO
+    }
+
+    private static function _getLatestVersion()
+    {
+        if (!isset(static::$_latest_version)) {
+            // TODO - evaluate
+            if (SYNCEE_VERSION_FREE) {
+
+            } else {
+
+            }
+        }
+
+        return static::$_latest_version;
     }
 }

@@ -56,6 +56,7 @@ if ($ee_will_eval_templates) {
 
 // TODO - start tracking memory usage in tests/for the entire module in general while building
 defined('SYNCEE_VERSION')         or define('SYNCEE_VERSION',        '0.1.0');
+defined('SYNCEE_VERSION_FREE')    or define('SYNCEE_VERSION_FREE',   substr_count(SYNCEE_VERSION, 'free') === 1);
 defined('SYNCEE_EE_VERSION')      or define('SYNCEE_EE_VERSION',     defined('APP_VER') ? APP_VER : null);
 defined('SYNCEE_URL')             or define('SYNCEE_URL',            'http://www.sync-ee.com');
 defined('SYNCEE_PATH')            or define('SYNCEE_PATH',           dirname(__FILE__));
@@ -131,6 +132,6 @@ spl_autoload_register($module_autoloader);
 
 if (isset($idiom)) {
     Syncee_Lang::setLanguage($idiom);
-} elseif (is_object($GLOBALS['LANG']) && isset($GLOBALS['LANG']->user_lang)) {
+} elseif (isset($GLOBALS['LANG']) && is_object($GLOBALS['LANG']) && isset($GLOBALS['LANG']->user_lang)) {
     Syncee_Lang::setLanguage($GLOBALS['LANG']->user_lang);
 }
