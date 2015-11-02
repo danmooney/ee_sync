@@ -28,7 +28,7 @@ Syncee.updateSummaryBasedOnRow = function ($row, isMerged) {
             questionMarkHtml += 'requires no further input.  It will be merged from ' + mergeResultSummarySourceSiteNames.join(' ');
         }
     } else {
-        questionMarkHtml += 'still requires your input.  No action will be taken until all inputs are filled.';
+        questionMarkHtml += 'will not be merged in.  It still requires your input.  No action will be taken until all inputs are filled.';
     }
 
     $summarizationTableCell.html(questionMarkHtml);
