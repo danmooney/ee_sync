@@ -18,12 +18,12 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Mcp_Site_Group_Synchronize_Channel extends Syncee_Mcp_Abstract
+class Syncee_Mcp_Synchronize extends Syncee_Mcp_Abstract
 {
     /**
      * The GET method for viewing a synchronization_profile_id
      */
-    public function synchronizeSiteGroupChannels()
+    public function synchronize()
     {
         $synchronization_profile_id = ee()->input->get('synchronization_profile_id');
 
@@ -50,13 +50,12 @@ class Syncee_Mcp_Site_Group_Synchronize_Channel extends Syncee_Mcp_Abstract
         ), $this);
     }
 
-    /**
-     * Create a new synchronization profile and redirect to synchronizeSiteGroupChannels method with synchronization_profile_id PK appended to URL
-     * TODO - this perhaps needs to be ajaxified
-     */
-    public function synchronizeSiteGroupChannelsPOST()
+    public function synchronizePOST()
     {
         $site_group_id                   = ee()->input->get_post('site_group_id');
+        $comparator_library              = ee()->input->get_post('comparator_library');
+        $remote_entity                   = ee()->input->get_post('remote_entity');
+
         $site_group                      = Syncee_Site_Group::findByPk($site_group_id);
 
         if ($site_group->isEmptyRow()) {
@@ -65,20 +64,20 @@ class Syncee_Mcp_Site_Group_Synchronize_Channel extends Syncee_Mcp_Abstract
 
         $synchronization_profile_factory = new Syncee_Site_Synchronization_Profile_Factory(
             $site_group,
-            new Syncee_Entity_Channel_Collection_Library(),
-            new Syncee_Request_Remote_Entity_Channel()
+            new $comparator_library(),
+            new $remote_entity()
         );
 
         $synchronization_profile         = $synchronization_profile_factory->getNewSynchronizationProfile();
 
         $synchronization_profile->save();
 
-        Syncee_Helper::redirect('synchronizeSiteGroupChannels', array(
+        Syncee_Helper::redirect('synchronize', array(
             'synchronization_profile_id' => $synchronization_profile->getPrimaryKeyValues(true)
         ), $this, false);
     }
 
-    public function synchronizeSiteGroupChannelsFixPOST()
+    public function synchronizeFixPOST()
     {
         $synchronization_profile_id = ee()->input->get_post('synchronization_profile_id');
         $synchronization_profile    = Syncee_Site_Synchronization_Profile::findByPk($synchronization_profile_id);
@@ -106,8 +105,8 @@ class Syncee_Mcp_Site_Group_Synchronize_Channel extends Syncee_Mcp_Abstract
             throw $e;
         }
 
-        Syncee_Helper::redirect('synchronizeSiteGroupChannels', array(
+        Syncee_Helper::redirect('synchronize', array(
             'synchronization_profile_id' => $synchronization_profile->getPrimaryKeyValues(true)
-        ), $this, 'Site Group Channels have been merged into local site');
+        ), $this, 'Data has been merged into local site');
     }
 }

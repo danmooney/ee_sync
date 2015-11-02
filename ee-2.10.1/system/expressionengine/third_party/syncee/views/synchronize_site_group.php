@@ -36,13 +36,17 @@ $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
 <?php
     endif ?>
 <br><br>
-<form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronizeSiteGroupChannels', $syncee_site_group->getPrimaryKeyNamesValuesMap()) ?>">
+<form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronize', $syncee_site_group->getPrimaryKeyNamesValuesMap()) ?>">
     <button type="submit">Synchronize Channels</button>
+    <input type="hidden" name="comparator_library" value="Syncee_Entity_Channel_Collection_Library">
+    <input type="hidden" name="remote_entity" value="Syncee_Request_Remote_Entity_Channel">
     <?= Syncee_View::outputCsrfHiddenFormInputs() ?>
 </form>
 
-<form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronizeSiteGroupChannelFields', $syncee_site_group->getPrimaryKeyNamesValuesMap()) ?>">
+<form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronize', $syncee_site_group->getPrimaryKeyNamesValuesMap()) ?>">
     <button type="submit">Synchronize Channel Fields</button>
+    <input type="hidden" name="comparator_library" value="Syncee_Entity_Channel_Field_Collection_Library">
+    <input type="hidden" name="remote_entity" value="Syncee_Request_Remote_Entity_Channel_Field">
     <?= Syncee_View::outputCsrfHiddenFormInputs() ?>
 </form>
 
