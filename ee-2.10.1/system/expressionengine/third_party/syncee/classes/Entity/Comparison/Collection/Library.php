@@ -233,7 +233,7 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
         return $values;
     }
 
-    public function getAllComparateColumnNames()
+    public function getAllComparateColumnNames($ignore_hidden = true)
     {
         $comparate_column_names = array();
 
@@ -243,7 +243,11 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
          */
         foreach ($this->_collections as $collection) {
             foreach ($collection as $row) {
-                $comparate_column_names[] = $row->getComparateColumnName();
+                $should_be_added_to_comparate_column_names = !$ignore_hidden || !$row->comparateColumnIsHiddenInComparison();
+
+                if ($should_be_added_to_comparate_column_names) {
+                    $comparate_column_names[] = $row->getComparateColumnName();
+                }
             }
         }
 
