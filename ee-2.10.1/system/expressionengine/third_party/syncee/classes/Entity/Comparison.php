@@ -26,7 +26,7 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
     const RESULT_COMPARATE_VALUE_DIFFERS                       = 'RESULT_COMPARATE_VALUE_DIFFERS';
     const RESULT_COMPARATE_VALUE_SAME                          = 'RESULT_COMPARATE_VALUE_SAME';
 
-    private static $_comparison_results = array(
+    protected static $_comparison_results = array(
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET,
@@ -34,23 +34,23 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         self::RESULT_COMPARATE_VALUE_SAME
     );
 
-    private static $_sameness_comparison_results = array(
+    protected static $_sameness_comparison_results = array(
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET,
         self::RESULT_COMPARATE_VALUE_SAME
     );
 
-    private static $_difference_comparison_results = array(
+    protected static $_difference_comparison_results = array(
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET,
         self::RESULT_COMPARATE_VALUE_DIFFERS,
     );
 
-    private static $_missing_in_target_comparison_results = array(
+    protected static $_missing_in_target_comparison_results = array(
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_TARGET,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET,
     );
 
-    private static $_missing_in_source_comparison_results = array(
+    protected static $_missing_in_source_comparison_results = array(
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE,
         self::RESULT_COMPARATE_COLUMN_MISSING_IN_SOURCE_AND_TARGET,
     );
@@ -58,59 +58,59 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
     /**
      * @var string
      */
-    private $_comparison_result;
+    protected $_comparison_result;
 
     /**
      * @var Syncee_Entity_Comparate_Abstract
      */
-    private $_source;
+    protected $_source;
 
     /**
      * @var Syncee_Entity_Comparate_Abstract
      */
-    private $_target;
+    protected $_target;
 
     /**
      * @var mixed
      */
-    private $_source_value;
+    protected $_source_value;
 
     /**
      * @var bool
      */
-    private $_comparate_column_exists_in_source = true;
+    protected $_comparate_column_exists_in_source = true;
 
     /**
      * @var mixed
      */
-    private $_target_value;
+    protected $_target_value;
 
     /**
      * @var bool
      */
-    private $_comparate_column_exists_in_target = true;
+    protected $_comparate_column_exists_in_target = true;
 
     /**
      * @var string
      */
-    private $_comparate_column_name;
+    protected $_comparate_column_name;
 
     /**
      * @var Syncee_Entity_Comparison_Fix_Generic
      */
-    private $_fix;
+    protected $_fix = 'Syncee_Entity_Comparison_Fix_Generic';
 
     /**
      * TODO - these bools are simply for ease of inspection when debugging
      * @var bool
      */
-    private $_column_is_ignored_in_comparison;
+    protected $_column_is_ignored_in_comparison;
 
     /**
      * TODO - these bools are simply for ease of inspection when debugging
      * @var bool
      */
-    private $_column_is_hidden_in_comparison;
+    protected $_column_is_hidden_in_comparison;
 
     public function __construct(Syncee_Entity_Abstract $source, Syncee_Entity_Abstract $target)
     {
@@ -220,20 +220,6 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         return $this->_comparison_result;
     }
 
-    public function getFix()
-    {
-        if (!$this->_fix) {
-            $possible_fix_class_name = 'Syncee_Entity_Comparison_Fix_Field_' . $this->_comparate_column_name;
-            if (class_exists($possible_fix_class_name)) {
-                $this->_fix = new $possible_fix_class_name($this);
-            } else {
-                $this->_fix = new Syncee_Entity_Comparison_Fix_Generic($this);
-            }
-        }
-
-        return $this->_fix;
-    }
-
     public function getUniqueIdentifierValue()
     {
         return $this->_source->getUniqueIdentifierValue() ?: $this->_target->getUniqueIdentifierValue();
@@ -296,5 +282,18 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
     public function hasNoDifferingComparisons()
     {
         return in_array($this->getComparisonResult(), self::$_sameness_comparison_results);
+    }
+
+    /**
+     * @return Syncee_Entity_Comparison_Fix_Generic
+     */
+    public function getFix()
+    {
+        if (is_string($this->_fix)) {
+            $fix_class_name = $this->_fix;
+            $this->_fix     = new $fix_class_name($this);
+        }
+
+        return $this->_fix;
     }
 }
