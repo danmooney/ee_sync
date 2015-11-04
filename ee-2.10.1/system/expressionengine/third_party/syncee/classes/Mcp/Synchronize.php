@@ -27,6 +27,9 @@ class Syncee_Mcp_Synchronize extends Syncee_Mcp_Abstract
     {
         $synchronization_profile_id = ee()->input->get('synchronization_profile_id');
 
+        /**
+         * @var $synchronization_profile Syncee_Site_Synchronization_Profile
+         */
         $synchronization_profile    = Syncee_Site_Synchronization_Profile::findByPk($synchronization_profile_id);
 
         if ($synchronization_profile->isEmptyRow()) {
@@ -43,6 +46,9 @@ class Syncee_Mcp_Synchronize extends Syncee_Mcp_Abstract
             return $a->getSource()->getSite()->getPrimaryKeyValues(true) - $b->getSource()->getSite()->getPrimaryKeyValues(true);
         });
 
+        $page_title = sprintf('Synchronize %s', ucwords($synchronization_profile->getEntity()->getName()) . 's');
+        Syncee_View::setPageTitle($page_title, true);
+
         return Syncee_View::render(__FUNCTION__, array(
             'synchronization_profile'    => $synchronization_profile,
             'site_collection'            => $site_collection,
@@ -56,6 +62,9 @@ class Syncee_Mcp_Synchronize extends Syncee_Mcp_Abstract
         $comparator_library              = ee()->input->get_post('comparator_library');
         $remote_entity                   = ee()->input->get_post('remote_entity');
 
+        /**
+         * @var $site_group Syncee_Site_Group
+         */
         $site_group                      = Syncee_Site_Group::findByPk($site_group_id);
 
         if ($site_group->isEmptyRow()) {
