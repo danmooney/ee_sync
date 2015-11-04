@@ -52,35 +52,89 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
     public function execute()
     {
         /**
+         * @var $site Syncee_Site
          * @var $comparison_collection Syncee_Entity_Comparison_Collection
          */
-        $synchronization_profile       = $this->getSynchronizationProfile();
-        $decision_payload              = $this->getDecisionPayload();
+        $synchronization_profile          = $this->getSynchronizationProfile();
+        $decision_payload                 = $this->getDecisionPayload();
+        $unmodified_decision_payload_copy = $decision_payload;
+
         $site_collection               = $synchronization_profile->getSiteContainer();
         $comparison_collection_library = $synchronization_profile->getComparisonCollectionLibrary();
+        $all_comparate_column_names    = $comparison_collection_library->getAllComparateColumnNames(false);
         $target_site                   = $comparison_collection_library->getTargetSite();
         $unique_identifier_key         = $comparison_collection_library->getUniqueIdentifierKey();
 
+        // assign values from decision payload's key/site id pairs
         foreach ($decision_payload as $unique_identifier_value => $row) {
-            foreach ($row as $col_name => $site_id) {
-                $site = $site_collection->filterByCondition(array('site_id' => $site_id), true);
+            foreach ($all_comparate_column_names as $col_name) {
+                $site_id                                 = isset($row[$col_name]) ? $row[$col_name] : null;
+                $comparate_value_to_assign               = null;
+                $comparate_value_is_missing_from_payload = !$site_id;
 
-                if (!$site) {
-                    continue; // TODO - throw
+                // if comparate value is missing from payload, then determine the most appropriate value from the comparison library by evaluating frequency of site ids in decision payload
+                if ($comparate_value_is_missing_from_payload) {
+                    $site_ids_in_decision_payload = array_count_values($unmodified_decision_payload_copy[$unique_identifier_value]);
+                    arsort($site_ids_in_decision_payload, SORT_NUMERIC);
+                    $site_ids_in_decision_payload = array_keys($site_ids_in_decision_payload);
+
+                    foreach ($site_ids_in_decision_payload as $site_id) {
+                        $site = $site_collection->filterByCondition(array('site_id' => $site_id), true);
+
+                        if (!$site) {
+                            continue; // TODO - throw
+                        }
+
+                        $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSite($site);
+
+                        if (!$comparison_collection) {
+                            continue;
+                        }
+
+                        $comparison_entity         = $comparison_collection->getComparisonEntityByComparateColumnName($col_name);
+                        $comparate_value_to_assign = $comparison_entity->getSourceValue();
+
+                        break;
+                    }
+                } else {
+                    $site = $site_collection->filterByCondition(array('site_id' => $site_id), true);
+
+                    if (!$site) {
+                        continue; // TODO - throw
+                    }
+
+                    $comparate_entity = $comparison_collection_library->getComparateEntityBySiteAndUniqueIdentifierKeyAndValue($site, $unique_identifier_key, $unique_identifier_value);
+
+                    if (!$comparate_entity) {
+                        continue; // TODO - throw
+                    }
+
+                    if (!$comparate_value_is_missing_from_payload) {
+                        if (!$comparate_entity->existsInRow($col_name)) {
+                            continue; // TODO - throw
+                        }
+
+                        $comparate_value_to_assign = $comparate_entity->$col_name;
+                    }
+
+                    $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSite($site);
+
+                    if ($comparate_value_is_missing_from_payload && !$comparison_collection) {
+                        $comparison_collection = $comparison_collection_library[0];
+                    }
+
+                    $comparison_entity = $comparison_collection->getComparisonEntityByComparateColumnName($col_name);
                 }
 
-                $comparate_entity = $comparison_collection_library->getComparateEntityBySiteAndUniqueIdentifierKeyAndValue($site, $unique_identifier_key, $unique_identifier_value);
-
-                if (!$comparate_entity) {
-                    continue; // TODO - throw
-                } elseif (!$comparate_entity->existsInRow($col_name)) {
-                    continue; // TODO - throw
+                if (isset($comparison_entity)) {
+                    $comparison_entity->getFix()->modifyComparateValueAndOrPerformMiscTasksByDecisionPayload($comparate_value_to_assign, $decision_payload);
                 }
 
-                $decision_payload[$unique_identifier_value][$col_name] = $comparate_entity->$col_name;
+                $decision_payload[$unique_identifier_value][$col_name] = $comparate_value_to_assign;
             }
         }
 
+        // save/update
         foreach ($decision_payload as $unique_identifier_value => $row) {
             $active_record_row = $comparate_entity->getActiveRecord();
 
