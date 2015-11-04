@@ -49,13 +49,13 @@ class Test_Comparison_Channel_Field extends Syncee_Unit_Test_Case_Abstract
 
     public function testTwoSitesWithCompletelySimilarChannelFieldsGivesEmptyComparisonLibrary()
     {
-        $channel_field_comparison_library = $this->_site_collection->getChannelFieldComparisonCollectionLibrary();
+        $channel_field_comparison_library = $this->_site_collection->getComparisonCollectionLibrary(new Syncee_Entity_Channel_Field_Collection_Library(), new Syncee_Request_Remote_Entity_Channel_Field());
         $this->assertTrue($channel_field_comparison_library->hasNoDifferingComparisons(), 'Two sites have no comparisons; they are the same');
     }
 
     public function testTwoSitesWithDifferingFieldLabelGivesOneResultInComparisonLibrary()
     {
-        $channel_field_comparison_library = $this->_site_collection->getChannelFieldComparisonCollectionLibrary();
+        $channel_field_comparison_library = $this->_site_collection->getComparisonCollectionLibrary(new Syncee_Entity_Channel_Field_Collection_Library(), new Syncee_Request_Remote_Entity_Channel_Field());
 
         $differing_channel_field_comparison_library = $channel_field_comparison_library->getDifferingComparisonCollectionLibrary();
 
