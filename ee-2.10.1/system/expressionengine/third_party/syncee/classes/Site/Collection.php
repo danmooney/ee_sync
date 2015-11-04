@@ -87,52 +87,5 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract implements Synce
         return $entity_comparison_library;
     }
 
-    /**
-     * TODO - deprecate... but how?  This function has some added functionality that separates it from \Syncee_Site_Collection::getComparisonCollectionLibrary.  Maybe add function on arguments passed to it?
-     * @deprecated
-     * @return Syncee_Entity_Comparison_Collection_Library
-     * @throws Syncee_Exception
-     */
-    public function getChannelFieldComparisonCollectionLibrary()
-    {
-        $site_channel_field_library    = new Syncee_Entity_Channel_Field_Collection_Library();
-
-        // get channels/fields first
-        $channel_remote_request_entity = new Syncee_Request_Remote_Entity_Channel();
-
-        /**
-         * @var $row Syncee_Site
-         * @var $channel_collection Syncee_Entity_Channel_Collection
-         * @var $channel_entity Syncee_Entity_Channel
-         */
-        foreach ($this->_rows as $row) {
-            $request            = new Syncee_Request();
-            $request_log        = $row->isRemote() ? new Syncee_Site_Request_Log() : null;
-            $response           = $request->makeEntityCallToSite($row, $channel_remote_request_entity, $request_log);
-            $channel_collection = $response->getResponseDataDecodedAsCollection();
-
-            // get fields from channel collection and add to channel field collection
-
-            foreach ($channel_collection as $channel_entity) {
-                $channel_field_collection = $channel_entity->getFieldCollection();
-                $channel_field_collection->setSite($row);
-
-                $row->last_request_log = $request_log;
-
-                if (!$site_channel_field_library->collectionAlreadyExistsInLibrary($channel_field_collection)) {
-                    $site_channel_field_library->appendToLibraryAsCollection($channel_field_collection);
-                }
-
-                if ($request_log) {
-                    $this->_request_log_collection->appendToCollectionAsEntity($request_log);
-                }
-            }
-        }
-
-        $site_channel_field_comparison_library = $site_channel_field_library->compareCollections();
-
-        return $site_channel_field_comparison_library;
-    }
-
     // TODO - implement getSynchronizationProfileCollection
 }
