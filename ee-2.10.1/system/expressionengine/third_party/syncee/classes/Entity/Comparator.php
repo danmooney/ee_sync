@@ -42,8 +42,8 @@ class Syncee_Entity_Comparator implements Syncee_Entity_Comparator_Interface
         $target_data = $target->toArray();
 
         foreach ($source_data as $key => $value_in_source) {
-            $comparison = new Syncee_Entity_Comparison($source, $target);
-            $comparison->setComparateColumnName($key)->setSourceValue($value_in_source);
+            $comparison = $this->_getComparisonEntityBasedOnSourceAndTargetAndComparateColumnName($source, $target, $key);
+            $comparison->setSourceValue($value_in_source);
 
             $column_exists_in_target = array_key_exists($key, $target_data);
 
@@ -69,8 +69,8 @@ class Syncee_Entity_Comparator implements Syncee_Entity_Comparator_Interface
                 continue;
             }
 
-            $comparison = new Syncee_Entity_Comparison($source, $target);
-            $comparison->setComparateColumnName($key)->setTargetValue($value_in_target);
+            $comparison = $this->_getComparisonEntityBasedOnSourceAndTargetAndComparateColumnName($source, $target, $key);
+            $comparison->setTargetValue($value_in_target);
 
             $comparison->setComparateColumnExistsInSource(false);
 
@@ -80,5 +80,40 @@ class Syncee_Entity_Comparator implements Syncee_Entity_Comparator_Interface
         }
 
         return $comparison_collection;
+    }
+
+    /**
+     * @param Syncee_Entity_Abstract $source
+     * @param Syncee_Entity_Abstract $target
+     * @param string $comparate_column_name
+     * @return Syncee_Entity_Comparison
+     */
+    private function _getComparisonEntityBasedOnSourceAndTargetAndComparateColumnName(Syncee_Entity_Abstract $source, Syncee_Entity_Abstract $target, $comparate_column_name)
+    {
+        $comparison_class_name = 'Syncee_Entity_Comparison';
+
+
+        $comparate_column_name_words = implode('', array_map('ucwords', explode('_', $comparate_column_name)));
+
+        // construct possible comparison class name override
+        $possible_comparison_class_name = (
+            $comparison_class_name
+        .   '_'
+        .   preg_replace('#^' . SYNCEE_MODULE_NAME . '#', '', str_replace('_', '', $source->getActiveRecordClassName()))
+        .   '_Column_'
+        .   $comparate_column_name_words
+        );
+
+        if (class_exists($possible_comparison_class_name)) {
+            $comparison_class_name = $possible_comparison_class_name;
+        }
+
+        /**
+         * @var $comparison_entity Syncee_Entity_Comparison
+         */
+        $comparison_entity = new $comparison_class_name($source, $target);
+        $comparison_entity->setComparateColumnName($comparate_column_name);
+
+        return $comparison_entity;
     }
 }
