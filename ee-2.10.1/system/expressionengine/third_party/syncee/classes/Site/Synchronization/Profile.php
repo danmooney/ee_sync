@@ -178,7 +178,7 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
             $request_log_collection          = $this->getRequestLogCollection();
             $site_container                  = $this->getSiteContainer();
             $entity                          = $this->getEntity();
-            $comparator_collection_library   = $entity->queryDatabaseAndGenerateCollection()->getComparatorCollectionLibrary();
+            $comparator_collection_library   = $entity->getEmptyCollectionInstance()->getComparatorCollectionLibrary();
 
             $local_site_is_in_request_log_collection = false;
 
