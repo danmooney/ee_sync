@@ -83,8 +83,18 @@ class Syncee_View
         );
     }
 
-    public static function setPageTitle($title)
+    public static function setPageTitle($title, $prevent_override = false)
     {
+        static $called_with_override_prior_and_cannot_be_overridden = false;
+
+        if ($called_with_override_prior_and_cannot_be_overridden) {
+            return;
+        }
+
+        if ($prevent_override) {
+            $called_with_override_prior_and_cannot_be_overridden = true;
+        }
+
         $ee = ee();
 
         if (isset($ee->cp) && method_exists($ee->cp, 'set_variable')) {
