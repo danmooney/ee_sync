@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Entity_Comparison_Fix_Field_Channel_Id extends Syncee_Entity_Comparison_Fix_Generic
+class Syncee_Entity_Comparison_ChannelField_Column_FieldFormats extends Syncee_Entity_Comparison
 {
-
+    protected $_fix = 'Syncee_Entity_Comparison_Fix_ChannelField_Column_FieldFormats';
 }
