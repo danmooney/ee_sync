@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Mcp_Synchronize extends Syncee_Mcp_Abstract
+class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
 {
     /**
      * The GET method for viewing a synchronization_profile_id
