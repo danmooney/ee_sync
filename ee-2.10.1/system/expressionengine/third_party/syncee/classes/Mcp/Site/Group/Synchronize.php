@@ -89,6 +89,10 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
     public function synchronizeFixPOST()
     {
         $synchronization_profile_id = ee()->input->get_post('synchronization_profile_id');
+
+        /**
+         * @var $synchronization_profile Syncee_Site_Synchronization_Profile
+         */
         $synchronization_profile    = Syncee_Site_Synchronization_Profile::findByPk($synchronization_profile_id);
 
         if ($synchronization_profile->isEmptyRow()) {
@@ -114,8 +118,13 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
             throw $e;
         }
 
-        Syncee_Helper::redirect('synchronize', array(
-            'synchronization_profile_id' => $synchronization_profile->getPrimaryKeyValues(true)
-        ), $this, 'Data has been merged into local site');
+        Syncee_Helper::redirect(
+            'synchronize',
+            array(
+                'synchronization_profile_id' => $synchronization_profile->getPrimaryKeyValues(true)
+            ),
+            $this,
+            sprintf('%s have been merged into local site', ucwords($synchronization_profile->getEntity()->getName()) . 's')
+        );
     }
 }
