@@ -94,6 +94,7 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
                         $comparison_entity         = $comparison_collection->getComparisonEntityByComparateColumnName($col_name);
                         $comparate_value_to_assign = $comparison_entity->getSourceValue();
 
+                        $unmodified_decision_payload_copy[$unique_identifier_value][$col_name] = $site_id;
                         break;
                     }
                 } else {
@@ -127,7 +128,11 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
                 }
 
                 if (isset($comparison_entity)) {
-                    $comparison_entity->getFix()->modifyComparateValueAndOrPerformMiscTasksByDecisionPayload($comparate_value_to_assign, $decision_payload);
+                    $comparison_entity
+                        ->getFix()
+                        ->modifyComparateValueByDecisionPayloadBeforeSave($comparate_value_to_assign, $decision_payload)
+                        ->performMiscTasksByDecisionPayloadBeforeSave($comparate_value_to_assign, $decision_payload)
+                    ;
                 }
 
                 $decision_payload[$unique_identifier_value][$col_name] = $comparate_value_to_assign;
@@ -135,6 +140,8 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
         }
 
         // save/update
+        ee()->db->trans_begin();
+
         foreach ($decision_payload as $unique_identifier_value => $row) {
             $active_record_row = $comparate_entity->getActiveRecord();
 
@@ -146,14 +153,31 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
             // find existing active record row in target by unique identifier key/value pair
             $collection = $active_record_row::findAllByCondition(array($unique_identifier_key => $unique_identifier_value));
 
-            // if active record row exists, then overwrite so we can reassign proper primary key values from target
+            // if active record row exists, then overwrite so we can reassign proper primary key values from target and then implicitly perform an update when calling save method
             if (count($collection)) {
                 $active_record_row = $collection[0];
             }
 
-            $active_record_row->assign($row);
+            $active_record_row
+                ->assign($row)
+                ->save()
+            ;
 
-            $active_record_row->save();
+            // call aftersave methods on comparison entities
+            $unmodified_site_id_decision_payload_for_this_unique_identifier_value = $unmodified_decision_payload_copy[$unique_identifier_value];
+
+            foreach ($row as $col_name => $value) {
+                $site_id = $unmodified_site_id_decision_payload_for_this_unique_identifier_value[$col_name];
+
+                $site = $site_collection->filterByCondition(array('site_id' => $site_id), true);
+
+                $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSite($site);
+
+                $comparison_entity = $comparison_collection->getComparisonEntityByComparateColumnName($col_name);
+                $comparison_entity->getFix()->performMiscTasksByDecisionPayloadAndActiveRecordRowAfterSave($value, $decision_payload, $active_record_row);
+            }
         }
+
+        ee()->db->trans_commit();
     }
 }
