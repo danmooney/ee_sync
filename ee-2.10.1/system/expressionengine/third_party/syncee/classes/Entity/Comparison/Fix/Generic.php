@@ -30,9 +30,21 @@ class Syncee_Entity_Comparison_Fix_Generic extends Syncee_Entity_Comparison_Fix_
         $this->_comparison = $comparison;
     }
 
-    public function modifyComparateValueAndOrPerformMiscTasksByDecisionPayload(&$comparate_value, array $decision_payload)
+    public function modifyComparateValueByDecisionPayloadBeforeSave(&$comparate_value, array $decision_payload)
     {
         // nothing to do in generic fixes; leave comparate value as is and perform no tasks
-        return;
+        return $this;
+    }
+
+    public function performMiscTasksByDecisionPayloadBeforeSave($comparate_value, array $decision_payload)
+    {
+        // nothing to do in generic fixes; leave comparate value as is and perform no tasks
+        return $this;
+    }
+
+    public function performMiscTasksByDecisionPayloadAndActiveRecordRowAfterSave($comparate_value, array $decision_payload, Syncee_ActiveRecord_Abstract $active_record_row)
+    {
+        // nothing to do in generic fixes; leave comparate value as is and perform no tasks
+        return $this;
     }
 }

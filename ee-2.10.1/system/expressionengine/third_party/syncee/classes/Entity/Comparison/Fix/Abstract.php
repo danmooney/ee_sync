@@ -20,5 +20,9 @@ if (!defined('SYNCEE_PATH')) {
 
 abstract class Syncee_Entity_Comparison_Fix_Abstract
 {
-    abstract public function modifyComparateValueAndOrPerformMiscTasksByDecisionPayload(&$comparate_value, array $decision_payload);
+    abstract public function modifyComparateValueByDecisionPayloadBeforeSave(&$comparate_value, array $decision_payload);
+
+    abstract public function performMiscTasksByDecisionPayloadBeforeSave($comparate_value, array $decision_payload);
+
+    abstract public function performMiscTasksByDecisionPayloadAndActiveRecordRowAfterSave($comparate_value, array $decision_payload, Syncee_ActiveRecord_Abstract $active_record_row);
 }
