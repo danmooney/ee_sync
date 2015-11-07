@@ -211,6 +211,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
     /**
      * Assign data to active record model via enumeration
      * @param array $row
+     * @return self
      */
     public function assign(array $row)
     {
@@ -261,6 +262,8 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
                 }
             }
         }
+
+        return $this;
     }
 
     public function hasColumn($column)
