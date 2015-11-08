@@ -21,4 +21,6 @@ if (!defined('SYNCEE_PATH')) {
 interface Syncee_Site_Container_Interface
 {
     public function getSiteCollection();
+
+    public function getPrimaryKeyValues();
 }

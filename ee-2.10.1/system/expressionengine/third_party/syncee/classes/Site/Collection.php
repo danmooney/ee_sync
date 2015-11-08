@@ -44,6 +44,17 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract implements Synce
     }
 
     /**
+     * Added to conform to Syncee_Site_Container_Interface
+     * This collection is not part of any site group and should return null, unlike Syncee_Site_Group::getPrimaryKeyValues
+     * @return null
+     * @see Syncee_Site_Group::getPrimaryKeyValues
+     */
+    public function getPrimaryKeyValues()
+    {
+        return null;
+    }
+
+    /**
      * @param Syncee_Collection_Library_Comparator_Abstract $comparator_library
      * @param Syncee_Request_Remote_Entity_Chain_Interface $remote_entity
      * @return Syncee_Entity_Comparison_Collection_Library
@@ -86,6 +97,4 @@ class Syncee_Site_Collection extends Syncee_Collection_Abstract implements Synce
 
         return $entity_comparison_library;
     }
-
-    // TODO - implement getSynchronizationProfileCollection
 }
