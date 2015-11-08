@@ -26,8 +26,8 @@ class Syncee_Form_Site_Local extends Syncee_Form_Abstract
             'instructions' => 'In the OFF position, ABSOLUTELY NO remote sites are allowed to call this local site; the response will be 403 Forbidden.  Set to "ON" to allow some or all remote sites to call this local site (depending on the settings below).',
             'type' => 'dropdown',
             'options' => array(
-                0 => 'Off',
-                1 => 'On'
+                0 => 'OFF',
+                1 => 'ON'
             ),
         ),
         'ip_whitelist' => array(
