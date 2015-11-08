@@ -23,14 +23,14 @@ class Syncee_Table_Column_Value_Formatter_Link extends Syncee_Table_Column_Value
     /**
      * @var string
      */
-    private $_method;
+    protected $_method;
 
     /**
      * @var Syncee_ActiveRecord_Abstract
      */
-    private $_row_override;
+    protected $_row_override;
 
-    private $_extra_keys_to_create_module_cp_url_from;
+    protected $_extra_keys_to_create_module_cp_url_from;
 
     public function __construct($method, Syncee_ActiveRecord_Abstract $row_override = null, array $extra_keys_to_create_module_cp_url_from = array())
     {
