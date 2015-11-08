@@ -123,6 +123,7 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
     public function setSiteContainer(Syncee_Site_Container_Interface $site_container)
     {
         $this->_site_container = $site_container;
+        $this->site_group_id   = $site_container->getPrimaryKeyValues(true);
         return $this;
     }
 
