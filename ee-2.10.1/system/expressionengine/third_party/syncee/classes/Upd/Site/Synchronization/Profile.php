@@ -32,6 +32,11 @@ class Syncee_Upd_Site_Synchronization_Profile extends Syncee_Upd_Abstract
             'unsigned'       => true,
             'null'           => false,
         ),
+        'site_group_id' => array(
+            'type'           => 'INT',
+            'unsigned'       => true,
+            'null'           => true,
+        ),
         'create_datetime' => array(
             'type'  => 'DATETIME',
             'null'  => false,
