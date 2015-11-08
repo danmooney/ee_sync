@@ -76,6 +76,8 @@
 
     background: #F3F3F3;
     color: #000;
+    text-shadow: none;
+    border: 0;
 }
 
 #syncee a.btn-secondary.active {
