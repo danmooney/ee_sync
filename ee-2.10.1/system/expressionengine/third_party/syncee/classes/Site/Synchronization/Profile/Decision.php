@@ -140,8 +140,6 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
         }
 
         // save/update
-        ee()->db->trans_begin();
-
         foreach ($decision_payload as $unique_identifier_value => $row) {
             $active_record_row = $comparate_entity->getActiveRecord();
 
@@ -178,6 +176,6 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
             }
         }
 
-        ee()->db->trans_commit();
+
     }
 }

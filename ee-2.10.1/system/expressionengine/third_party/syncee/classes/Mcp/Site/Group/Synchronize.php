@@ -110,10 +110,22 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
 
         $synchronization_profile_decision->save();
 
-        // Execute the merge!
+        // Execute the merge and update site group last_sync_datetime
         try {
+            ee()->db->trans_begin();
+
             $synchronization_profile_decision->execute();
+            if (($site_group = Syncee_Site_Group::findByPk($synchronization_profile_decision->getSynchronizationProfile()->site_group_id)) &&
+                !$site_group->isEmptyRow()
+            ) {
+                $site_group->last_sync_datetime = gmdate('Y-m-d H:i:s');
+                $site_group->save();
+            }
+
+            ee()->db->trans_commit();
         } catch (Exception $e) {
+            ee()->db->trans_rollback();
+
             // TODO
             throw $e;
         }
