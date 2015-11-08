@@ -79,6 +79,57 @@ class Test_Remote_Api_Call_Authorization extends Syncee_Unit_Test_Case_Abstract
         $this->assertTrue(isset($decoded_response['code']) && $decoded_response['code'] === 200, 'HTTP code is in JSON response and is 200: %s');
     }
 
+    public function testRemoteApiCallsWithAndWithoutBasicAuth()
+    {
+        /**
+         * @var $remote_site Syncee_Site
+         */
+        $request     = $this->_request;
+        $remote_site = $this->_remote_site;
+
+        $htpasswd_pathname = SYNCEE_PATH_TESTS . '/configs/.htpasswd';
+        exec("htpasswd -bc $htpasswd_pathname testing here");
+
+        $remote_site_host = parse_url($remote_site->site_url, PHP_URL_HOST);
+
+        // make htaccess with reference to htpasswd
+        $htaccess_pathname = FCPATH . '/.htaccess';
+        $htaccess_contents = <<<EOD
+SetEnvIfNoCase Host ^$remote_site_host$ is_on_restricted_site
+Authtype Basic
+AuthName "Test!"
+AuthUserFile $htpasswd_pathname
+Require valid-user
+Deny from env=is_on_restricted_site
+Satisfy any
+EOD;
+
+        file_put_contents($htaccess_pathname, $htaccess_contents);
+
+        $response = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
+
+        // no basic auth; this should return 401 Unauthorized
+        $this->assertEqual(401, $response->getStatusCode(), 'HTTP Response status code is 401: %s');
+
+        // add basic auth now and see if we can get in OK
+        $remote_site->basic_http_auth = 'testing:here';
+        $remote_site->save();
+
+        $response = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
+
+        $this->assertJson($response->getRawResponse());
+        $this->assertEqual(200, $response->getStatusCode(), 'HTTP Response status code is 200: %s');
+
+        // use bogus basic auth
+        $remote_site->basic_http_auth = 'bogus:auth';
+        $remote_site->save();
+
+        $response = $request->makeEntityCallToSite($remote_site, new Syncee_Request_Remote_Entity_Channel(), new Syncee_Site_Request_Log());
+        $this->assertEqual(401, $response->getStatusCode(), 'HTTP Response status code is 401: %s');
+
+        unlink($htaccess_pathname);
+    }
+
     public function testRemoteApiCallFailsWithWhitelistThatHasFailingIp()
     {
         /**
