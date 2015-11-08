@@ -63,6 +63,11 @@ class Syncee_Upd_Site extends Syncee_Upd_Abstract
             'constraint'     => 1000,
             'null'           => true
         ),
+        'basic_http_auth'  => array(
+            'type'           => 'VARCHAR',
+            'constraint'     => 255,
+            'null'           => true
+        ),
         'public_key' => array(
             'type'     => 'text',
             'null'     => false

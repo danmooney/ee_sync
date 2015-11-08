@@ -36,6 +36,10 @@ class Syncee_Form_Site_Remote extends Syncee_Form_Abstract
                 1 => 'Yes'
             ),
         ),
+        'basic_http_auth' => array(
+            'label'        => 'Basic HTTP Auth',
+            'instructions' => 'If server is protected against Basic HTTP Authorization, enter the username and password separated by a colon (":") in order to access it'
+        ),
     );
 
     protected $_button_text_by_method = array(
