@@ -53,9 +53,13 @@ class Syncee_Request implements Syncee_Request_Interface
         $ch = $this->_curl_handle = new Syncee_Helper_Curl($remote_site_url);
         $ch->setOpt(CURLOPT_RETURNTRANSFER, true);
         $ch->setOpt(CURLOPT_FOLLOWLOCATION, true);
+        $ch->setOpt(CURLOPT_MAXREDIRS, 10);
         $ch->setOpt(CURLOPT_CONNECTTIMEOUT_MS, 5000);
         $ch->setOpt(CURLOPT_CONNECTTIMEOUT, 10000);
 
+        if ($site->basic_http_auth) {
+            $ch->setOpt(CURLOPT_USERPWD, $site->basic_http_auth);
+        }
 
         $this->_response = $response = new Syncee_Response($this, $site, $entity);
 
