@@ -73,6 +73,19 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
     public function setEntityName($entity_name)
     {
         $this->_entity_name = $entity_name;
+
+        if (!is_string($entity_name)) {
+            // Set string value on self::$entity_class_name (column in DB table)
+            $this->entity_class_name = get_class($entity_name);
+        }
+
+        return $this;
+    }
+
+    public function setComparatorLibrary(Syncee_Collection_Library_Comparator_Abstract $comparator_library)
+    {
+        $this->comparator_library_class_name = get_class($comparator_library);
+        return $this;
     }
 
     /**
