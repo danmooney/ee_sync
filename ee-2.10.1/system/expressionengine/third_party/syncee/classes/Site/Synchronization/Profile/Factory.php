@@ -53,7 +53,7 @@ class Syncee_Site_Synchronization_Profile_Factory
         $site_group                    = $this->_site_group;
         $site_collection               = $site_group->getSiteCollection();
 
-        $channel_comparison_library    = $site_collection->getComparisonCollectionLibrary($this->_comparator_library, $this->_remote_entity);
+        $comparison_library            = $site_collection->getComparisonCollectionLibrary($this->_comparator_library, $this->_remote_entity);
 
         $synchronization_profile       = new Syncee_Site_Synchronization_Profile();
 
@@ -62,7 +62,9 @@ class Syncee_Site_Synchronization_Profile_Factory
         $synchronization_profile
             ->setRequestLogCollection($site_collection->getRequestLogCollection())
             ->setSiteContainer($site_group)
-            ->setComparisonCollectionLibrary($channel_comparison_library)
+            ->setEntityName($this->_remote_entity)
+            ->setComparatorLibrary($this->_comparator_library)
+            ->setComparisonCollectionLibrary($comparison_library)
         ;
 
         return $synchronization_profile;
