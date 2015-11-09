@@ -32,10 +32,22 @@ class Syncee_Upd_Site_Synchronization_Profile extends Syncee_Upd_Abstract
             'unsigned'       => true,
             'null'           => false,
         ),
+
+        // TODO - add index on site_group_id/entity_class_name/comparator_library_class_name
         'site_group_id' => array(
             'type'           => 'INT',
             'unsigned'       => true,
-            'null'           => true,
+            'null'           => false,
+        ),
+        'entity_class_name' => array(
+            'type'       => 'VARCHAR',
+            'constraint' => 100,
+            'null'       => false,
+        ),
+        'comparator_library_class_name' => array(
+            'type'       => 'VARCHAR',
+            'constraint' => 100,
+            'null'       => false,
         ),
         'create_datetime' => array(
             'type'  => 'DATETIME',
