@@ -137,9 +137,4 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
         Syncee_Helper::redirect('viewSiteGroupList', array(), $this);
     }
-
-    public function viewSiteGroupSynchronizationLog()
-    {
-
-    }
 }
