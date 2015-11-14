@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Field Group Clarifier Extension Class
+ *
+ * @package   FieldGroupClarifier
+ * @author    Dan Mooney <dan.r.mooney@gmail.com>
+ * @copyright Copyright (c) Dan Mooney
+ */
 class Field_Group_Clarifier_Ext
 {
     private static $_channel_field_group_name;
@@ -8,7 +15,7 @@ class Field_Group_Clarifier_Ext
 	public $version          = '1.0';
 	public $description      = 'Shows the field group you are working on while adding or updating channel fields.';
 	public $settings_exist   = 'n';
-	public $docs_url         = '';
+	public $docs_url         = 'https://devot-ee.com/add-ons/field-group-clarifier';
 
     public function activate_extension()
     {
@@ -67,6 +74,12 @@ class Field_Group_Clarifier_Ext
 	    }
 
 	    $channel_field_group_name = self::$_channel_field_group_name = ee()->db->select('group_name')->from('field_groups')->where('group_id', $group_id)->get()->row('group_name');
+
+        if (!$channel_field_group_name) {
+            // if channel field group name is missing for some reason, set the static variable so we don't try again
+            self::$_channel_field_group_name = '';
+            return $parameters;
+        }
 
 	    $ee = ee();
 
