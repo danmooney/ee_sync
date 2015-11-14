@@ -12,7 +12,7 @@ class Field_Group_Clarifier_Ext
     private static $_channel_field_group_name;
 
     public $name             = 'Field Group Clarifier';
-	public $version          = '1.0';
+	public $version          = '1.0.0';
 	public $description      = 'Shows the field group you are working on while adding or updating channel fields.';
 	public $settings_exist   = 'n';
 	public $docs_url         = 'https://devot-ee.com/add-ons/field-group-clarifier';
@@ -73,15 +73,15 @@ class Field_Group_Clarifier_Ext
 		    return $parameters;
 	    }
 
-	    $channel_field_group_name = self::$_channel_field_group_name = ee()->db->select('group_name')->from('field_groups')->where('group_id', $group_id)->get()->row('group_name');
+        $ee = ee();
+
+	    $channel_field_group_name = self::$_channel_field_group_name = $ee->db->select('group_name')->from('field_groups')->where('group_id', $group_id)->get()->row('group_name');
 
         if (!$channel_field_group_name) {
             // if channel field group name is missing for some reason, set the static variable so we don't try again
             self::$_channel_field_group_name = '';
             return $parameters;
         }
-
-	    $ee = ee();
 
         if (isset($_GET['field_id'])) {
             $field_id = $_GET['field_id'];
@@ -109,11 +109,14 @@ class Field_Group_Clarifier_Ext
             $cp_page_title_not_set_yet_and_will_most_likely_be_overwritten_later = !isset($ee->view->cp_page_title) || empty($ee->view->cp_page_title);
 
             if ($cp_page_title_not_set_yet_and_will_most_likely_be_overwritten_later) {
-                $lang = ee()->lang;
-                $lang->language[$lang_key] = sprintf('%s for Field Group "%s"', $action, $channel_field_group_name);
+                $lang = isset($ee->lang) && is_object($ee->lang) ? $ee->lang : null;
 
-                if ($lang_key === 'create_new_custom_field') {
-                    $lang->language['create_field'] = $lang->language[$lang_key];
+                if ($lang && isset($lang->language) && is_array($lang->language)) {
+                    $lang->language[$lang_key] = sprintf('%s for Field Group "%s"', $action, $channel_field_group_name);
+
+                    if ($lang_key === 'create_new_custom_field') {
+                        $lang->language['create_field'] = $lang->language[$lang_key];
+                    }
                 }
             } else {
 	            $ee->view->cp_page_title .= sprintf(' for Field Group "%s"', $channel_field_group_name);
