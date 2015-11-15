@@ -43,8 +43,14 @@ class Syncee_Helper
 
     public static function createModuleCpUrl($method = '', array $additional_query_params = array())
     {
-        $base = BASE;
-        $path = str_replace('&amp;', '&', $base) . '&C=addons_modules&M=show_module_cp&module=' . strtolower(Syncee_Upd::MODULE_NAME);
+
+        if (static::isEE3()) {
+            $path = (string) ee('CP/URL', sprintf('addons/settings/%s', strtolower(SYNCEE_MODULE_NAME)));
+        } else {
+            $base = BASE;
+            $path = str_replace('&amp;', '&', $base) . '&C=addons_modules&M=show_module_cp&module=' . strtolower(Syncee_Upd::MODULE_NAME);
+        }
+
 
         if (is_array($method) && isset($method['method'])) {
             $additional_query_params = $method;
@@ -55,8 +61,13 @@ class Syncee_Helper
         $additional_query_params = array_diff_key($additional_query_params, array_flip(Syncee_Form_Abstract::getRequestBlacklist()));
 
         if ($method) {
+            if (static::isEE3()) {
+                $path .= '/' . Syncee_Mcp::PROXY_METHOD;
+            } else {
+                $path .= '&method=' . Syncee_Mcp::PROXY_METHOD;
+            }
+
             $path .= '&' . Syncee_Mcp::REAL_METHOD_QUERY_PARAM . '=' . $method;
-            $path .= '&method=' . Syncee_Mcp::PROXY_METHOD;
         }
 
         $additional_query_params = array_filter($additional_query_params, function ($additional_query_param) {
@@ -276,5 +287,10 @@ class Syncee_Helper
         }
 
         return $val;
+    }
+
+    public static function isEE3()
+    {
+        return defined('APP_VER') && version_compare(APP_VER, '3.0.0', '>=');
     }
 }
