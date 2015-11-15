@@ -26,7 +26,7 @@ class Syncee_Mcp
             $_GET[self::REAL_METHOD_QUERY_PARAM] = $this->_default_method;
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['method'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_GET[self::REAL_METHOD_QUERY_PARAM] .= 'POST';
         }
 
@@ -43,6 +43,11 @@ class Syncee_Mcp
     {
         $_GET['method'] = self::$_real_method;
         return $this->__call($_GET['method'], array());
+    }
+
+    public function index()
+    {
+        return $this->proxy();
     }
 
     /**
