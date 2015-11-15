@@ -20,6 +20,44 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
 {
+    public function viewSynchronizeProfileList()
+    {
+        $site_group_id                   = ee()->input->get_post('site_group_id');
+        $comparator_library              = ee()->input->get_post('comparator_library');
+        $remote_entity                   = ee()->input->get_post('remote_entity');
+
+        $synchronize_profile_collection  = Syncee_Site_Synchronization_Profile::findAllByCondition(array(
+            'site_group_id'                 => $site_group_id,
+            'entity_class_name'             => $remote_entity,
+            'comparator_library_class_name' => $comparator_library,
+        ));
+
+        $site_group = Syncee_Site_Group::findByPk($site_group_id);
+
+        if ($site_group->isEmptyRow()) {
+            // TODO - throw
+        }
+
+        /**
+         * @var $remote_entity_obj Syncee_Request_Remote_Entity_Abstract
+         */
+        $remote_entity_obj  = new $remote_entity();
+        $remote_entity_name = ucwords($remote_entity_obj->getName()) . 's';
+
+        $page_title         = "Synchronize $remote_entity_name: <strong>{$site_group->title}</strong>";
+
+        Syncee_View::setPageTitle($page_title, true);
+
+        return Syncee_View::render(__FUNCTION__, array(
+            'site_group'                         => $site_group,
+            'synchronization_profile_collection' => $synchronize_profile_collection,
+            'comparator_library'                 => new $comparator_library(),
+            'remote_entity'                      => new $remote_entity(),
+            'remote_entity_name'                 => $remote_entity_name,
+            'paginator'                          => new Syncee_Paginator_Synchronization_Profile($_GET, $this)
+        ), $this);
+    }
+
     /**
      * The GET method for viewing a synchronization_profile_id
      */
@@ -46,13 +84,23 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
             return $a->getSource()->getSite()->getPrimaryKeyValues(true) - $b->getSource()->getSite()->getPrimaryKeyValues(true);
         });
 
-        $page_title = sprintf('Synchronize %s', ucwords($synchronization_profile->getEntity()->getName()) . 's');
+        $remote_entity_name = ucwords($synchronization_profile->getEntity()->getName());
+        $site_group         = Syncee_Site_Group::findByPk($synchronization_profile->site_group_id);
+
+        $page_title         = sprintf('Synchronize %s', $remote_entity_name . 's');
+
+        if (!$site_group->isEmptyRow()) {
+            $page_title .= ": <strong>{$site_group->title}</strong>";
+        }
+
         Syncee_View::setPageTitle($page_title, true);
 
         return Syncee_View::render(__FUNCTION__, array(
+            'site_group'                 => $site_group,
             'synchronization_profile'    => $synchronization_profile,
             'site_collection'            => $site_collection,
             'entity_comparison_library'  => $comparison_library,
+            'remote_entity_name'         => $remote_entity_name
         ), $this);
     }
 
@@ -138,5 +186,10 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
             $this,
             sprintf('%s have been merged into local site', ucwords($synchronization_profile->getEntity()->getName()) . 's')
         );
+    }
+
+    private function _getHumanReadableEntityName()
+    {
+        // TODO?
     }
 }
