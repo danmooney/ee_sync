@@ -11,10 +11,11 @@ if (!function_exists('lang')) {
 }
 
 return array(
-    'author' => 'Dan Mooney',
-    'author_url' => 'https://sync-ee.com/',
-    'name' => lang('syncee_module_name'),
-    'description' => lang('syncee_module_description'),
-    'version' => '0.1.0',
+    'author'         => 'Dan Mooney',
+    'author_url'     => 'https://sync-ee.com/',
+    'name'           => lang('syncee_module_name'),
+    'description'    => lang('syncee_module_description'),
+    'version'        => '0.1.0',
+    'namespace'      => 'Syncee',
     'settings_exist' => true,
 );
