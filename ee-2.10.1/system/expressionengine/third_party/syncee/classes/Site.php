@@ -26,7 +26,9 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
 {
     const TABLE_NAME = 'syncee_site';
 
-    const REMOTE_SITE_PLACEHOLDER_TITLE = '(DELETED REMOTE SITE)';
+    const SITE_UNNAMED_PLACEHOLDER_TITLE = '(UNNAMED SITE)';
+
+    const REMOTE_SITE_PLACEHOLDER_TITLE  = '(DELETED REMOTE SITE)';
 
     private $_default_ip_whitelist_separator = "\n";
 
@@ -254,7 +256,10 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
     public function __get($property)
     {
         if ($property === 'title' && $this->isLocal()) {
-            return $this->getCorrespondingLocalEeSiteRow()->site_label;
+            return strlen($this->getCorrespondingLocalEeSiteRow()->site_label)
+                ? $this->getCorrespondingLocalEeSiteRow()->site_label
+                : static::SITE_UNNAMED_PLACEHOLDER_TITLE
+            ;
         } elseif ($property === 'last_request_log') {
             if (!isset($this->last_request_log)) {
                 $request_log_collection = Syncee_Site_Request_Log::findAllByCondition(
