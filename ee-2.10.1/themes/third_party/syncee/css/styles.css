@@ -8,9 +8,7 @@
     -webkit-font-smoothing: antialiased;
 }
 
-.col.w-16.last { /* EE 3 container selector */
-    position: relative;
-}
+
 
 .syncee-version {
     font-size: 14px;
@@ -148,6 +146,9 @@ body .syncee-version .btn {
 
 #syncee-page {
     padding: 14px;
+    background: #ECF1F4;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
 }
 
 .remote-site-settings-payload-container {
@@ -689,11 +690,13 @@ body .syncee-version .btn {
 }
 
 #syncee .menu.mainmenu {
+    margin-top: 0;
     margin-bottom: 0;
 }
 
 #syncee .menu.submenu {
     margin-top: 0;
+    margin-bottom: 0;
     background: #FFF;
     border-left: 1px solid #D4D4D4;
     border-right: 1px solid #D4D4D4;
@@ -858,6 +861,61 @@ section.wrap .col-group.align-right {
 }
 
 section.wrap .col-group.align-right .breadcrumb {
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
     max-width: 1180px;
 }
+
+.col.w-16.last { /* EE 3 container selector */
+    position: relative;
+    padding-left: 25px;
+    padding-right: 25px
+}
+
+#syncee > .heading {
+    background: #3E4C54;
+    box-shadow: inset 0 1px #175E58 !important;
+    border-left: 2px solid #3E4C54;
+    border-top: 2px solid #3E4C54;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    -webkit-font-smoothing: antialiased;
+}
+
+#syncee strong {
+    font-weight: bold;
+    font-style: normal;
+}
+
+#syncee > .heading > * {
+    font-weight: normal;
+    color: #fff;
+    font-size: 19px;
+    line-height: 1;
+    padding: 7px 17px 7px 17px;
+    position: relative;
+    text-shadow: #666 0 1px 0;
+}
+
+#syncee p {
+    margin-top: 0;
+    margin-bottom: 11px;
+}
+
+#syncee h1 {
+    margin-bottom: 8px;
+}
+
+#syncee ol, #syncee li {
+    list-style: none;
+}
+
+#syncee table a.warning {
+    color: #FF9797;
+}
+
+#syncee table a.warning:hover {
+    text-decoration: underline;
+}
+
+/** END MORE EE3 styles **/
