@@ -6,8 +6,8 @@
 require_once dirname(__FILE__) . '/../_init.php';
 ?>
 <div class="site-settings-container">
-    <h1><?= "{$syncee_remote_site->getSiteUrl()}" ?></h1>
-    <h2>(EE Site ID: <?= $syncee_remote_site->ee_site_id ?>)</h2>
+    <h1><a href="<?= $syncee_remote_site->getSiteUrl() ?>"><?= $syncee_remote_site->getSiteUrl() ?></a></h1>
+    <h3>(EE Site ID: <?= $syncee_remote_site->ee_site_id ?>)</h3>
     <br><br>
     <?= $form ?>
 </div>
