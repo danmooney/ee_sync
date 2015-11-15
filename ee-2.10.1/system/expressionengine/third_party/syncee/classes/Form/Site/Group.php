@@ -58,9 +58,7 @@ class Syncee_Form_Site_Group extends Syncee_Form_Abstract
          * @var $local_site Syncee_Site
          */
         foreach ($local_sites as $local_site) {
-            $ee_site_row = $local_site->getCorrespondingLocalEeSiteRow();
-
-            $options[$local_site->getPrimaryKeyValues(true)] = $ee_site_row->site_label;
+            $options[$local_site->getPrimaryKeyValues(true)] = $local_site->title;
         }
 
 
