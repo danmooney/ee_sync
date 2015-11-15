@@ -100,9 +100,17 @@ class Syncee_Response
             }
         }
 
+        if (defined('APP_VER') && $decoded_response['ee_version'] !== APP_VER) {
+            $this->_errors[] = 'ExpressionEngine Version mismatch.  Unexpected behavior may occur.';
+        }
+
+        if (SYNCEE_VERSION !== $decoded_response['version']) {
+            $this->_errors[] = 'SyncEE Version mismatch.  Unexpected behavior may occur.';
+        }
+
         $this->_message             = isset($decoded_response['message']) ? $decoded_response['message'] : '';
 
-        $decoded_response['errors'] = $this->_errors;
+        $decoded_response['errors'] = array_unique($this->_errors);
         $this->_response_decoded    = $decoded_response;
 
         $this->_raw_response        = json_encode($decoded_response);
