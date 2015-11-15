@@ -8,18 +8,27 @@
     -webkit-font-smoothing: antialiased;
 }
 
-#mainContent .contents .syncee-version {
+.col.w-16.last { /* EE 3 container selector */
+    position: relative;
+}
+
+.syncee-version {
     font-size: 14px;
     position: absolute;
     top: 13px;
     right: 40px;
 }
 
+.col.w-16.last .syncee-version {
+    top: 4px;
+    right: 20px;
+}
+
 #breadCrumb .syncee-version {
     display: none;
 }
 
-#mainContent .contents .syncee-version .btn {
+body .syncee-version .btn {
     background: #D5BDB5;
     color: #FFF;
 }
@@ -35,7 +44,24 @@
 
 #syncee-page table {
     color: #000;
+    border: 0;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    box-sizing: content-box;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }
+
+#syncee-page table tr:first-child th:first-child,
+#syncee-page table tr:first-child th:last-child
+{
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+}
+
 
 #syncee a {
     /*color: inherit;*/
@@ -49,6 +75,7 @@
 }
 
 #syncee .menu li {
+    list-style-type: none;
     float: left;
     margin: 8px 10px;
 }
@@ -62,6 +89,8 @@
     padding: 8px 12px;
     border-radius: 4px;
     box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+    text-transform: none;
+    font-size: 12px;
 }
 
 #syncee a.btn-secondary {
@@ -195,6 +224,12 @@
 
 #syncee-page table tr > * {
     border: 1px solid gray;
+    padding: 0;
+    font-size: 12px;
+    white-space: normal;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }
 
 #syncee-page table.comparison-collection-table .comparison-details tr > * {
@@ -211,7 +246,12 @@
     color: #FFF;
     position: relative;
     background-clip: padding-box !important;
+    text-align: center;
     /*padding: 8px 23px;*/
+}
+
+#syncee-page table tr th a {
+    text-decoration: none;
 }
 
 #syncee-page table tr td {
@@ -648,7 +688,12 @@
     border-bottom: 1px solid #D4D4D4;
 }
 
+#syncee .menu.mainmenu {
+    margin-bottom: 0;
+}
+
 #syncee .menu.submenu {
+    margin-top: 0;
     background: #FFF;
     border-left: 1px solid #D4D4D4;
     border-right: 1px solid #D4D4D4;
@@ -805,4 +850,14 @@
 
 .syncee-highlight {
   animation: highlight-after-scrolling-to 1s;
+}
+
+/** MORE EE 3 styles **/
+section.wrap .col-group.align-right {
+    max-width: 100%;
+}
+
+section.wrap .col-group.align-right .breadcrumb {
+    margin: 0 auto;
+    max-width: 1180px;
 }
