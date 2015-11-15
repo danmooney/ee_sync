@@ -24,6 +24,7 @@ if (!defined('SYNCEE_PATH')) {
 class Syncee_Site_Request_Log_Diagnosis
 {
     const REQUEST_DIAGNOSIS_SYNCEE_VERSIONS_DIFFER = 'REQUEST_DIAGNOSIS_SYNCEE_VERSIONS_DIFFER';
+    const REQUEST_DIAGNOSIS_EE_VERSIONS_DIFFER     = 'REQUEST_DIAGNOSIS_EE_VERSIONS_DIFFER';
     const REQUEST_DIAGNOSIS_UNABLE_TO_REACH_SERVER = 'REQUEST_DIAGNOSIS_UNABLE_TO_REACH_SERVER';
     const REQUEST_DIAGNOSIS_ACTION_ID_INVALID      = 'REQUEST_DIAGNOSIS_ACTION_ID_INVALID';
     const REQUEST_FORBIDDEN_FROM_THIS_IP           = 'REQUEST_FORBIDDEN_FROM_THIS_IP';
@@ -76,6 +77,10 @@ class Syncee_Site_Request_Log_Diagnosis
 
         if ($request_log->version && $request_log->version !== $request_log->request_version) {
             $diagnoses[] = static::REQUEST_DIAGNOSIS_SYNCEE_VERSIONS_DIFFER;
+        }
+
+        if (defined('APP_VER') && $request_log->ee_version && $request_log->ee_version !== APP_VER) {
+            $diagnoses[] = static::REQUEST_DIAGNOSIS_EE_VERSIONS_DIFFER;
         }
 
         $this->_diagnoses = array_unique($diagnoses);
