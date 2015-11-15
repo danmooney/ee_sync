@@ -20,6 +20,8 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_View
 {
+    private static $_page_title;
+
     public static function render($template_filename, array $vars = array(), Syncee_Mcp_Abstract $mcp)
     {
         static::setPageTitle(static::_getPageTitleByMcpAndVars($mcp, $vars));
@@ -31,6 +33,9 @@ class Syncee_View
 
         // render shared files
         ob_start();
+        if (Syncee_Helper::isEE3()) {
+            include SYNCEE_PATH_VIEWS . '/_shared/heading.php';
+        }
         include SYNCEE_PATH_VIEWS . '/_shared/menu.php';
         include SYNCEE_PATH_VIEWS . '/_shared/version.php';
         $menu_html = ob_get_clean();
@@ -60,7 +65,7 @@ class Syncee_View
 
         $image_cache_html = ee()->load->view('_shared/image_cache.php', $vars, true);
 
-        return sprintf(
+        $body = sprintf(
             '<div id="syncee">%s<div id="syncee-page">%s %s<div style="clear:both;"></div>%s%s</div></div>',
             $menu_html,
             $flash_message_html,
@@ -71,6 +76,15 @@ class Syncee_View
             ),
             $paginator_html,
             $image_cache_html
+        );
+
+        if (!Syncee_Helper::isEE3()) {
+            return $body;
+        }
+
+        return array(
+            'body'    => $body,
+            'heading' => SYNCEE_MODULE_NAME . ' / ' . static::$_page_title
         );
     }
 
@@ -104,6 +118,8 @@ class Syncee_View
             ee()->view->cp_heading    = $title;
             ee()->view->cp_page_title = strip_tags($title . ' | ' . Syncee_Upd::MODULE_NAME);
         }
+
+        static::$_page_title = $title;
     }
 
     public static function addStylesheets()
