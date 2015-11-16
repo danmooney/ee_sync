@@ -88,6 +88,11 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
         return $this;
     }
 
+    public function getComparatorLibrary()
+    {
+        return $this->comparator_library_class_name;
+    }
+
     /**
      * @return Syncee_Request_Remote_Entity_Abstract
      */
