@@ -23,7 +23,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
     public function viewSiteGroupList()
     {
         $paginator          = new Syncee_Paginator_Site_Group($_GET, $this);
-        $site_groups = Syncee_Site_Group::findAll($paginator);
+        $site_groups        = Syncee_Site_Group::findAll($paginator);
 
         return Syncee_View::render(__FUNCTION__, array(
             'paginator'          => $paginator,
@@ -34,7 +34,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
     public function synchronizeSiteGroup()
     {
         $site_group_id     = ee()->input->get('site_group_id');
-        $site_group = Syncee_Site_Group::findByPk($site_group_id);
+        $site_group        = Syncee_Site_Group::findByPk($site_group_id);
 
         if ($site_group->isEmptyRow()) {
             // TODO
@@ -60,7 +60,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
     {
         $site_group_id        = ee()->input->get('site_group_id');
         $site_group_id_passed = (bool) $site_group_id;
-        $site_group    = $site_group_id_passed ? Syncee_Site_Group::findByPk($site_group_id) : new Syncee_Site_Group();
+        $site_group           = $site_group_id_passed ? Syncee_Site_Group::findByPk($site_group_id) : new Syncee_Site_Group();
 
         if ($site_group->isEmptyRow() && $site_group_id_passed) {
             show_error('Unable to find site group');
@@ -98,7 +98,7 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
         $site_group = new Syncee_Site_Group($form->getValues());
 
-        $site_ids                   = array_merge((array) $form->getValue('local_site_id'), $form->getValue('remote_site_id'));
+        $site_ids   = array_merge((array) $form->getValue('local_site_id'), $form->getValue('remote_site_id'));
         $site_group->site_id = $site_ids;
 
         $site_group->save();
