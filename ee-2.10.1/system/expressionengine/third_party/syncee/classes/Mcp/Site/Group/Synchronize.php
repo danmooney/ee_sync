@@ -95,6 +95,11 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
 
         Syncee_View::setPageTitle($page_title, true);
 
+        // set $_GET params so menu active state can be resolved
+        $_GET['site_group_id']      = $site_group->getPrimaryKeyValues(true) ?: 'PLACEHOLDER_JUST_TO_TRIGGER_MENU';
+        $_GET['comparator_library'] = $synchronization_profile->getComparatorLibrary();
+        $_GET['remote_entity']      = $synchronization_profile->getEntityName();
+
         return Syncee_View::render(__FUNCTION__, array(
             'site_group'                 => $site_group,
             'synchronization_profile'    => $synchronization_profile,
