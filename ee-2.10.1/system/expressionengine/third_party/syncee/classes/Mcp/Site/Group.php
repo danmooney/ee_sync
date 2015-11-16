@@ -23,25 +23,25 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
     public function viewSiteGroupList()
     {
         $paginator          = new Syncee_Paginator_Site_Group($_GET, $this);
-        $syncee_site_groups = Syncee_Site_Group::findAll($paginator);
+        $site_groups = Syncee_Site_Group::findAll($paginator);
 
         return Syncee_View::render(__FUNCTION__, array(
             'paginator'          => $paginator,
-            'syncee_site_groups' => $syncee_site_groups
+            'site_groups' => $site_groups
         ), $this);
     }
 
     public function synchronizeSiteGroup()
     {
         $site_group_id     = ee()->input->get('site_group_id');
-        $syncee_site_group = Syncee_Site_Group::findByPk($site_group_id);
+        $site_group = Syncee_Site_Group::findByPk($site_group_id);
 
-        if ($syncee_site_group->isEmptyRow()) {
+        if ($site_group->isEmptyRow()) {
             // TODO
         }
 
         return Syncee_View::render(__FUNCTION__, array(
-            'syncee_site_group' => $syncee_site_group
+            'site_group' => $site_group
         ), $this);
     }
 
@@ -60,17 +60,17 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
     {
         $site_group_id        = ee()->input->get('site_group_id');
         $site_group_id_passed = (bool) $site_group_id;
-        $syncee_site_group    = $site_group_id_passed ? Syncee_Site_Group::findByPk($site_group_id) : new Syncee_Site_Group();
+        $site_group    = $site_group_id_passed ? Syncee_Site_Group::findByPk($site_group_id) : new Syncee_Site_Group();
 
-        if ($syncee_site_group->isEmptyRow() && $site_group_id_passed) {
+        if ($site_group->isEmptyRow() && $site_group_id_passed) {
             show_error('Unable to find site group');
         }
 
-        $form     = new Syncee_Form_Site_Group($syncee_site_group, $this);
+        $form     = new Syncee_Form_Site_Group($site_group, $this);
         $ee_sites = ee()->db->get('sites')->result_object();
 
         return Syncee_View::render(__FUNCTION__, array(
-            'syncee_site_group' => $syncee_site_group,
+            'site_group' => $site_group,
             'ee_sites'          => $ee_sites,
             'form'              => $form
         ), $this);
@@ -84,26 +84,26 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
             show_error('Form errors: <pre>' . print_r($form->getErrors(), true));
         }
 
-        $syncee_site_group = Syncee_Site_Group::findByPk($form->getValue('site_group_id'));
+        $site_group = Syncee_Site_Group::findByPk($form->getValue('site_group_id'));
 
-        $syncee_site_group->delete();
+        $site_group->delete();
 
         // delete syncee group map with $former_local_syncee_site
-//        if (!$syncee_site_group->isEmptyRow()) {
-//            $syncee_site_group_map =
+//        if (!$site_group->isEmptyRow()) {
+//            $site_group_map =
 //            Syncee_Site_Group_Map::findAllByCondition(array(
-//                'site_group_id' => $syncee_site_group->getPrimaryKeyValues(true),
+//                'site_group_id' => $site_group->getPrimaryKeyValues(true),
 //            ))->delete();
 //        }
 
-        $syncee_site_group = new Syncee_Site_Group($form->getValues());
+        $site_group = new Syncee_Site_Group($form->getValues());
 
         $site_ids                   = array_merge((array) $form->getValue('local_site_id'), $form->getValue('remote_site_id'));
-        $syncee_site_group->site_id = $site_ids;
+        $site_group->site_id = $site_ids;
 
-        $syncee_site_group->save();
+        $site_group->save();
 
-        $site_group_id = $syncee_site_group->getPrimaryKeyValues(true);
+        $site_group_id = $site_group->getPrimaryKeyValues(true);
 
         Syncee_Helper::redirect($redirect_method, array(
             'site_group_id' => $site_group_id
@@ -112,26 +112,26 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
     public function deleteSiteGroup()
     {
-        $syncee_site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
+        $site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
 
-        if ($syncee_site_group->isEmptyRow()) {
+        if ($site_group->isEmptyRow()) {
             // TODO
         }
 
         return Syncee_View::render(__FUNCTION__, array(
-            'syncee_site_group' => $syncee_site_group
+            'site_group' => $site_group
         ), $this);
     }
 
     public function deleteSiteGroupPOST()
     {
-        $syncee_site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
+        $site_group = Syncee_Site_Group::findByPk(ee()->input->get('site_group_id'));
 
-        if ($syncee_site_group->isEmptyRow()) {
+        if ($site_group->isEmptyRow()) {
             // TODO
         }
 
-        if (!$syncee_site_group->delete()) {
+        if (!$site_group->delete()) {
             // TODO
         }
 
