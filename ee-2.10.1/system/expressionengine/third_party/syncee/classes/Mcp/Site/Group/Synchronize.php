@@ -26,11 +26,13 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
         $comparator_library              = ee()->input->get_post('comparator_library');
         $remote_entity                   = ee()->input->get_post('remote_entity');
 
+        $paginator                       = new Syncee_Paginator_Synchronization_Profile($_GET, $this);
+
         $synchronize_profile_collection  = Syncee_Site_Synchronization_Profile::findAllByCondition(array(
             'site_group_id'                 => $site_group_id,
             'entity_class_name'             => $remote_entity,
             'comparator_library_class_name' => $comparator_library,
-        ));
+        ), $paginator);
 
         $site_group = Syncee_Site_Group::findByPk($site_group_id);
 
@@ -54,7 +56,7 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
             'comparator_library'                 => new $comparator_library(),
             'remote_entity'                      => new $remote_entity(),
             'remote_entity_name'                 => $remote_entity_name,
-            'paginator'                          => new Syncee_Paginator_Synchronization_Profile($_GET, $this)
+            'paginator'                          => $paginator
         ), $this);
     }
 
