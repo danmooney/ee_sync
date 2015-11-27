@@ -31,20 +31,6 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
         ), $this);
     }
 
-    public function synchronizeSiteGroup()
-    {
-        $site_group_id     = ee()->input->get('site_group_id');
-        $site_group        = Syncee_Site_Group::findByPk($site_group_id);
-
-        if ($site_group->isEmptyRow()) {
-            // TODO
-        }
-
-        return Syncee_View::render(__FUNCTION__, array(
-            'site_group' => $site_group
-        ), $this);
-    }
-
     public function newSiteGroup()
     {
         unset($_GET['site_group_id']);
