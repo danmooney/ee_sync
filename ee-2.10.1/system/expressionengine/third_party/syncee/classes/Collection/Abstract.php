@@ -154,7 +154,7 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
                 $passes = true;
 
                 foreach ($method as $key => $val) {
-                    if ((is_scalar($val) && $row->$key != $val) ||
+                    if ((is_scalar($val) && null !== $val && $row->$key != $val) ||
                         (is_array($val) && !in_array($row->$key, $val))
                     ) {
                         $passes = false;
