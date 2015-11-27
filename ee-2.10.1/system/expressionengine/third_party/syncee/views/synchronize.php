@@ -148,7 +148,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
             </td>
             <?php
                 foreach ($remote_site_collection as $remote_site):
-                    $entity_comparison_collection = $entity_comparison_library_with_unique_identifier_value->getComparisonCollectionBySourceSite($remote_site);
+                    $entity_comparison_collection = $entity_comparison_library_with_unique_identifier_value->getComparisonCollectionBySourceSiteAndTargetSiteAndUniqueIdentifierValue($remote_site);
                     $source_has_entity_missing    = $entity_comparison_collection->getSource()->isEmptyRow();
                     ?>
                     <td class="comparison-site-collection-existence-container source-field-container comparison-site-field-container source-field" data-col-idx="<?= $col_idx++ ?>">
@@ -162,10 +162,26 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                         $total_comparisons          = $entity_comparison_collection->getTotalComparisonEntityCountByResult();
                                         $percentage_difference      = intval(($total_sameness_comparisons / $total_comparisons) * 100);
 
+                                        // determine whether PK differs from target (if it exists)
+                                        $primary_key_names = $entity_comparison_collection->getTarget()->getActiveRecord()->getPrimaryKeyNames();
+
+                                        $primary_key_differs_from_target = false;
+
+                                        foreach ($primary_key_names as $primary_key_name) {
+                                            $primary_key_differs_from_target = (
+                                                $entity_comparison_collection->getComparisonEntityByComparateColumnName($primary_key_name)->getSourceValue() !== $entity_comparison_collection->getComparisonEntityByComparateColumnName($primary_key_name)->getTargetValue()
+                                            );
+
+                                            if ($primary_key_differs_from_target) {
+                                                break;
+                                            }
+                                        }
+
                                         echo sprintf(
-                                            '(%s%% match with %s)',
+                                            '(%s%% match with %s%s)',
                                             $percentage_difference,
-                                            $entity_comparison_collection->getTarget()->getSite()->title
+                                            $entity_comparison_collection->getTarget()->getSite()->title,
+                                            $primary_key_differs_from_target ? ' - PK Differs' : ''
                                         );
 
 //                                        echo sprintf(
@@ -178,7 +194,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                     endif ?>
                             </span>
                         <?php
-                            if (!$source_has_entity_missing /* && (!isset($percentage_difference) || $percentage_difference < 100) */): ?>
+                            if (!$source_has_entity_missing && (!isset($percentage_difference) || $percentage_difference < 100) ): ?>
                                 <span class="decision-checkbox">
                                     <input type="checkbox">
                                 </span>
@@ -218,16 +234,16 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                     count($unique_values_for_this_comparate) <= 1
                                 );
 
-                                $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites;
+                                $comparate_column_is_ignored_in_comparison = $entity_comparison->comparateColumnIsIgnoredInComparison();
+                                $comparate_column_is_primary_key           = $entity_comparison->comparateColumnIsPrimaryKey();
+
+                                $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites || $comparate_column_is_primary_key;
 
                                 if (!$entity_missing_in_target && null === $entity_comparison->getTargetValue()) {
                                     $target_value_to_output = '<i>(NULL)</i>';
                                 } else {
                                     $target_value_to_output = strlen(trim($entity_comparison->getTargetValue())) > 0 ? trim($entity_comparison->getTargetValue()) : '&nbsp;';
                                 }
-
-                                $comparate_column_is_ignored_in_comparison = $entity_comparison->comparateColumnIsIgnoredInComparison();
-                                $comparate_column_is_primary_key           = $entity_comparison->comparateColumnIsPrimaryKey();
 
                                 $comparate_column_class = '';
 
@@ -306,20 +322,23 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                                 $source_value_to_output === $target_value_to_output
                                             );
 
-                                            if ($entity_exists_in_both_source_and_target) {
-                                                $match_class = $source_value_same_as_target_value ? 'match-with-target' : 'no-match-with-target';
-                                            } else {
-                                                $match_class = '';
-                                            }
-
 
                                             // increment unique value output counter
-
                                             if (!$entity_comparison->isMissingInSource()) {
                                                 $comparate_output_count_by_unique_value[$entity_comparison->getSourceValue(true)] += 1;
                                                 $unique_value_already_output_in_row = $comparate_output_count_by_unique_value[$entity_comparison->getSourceValue(true)] > 1;
                                             } else {
                                                 $unique_value_already_output_in_row = false;
+                                            }
+
+
+                                            $column_is_not_primary_key_or_is_unique_primary_key_and_entity_is_missing_in_target = !$comparate_column_is_primary_key || ($comparate_column_is_primary_key && $entity_missing_in_target && !$unique_value_already_output_in_row);
+                                            $checkbox_should_be_output = !$entity_missing_in_source && !$unique_value_already_output_in_row && !$source_value_same_as_target_value && $column_is_not_primary_key_or_is_unique_primary_key_and_entity_is_missing_in_target;
+
+                                            if ($entity_exists_in_both_source_and_target && $column_is_not_primary_key_or_is_unique_primary_key_and_entity_is_missing_in_target) {
+                                                $match_class = $source_value_same_as_target_value ? 'match-with-target' : 'no-match-with-target';
+                                            } else {
+                                                $match_class = '';
                                             }
 
                                             ?>
@@ -329,7 +348,9 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                                         <?= ee()->security->xss_clean($source_value_to_output) ?>
                                                     </span>
                                                     <?php
-                                                        if (!$entity_missing_in_source && !$unique_value_already_output_in_row /*&& !$entity_comparison_has_only_one_unique_value_or_less_across_all_sites*/ /*&& !$comparate_column_is_ignored_in_comparison*/ && !$source_value_same_as_target_value): ?>
+                                                        $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites;
+
+                                                        if ($checkbox_should_be_output /*|| (!$comparate_column_is_primary_key)*/ /*&& !$entity_comparison_has_only_one_unique_value_or_less_across_all_sites*/ /*&& !$comparate_column_is_ignored_in_comparison*/ ): ?>
                                                             <span class="decision-checkbox">
                                                                 <input type="checkbox" <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'class="checkbox-no-action-needed"' : '' ?>">
                                                             </span>

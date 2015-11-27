@@ -85,10 +85,13 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
                             continue; // TODO - throw
                         }
 
-                        $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSite($site);
+                        $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSiteAndTargetSiteAndUniqueIdentifierValue($site, null, $unique_identifier_value);
 
+                        // if comparison collection is missing or the comparison collection target already exists, then continue to avoid making guesses on missing decision payload values
                         if (!$comparison_collection) {
                             continue;
+                        } elseif (!$comparison_collection->getTarget()->isEmptyRow()) {
+                            continue 2;
                         }
 
                         $comparison_entity         = $comparison_collection->getComparisonEntityByComparateColumnName($col_name);
@@ -118,7 +121,7 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
                         $comparate_value_to_assign = $comparate_entity->$col_name;
                     }
 
-                    $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSite($site);
+                    $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSiteAndTargetSiteAndUniqueIdentifierValue($site);
 
                     if ($comparate_value_is_missing_from_payload && !$comparison_collection) {
                         $comparison_collection = $comparison_collection_library[0];
@@ -169,13 +172,11 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
 
                 $site = $site_collection->filterByCondition(array('site_id' => $site_id), true);
 
-                $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSite($site);
+                $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSiteAndTargetSiteAndUniqueIdentifierValue($site);
 
                 $comparison_entity = $comparison_collection->getComparisonEntityByComparateColumnName($col_name);
                 $comparison_entity->getFix()->performMiscTasksByDecisionPayloadAndActiveRecordRowAfterSave($value, $decision_payload, $active_record_row);
             }
         }
-
-
     }
 }

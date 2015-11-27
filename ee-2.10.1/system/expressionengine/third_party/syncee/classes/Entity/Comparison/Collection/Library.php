@@ -130,9 +130,10 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
     /**
      * @param Syncee_Site $source_site
      * @param Syncee_Site $target_site
+     * @param string $unique_identifier_value
      * @return Syncee_Entity_Comparison_Collection|bool
      */
-    public function getComparisonCollectionBySourceSite(Syncee_Site $source_site, Syncee_Site $target_site = null)
+    public function getComparisonCollectionBySourceSiteAndTargetSiteAndUniqueIdentifierValue(Syncee_Site $source_site, Syncee_Site $target_site = null, $unique_identifier_value = null)
     {
         /**
          * @var $collection_to_test Syncee_Entity_Comparison_Collection
@@ -140,7 +141,8 @@ class Syncee_Entity_Comparison_Collection_Library extends Syncee_Collection_Libr
         foreach ($this->_collections as $collection_to_test) {
             $collection_found = (
                 $collection_to_test->getSource()->getSite()->getPrimaryKeyValues(true) === $source_site->getPrimaryKeyValues(true) &&
-                (!$target_site || $collection_to_test->getTarget()->getSite()->getPrimaryKeyValues(true) === $target_site->getPrimaryKeyValues(true))
+                (!$target_site || $collection_to_test->getTarget()->getSite()->getPrimaryKeyValues(true) === $target_site->getPrimaryKeyValues(true)) &&
+                (!$unique_identifier_value || $collection_to_test->getUniqueIdentifierValue() === $unique_identifier_value)
             );
 
             if ($collection_found) {
