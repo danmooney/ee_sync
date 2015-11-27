@@ -80,7 +80,7 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
         return $this->_comparison_result;
     }
 
-    public function getTotalComparisonEntityCountByResult($comparison_results = array(), $exclude_ignored_and_hidden_columns = true)
+    public function getTotalComparisonEntityCountByResult($comparison_results = array(), $exclude_ignored_and_hidden_columns = true, $exclude_primary_key_columns = true)
     {
         $total_comparison_entity_count = 0;
 
@@ -105,6 +105,10 @@ class Syncee_Entity_Comparison_Collection extends Syncee_Collection_Abstract imp
             if ($exclude_ignored_and_hidden_columns &&
                 ($row->comparateColumnIsIgnoredInComparison() || $row->comparateColumnIsHiddenInComparison())
             ) {
+                continue;
+            }
+
+            if ($exclude_primary_key_columns && $row->comparateColumnIsPrimaryKey()) {
                 continue;
             }
 
