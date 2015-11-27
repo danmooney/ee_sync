@@ -375,7 +375,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
         }
 
         foreach ($row as $key => $val) {
-            if (!is_scalar($val)) {
+            if (!is_scalar($val) && null !== $val) {
                 $row[$key] = serialize($val);
             }
         }
@@ -456,7 +456,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
         $row        = array();
 
         foreach ($table_cols as $table_property) {
-            if (isset($this->_col_val_mapping[$table_property])) {
+            if (array_key_exists($table_property, $this->_col_val_mapping)) {
                 $row[$table_property] = $this->_col_val_mapping[$table_property];
             }
         }
