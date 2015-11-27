@@ -1,7 +1,7 @@
 <?php
 /**
- * @var $syncee_site_groups Syncee_Site_Group_Collection
- * @var $syncee_site_group Syncee_Site_Group
+ * @var $site_groups Syncee_Site_Group_Collection
+ * @var $site_group Syncee_Site_Group
  * @var $local_syncee_site Syncee_Site
  * @var $paginator Syncee_Paginator
  */
@@ -9,13 +9,13 @@ require_once dirname(__FILE__) . '/../_init.php';
 
 ?>
 <?php
-    if (!count($syncee_site_groups)): ?>
+    if (!count($site_groups)): ?>
         <p>You currently don't have any site groups set up.  Click the "New Site Group" button to set up one.</p>
 <?php
     endif ?>
     <a class="btn" href="<?= Syncee_Helper::createModuleCpUrl('newSiteGroup') ?>">New Site Group</a><br><br>
 <?php
-    if (count($syncee_site_groups)):
+    if (count($site_groups)):
         echo new Syncee_Table(
             new Syncee_Table_Column_Collection(array(
                 new Syncee_Table_Column('Site Group Name', 'title', true, 'left', new Syncee_Table_Column_Value_Formatter_Link('editSiteGroup')),
@@ -65,7 +65,7 @@ require_once dirname(__FILE__) . '/../_init.php';
                 new Syncee_Table_Column('Edit', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('editSiteGroup')),
                 new Syncee_Table_Column('Delete', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('deleteSiteGroup')),
             )),
-            $syncee_site_groups,
+            $site_groups,
             null,
             $paginator
         );
