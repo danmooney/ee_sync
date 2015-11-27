@@ -58,7 +58,6 @@ require_once dirname(__FILE__) . '/../_init.php';
 
                     return $html;
                 }),
-                new Syncee_Table_Column('Synchronize', 'Synchronize With Remote Sites', false, 'center', new Syncee_Table_Column_Value_Formatter_Link_Button('synchronizeSiteGroup', null, array(), 'btn btn-secondary')),
                 new Syncee_Table_Column('Date Created', 'create_datetime', true, 'center', new Syncee_Table_Column_Value_Formatter_Datetime()),
                 new Syncee_Table_Column('Date Last Synchronized', 'last_sync_datetime', true, 'center', new Syncee_Table_Column_Value_Formatter_Datetime('<i>Never</i>')),
                 new Syncee_Table_Column('Syncee Site Group ID', 'site_group_id', true, 'right'),

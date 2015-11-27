@@ -14,11 +14,9 @@ require_once dirname(__FILE__) . '/../_init.php';
 <?php
     if (!count($synchronization_profile_collection)): ?>
         <p>You haven't generated any <?= strtolower($remote_entity->getName()) ?> synchronization profiles yet.  Click the "Generate New <?= ucwords($remote_entity->getName()) ?> Synchronization Profile" to generate one.</p>
+        <br>
 <?php
     endif ?>
-    <a class="btn btn-secondary" href="<?= Syncee_Helper::createModuleCpUrl('synchronizeSiteGroup', $site_group->getPrimaryKeyNamesValuesMap()) ?>">Back to main Site Group Synchronization</a>
-    <br><br>
-
     <form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronize', $site_group->getPrimaryKeyNamesValuesMap()) ?>">
         <button class="btn" type="submit">Generate New <?= ucwords($remote_entity->getName()) ?> Synchronization Profile</button>
         <input type="hidden" name="comparator_library" value="<?= get_class($comparator_library) ?>">

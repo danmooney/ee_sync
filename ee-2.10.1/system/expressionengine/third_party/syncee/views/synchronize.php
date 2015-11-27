@@ -1,12 +1,14 @@
 <?php
 /**
  * @var $site_collection Syncee_Site_Collection
+ * @var $site_group Syncee_Site_Group
  * @var $entity_comparison_library Syncee_Entity_Comparison_Collection_Library
  * @var $entity_comparison_collection Syncee_Entity_Comparison_Collection
  * @var $entity_comparison Syncee_Entity_Comparison
  * @var $local_site Syncee_Site
  * @var $remote_site Syncee_Site
  * @var $synchronization_profile Syncee_Site_Synchronization_Profile
+ * @var $remote_entity_name string
  */
 
 $remote_site_collection = $site_collection->filterByCondition(array('is_local' => false));
@@ -44,7 +46,17 @@ $other_columns_percentage_width            = round(
 
 sort($unique_identifier_values, SORT_STRING);
 
+$synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchronizeProfileList', array_merge($site_group->getPrimaryKeyNamesValuesMap(), array(
+    'comparator_library' => $synchronization_profile->comparator_library_class_name,
+    'remote_entity'      => $synchronization_profile->entity_class_name
+)));
+
 ?>
+
+<?php
+/* <a class="btn btn-secondary" href="<?= $synchronize_profile_list_url ?>">Back to <?= $remote_entity_name ?> Synchronization Profiles</a>
+<br> */ ?>
+<br>
 
 <table class="collection-table comparison-collection-table" data-sticky-table data-sticky-table-max-rows="3" data-resizable-table data-total-entity-comparate-column-names="<?= count($entity_comparate_column_names) ?>">
     <thead>

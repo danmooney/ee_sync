@@ -1,16 +1,32 @@
 <?php
 /**
- * @var $syncee_site_group Syncee_Site_Group
+ * @var $site_group Syncee_Site_Group
  * @var $remote_site_collection Syncee_Site_Collection
  * @var $local_site Syncee_Site
  * @var $remote_site Syncee_Site
  */
 require_once dirname(__FILE__) . '/../_init.php';
 
-$local_site                   = $syncee_site_group->local_site;
-$remote_site_collection       = $syncee_site_group->remote_sites;
+$local_site                   = $site_group->local_site;
+$remote_site_collection       = $site_group->remote_sites;
 
 $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
+
+// URLs to synchronization profile views are below:
+$synchronize_channels_url = Syncee_Helper::createModuleCpUrl('viewSynchronizeProfileList', array_merge($site_group->getPrimaryKeyNamesValuesMap(), array(
+    'comparator_library' => 'Syncee_Entity_Channel_Collection_Library',
+    'remote_entity'      => 'Syncee_Request_Remote_Entity_Channel'
+)));
+
+$synchronize_channel_fields_url = Syncee_Helper::createModuleCpUrl('viewSynchronizeProfileList', array_merge($site_group->getPrimaryKeyNamesValuesMap(), array(
+    'comparator_library' => 'Syncee_Entity_Channel_Field_Collection_Library',
+    'remote_entity'      => 'Syncee_Request_Remote_Entity_Channel_Field'
+)));
+
+$synchronize_channel_data_url = Syncee_Helper::createModuleCpUrl('viewSynchronizeProfileList', array_merge($site_group->getPrimaryKeyNamesValuesMap(), array(
+    'comparator_library' => 'Syncee_Entity_Channel_Data_Collection_Library',
+    'remote_entity'      => 'Syncee_Request_Remote_Entity_Channel_Data'
+)));
 
 ?>
 <h3>Local Site: <a href="<?= Syncee_Helper::createModuleCpUrl('editLocalSite', $local_site->getPrimaryKeyNamesValuesMap()) ?>"><?= $local_site->title ?></a></h3>
@@ -21,7 +37,7 @@ $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
         <p>You currently don't have any remote sites set up.  <a href="<?= Syncee_Helper::createModuleCpUrl('newRemoteSite') ?>">Click here to set up one.</a></p>
 <?php
     elseif (!count($remote_site_collection)): ?>
-        <p></p>
+        <p>You haven't assigned any remote sites to this local site.  <a href="<?= Syncee_Helper::createModuleCpUrl('editSiteGroup', $site_group->getPrimaryKeyNamesValuesMap()) ?>">Click here to add them to the site group.</a></p>
 <?php
     else: ?>
         <ul>
@@ -36,18 +52,25 @@ $total_remote_site_collection = Syncee_Site::getRemoteSiteCollection();
 <?php
     endif ?>
 <br><br>
-<form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronize', $syncee_site_group->getPrimaryKeyNamesValuesMap()) ?>">
+
+<a href="<?= $synchronize_channels_url ?>">Channels</a>
+<a href="<?= $synchronize_channel_fields_url ?>">Channel Fields</a>
+<a href="<?= $synchronize_channel_data_url ?>">Channel Data</a>
+
+
+<?php /*
+<form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronize', $site_group->getPrimaryKeyNamesValuesMap()) ?>">
     <button type="submit">Synchronize Channels</button>
     <input type="hidden" name="comparator_library" value="Syncee_Entity_Channel_Collection_Library">
     <input type="hidden" name="remote_entity" value="Syncee_Request_Remote_Entity_Channel">
     <?= Syncee_View::outputCsrfHiddenFormInputs() ?>
 </form>
 
-<form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronize', $syncee_site_group->getPrimaryKeyNamesValuesMap()) ?>">
+<form method="post" action="<?= Syncee_Helper::createModuleCpUrl('synchronize', $site_group->getPrimaryKeyNamesValuesMap()) ?>">
     <button type="submit">Synchronize Channel Fields</button>
     <input type="hidden" name="comparator_library" value="Syncee_Entity_Channel_Field_Collection_Library">
     <input type="hidden" name="remote_entity" value="Syncee_Request_Remote_Entity_Channel_Field">
     <?= Syncee_View::outputCsrfHiddenFormInputs() ?>
 </form>
 
-<p>Synchronize Channel Data</p>
+<p>Synchronize Channel Data</p> */ ?>
