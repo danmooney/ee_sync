@@ -38,6 +38,8 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
 
     public function setUp()
     {
+        ee()->load->dbforge();
+
         $this->_http_host_running_tests = $_SERVER['HTTP_HOST'];
         $this->_installFreshDatabases();
         $this->_switchToDatabaseBasedOnNumber();
@@ -235,14 +237,12 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
             );
 
             if ($need_to_truncate_all_tables) {
-                foreach ($tables as $table) {
-                    ee()->db->truncate($table);
-                }
+                $this->_truncateTables($i);
             }
 
             // install fresh dump
             if ($need_to_execute_dump) {
-                $response = shell_exec("mysql56 -u {$db->username} {$db->database} < '$sql_pathname'");
+                $response = shell_exec("/opt/local/bin/mysql56 -u {$db->username} {$db->database} < '$sql_pathname' 2>&1");
             }
 
             // uninstall and reinstall syncee
@@ -260,11 +260,10 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
         $this->_switchToDatabaseBasedOnNumber();
     }
 
-    private function _truncateTables()
+    private function _truncateTables($db_config_num = null)
     {
         $syncee_upd = new Syncee_Upd();
-
-        $i = 1;
+        $i          = is_numeric($db_config_num) ? $db_config_num : 1;
 
         while ($db_name = $this->_fetchFromConfig("database.connection.db$i", false)) {
             $this->_switchToDatabaseBasedOnNumber($i);
@@ -278,10 +277,26 @@ abstract class Syncee_Unit_Test_Case_Abstract extends Testee_Unit_Test_Case
                 foreach ($tables as $table) {
                     ee()->db->truncate($table);
                 }
+
+                // remove all field_id_* columns from exp_channel_data table
+                $channel_data_columns = ee()->db->list_fields('channel_data');
+
+                foreach ($channel_data_columns as $channel_data_column) {
+                    $is_field_column = preg_match('#^field_#', $channel_data_column);
+
+                    if ($is_field_column) {
+                        ee()->dbforge->drop_column('channel_data', $channel_data_column);
+                    }
+                }
+
                 ee()->db->db_debug = true;
             }
 
             $syncee_upd->uninstall();
+
+            if ($db_config_num) {
+                break;
+            }
 
             $i += 1;
         }
