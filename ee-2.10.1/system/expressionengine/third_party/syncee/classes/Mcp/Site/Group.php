@@ -57,8 +57,8 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 
         return Syncee_View::render(__FUNCTION__, array(
             'site_group' => $site_group,
-            'ee_sites'          => $ee_sites,
-            'form'              => $form
+            'ee_sites'   => $ee_sites,
+            'form'       => $form
         ), $this);
     }
 
