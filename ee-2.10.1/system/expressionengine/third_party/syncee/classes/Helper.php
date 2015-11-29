@@ -181,7 +181,7 @@ class Syncee_Helper
             $json = json_encode($json);
         }
 
-        if (defined('JSON_PRETTY_PRINT')) {
+        if (defined('JSON_PRETTY_PRINT') && JSON_PRETTY_PRINT) {
             $result = json_encode(json_decode($json, true), JSON_PRETTY_PRINT);
         } else {
             $result          = '';
@@ -201,9 +201,9 @@ class Syncee_Helper
                 }
                 if ($in_escape) {
                     $in_escape = false;
-                } else if ($char === '"') {
+                } elseif ($char === '"') {
                     $in_quotes = !$in_quotes;
-                } else if (!$in_quotes) {
+                } elseif (!$in_quotes) {
                     switch ($char) {
                         case '}':
                         case ']':
@@ -232,7 +232,7 @@ class Syncee_Helper
                             $new_line_level = null;
                             break;
                     }
-                } else if ($char === '\\') {
+                } elseif ($char === '\\') {
                     $in_escape = true;
                 }
 
