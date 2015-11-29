@@ -32,7 +32,18 @@ require_once dirname(__FILE__) . '/../_init.php';
                 new Syncee_Table_Column('Response Syncee Version', 'version', true, 'right'),
                 new Syncee_Table_Column('Response Message', 'message', true, 'left'),
                 new Syncee_Table_Column('Response Errors', 'errors', false, 'left', new Syncee_Table_Column_Value_Formatter_List()),
-                new Syncee_Table_Column('Delete', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('deleteRequestLog')),
+                new Syncee_Table_Column('Synchronization Profile', function (Syncee_Site_Request_Log $request_log) {
+                    if (!$request_log->synchronization_profile_id) {
+                        return null;
+                    }
+
+                    return sprintf(
+                        '<a href="%s">%s</a>',
+                        Syncee_Helper::createModuleCpUrl('synchronize', array('synchronization_profile_id' => $request_log->synchronization_profile_id)),
+                        'Synchronization Profile #' . $request_log->synchronization_profile_id
+                    );
+                }, false, 'center'),
+//                new Syncee_Table_Column('Delete', null, false, 'center', new Syncee_Table_Column_Value_Formatter_Link('deleteRequestLog')),
             )),
             $request_log_collection,
             new Syncee_Table_Row_Formatter_PositiveNegative(function (Syncee_Site_Request_Log $request_log) {
