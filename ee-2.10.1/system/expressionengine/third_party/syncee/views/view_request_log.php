@@ -30,6 +30,16 @@ $site_primary_key_value_map = $request_log->site->getPrimaryKeyNamesValuesMap();
                     <span><?= $request_log->request_entity->getName() ?></span>
                 </td>
             </tr>
+            <?php
+                if ($request_log->url): ?>
+                    <tr>
+                        <td class="label"><span>URL</span></td>
+                        <td class="value">
+                            <a href="<?= $request_log->url ?>" target="_blank"><span><?= $request_log->url ?></span></a>
+                        </td>
+                    </tr>
+            <?php
+                endif ?>
             <tr>
                 <td class="label"><span>Response Status Code</span></td>
                 <td class="value"><span><?= $request_log->code ?></span></td>
@@ -61,6 +71,18 @@ $site_primary_key_value_map = $request_log->site->getPrimaryKeyNamesValuesMap();
     endif ?>
     <h2>Raw Decrypted Response from Request</h2><br>
     <div id="remote_site_settings_payload">
-        <div id="remote_site_settings_payload_contents"><pre><?= $request_log->raw_response ?  Syncee_Helper::prettyPrintJson($request_log->getRawResponseWithDataDecoded()) : '(Empty Response)' ?></pre></div>
+        <div id="remote_site_settings_payload_contents">
+            <?php
+                if (!$request_log->raw_response):
+                    $response = '(Empty Response)';
+                elseif ($request_log->getRawResponseWithDataDecoded()):
+                    $response = Syncee_Helper::prettyPrintJson($request_log->getRawResponseWithDataDecoded());
+                else:
+                    $response = htmlentities($request_log->raw_response);
+                endif;
+
+                echo sprintf('<pre>%s</pre>', $response);
+            ?>
+        </div>
     </div>
 </div>
