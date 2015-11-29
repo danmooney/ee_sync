@@ -151,6 +151,9 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
                 unset($row[$primary_key_name]);
             }
 
+            // set proper site id based on what the target site's primary key value is
+            $row['site_id'] = $target_site->getPrimaryKeyValues(true);
+
             // find existing active record row in target by unique identifier key/value pair
             $collection = $active_record_row::findAllByCondition(array($unique_identifier_key => $unique_identifier_value));
 
