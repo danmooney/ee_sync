@@ -68,7 +68,10 @@ class Syncee_Site_Group extends Syncee_ActiveRecord_Abstract implements Syncee_S
         $row = parent::toArray($table_data_only);
 
         if (!$table_data_only) {
-            $row = array_merge($row, $this->local_site->toArray());
+            $local_site_row = $this->local_site->toArray();
+            unset($local_site_row['title']); // naming conflict with site_group title field
+
+            $row = array_merge($row, $local_site_row);
         }
 
         return $row;
