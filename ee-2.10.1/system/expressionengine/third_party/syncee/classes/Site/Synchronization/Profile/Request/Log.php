@@ -22,7 +22,9 @@ class Syncee_Site_Synchronization_Profile_Request_Log extends Syncee_ActiveRecor
 {
     const TABLE_NAME = 'syncee_site_synchronization_profile_request_log';
 
+    protected static $_cols;
+
     protected $_collection_model = 'Syncee_Site_Synchronization_Profile_Request_Log_Collection';
 
-    protected static $_cols;
+    protected $_primary_key_names = array('synchronization_profile_id', 'request_log_id');
 }
