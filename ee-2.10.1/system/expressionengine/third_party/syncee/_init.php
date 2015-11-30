@@ -17,6 +17,11 @@ if (!extension_loaded('curl')) {
     die('Curl extension required for this module.');
 }
 
+// if SYNCEE_MODULE_NAME already defined, then this file has already been included; return
+if (defined('SYNCEE_MODULE_NAME')) {
+    return;
+}
+
 // JSON_PRETTY_PRINT is PHP 5.4+
 if (!defined('JSON_PRETTY_PRINT')) {
     define('JSON_PRETTY_PRINT', 0);
@@ -136,3 +141,21 @@ if (isset($idiom)) {
 } elseif (isset($GLOBALS['LANG']) && is_object($GLOBALS['LANG']) && isset($GLOBALS['LANG']->user_lang)) {
     Syncee_Lang::setLanguage($GLOBALS['LANG']->user_lang);
 }
+
+$_SERVER['syncee_old_error_handler'] = set_error_handler(function () {});
+
+restore_error_handler();
+
+set_error_handler(function ($severity, $message) {
+    // if decryption error occurs, prevent showing EE-related error handling since nicer errors will appear after propagation
+    if ($message === 'Decryption Error' && !SYNCEE_UNIT_TEST_MODE) {
+        return;
+    }
+
+    if (!$_SERVER['syncee_old_error_handler']) { // if old error handler is native PHP error handler, then return false to use it
+        return false;
+    }
+
+    // else, call old error handler and pass arguments
+    call_user_func_array($_SERVER['syncee_old_error_handler'], func_get_args());
+});
