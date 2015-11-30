@@ -226,6 +226,14 @@ class Syncee_Site extends Syncee_ActiveRecord_Abstract
                     $this->requests_from_remote_sites_enabled = false;
                 }
             }
+        } else { // unset public/private keys so they don't inadvertently get changed in an update
+            if (null === $this->_col_val_mapping['public_key']) {
+                unset($this->_col_val_mapping['public_key']);
+            }
+
+            if (null === $this->_col_val_mapping['private_key']) {
+                unset($this->_col_val_mapping['private_key']);
+            }
         }
 
         // make sure ip whitelist is formatted properly
