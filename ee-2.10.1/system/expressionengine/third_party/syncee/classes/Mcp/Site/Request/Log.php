@@ -23,7 +23,7 @@ class Syncee_Mcp_Site_Request_Log extends Syncee_Mcp_Abstract
     public function viewRequestLogList()
     {
         $paginator              = new Syncee_Paginator_Site_Request_Log($_GET, $this);
-        $request_log_collection = Syncee_Site_Request_Log::findAll($paginator);
+        $request_log_collection = Syncee_Site_Request_Log::findAll($paginator, true);
 
         return Syncee_View::render(__FUNCTION__, array(
             'paginator'              => $paginator,
