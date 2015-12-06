@@ -51,6 +51,11 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
     );
 
     /**
+     * @var array
+     */
+    protected static $_cols;
+
+    /**
      * @var Syncee_Site
      */
     public $site;
