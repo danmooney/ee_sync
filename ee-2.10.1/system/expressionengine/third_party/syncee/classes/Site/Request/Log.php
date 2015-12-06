@@ -42,6 +42,14 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
 
     protected $_primary_key_names = array('request_log_id');
 
+    protected $_has_many_maps = array(
+        'Syncee_Site_Synchronization_Profile_Request_Log'
+    );
+
+    protected $_has_many_maps_join_types = array(
+        'Syncee_Site_Synchronization_Profile_Request_Log' => 'left'
+    );
+
     /**
      * @var Syncee_Site
      */
