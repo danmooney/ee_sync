@@ -171,11 +171,15 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
             $unmodified_site_id_decision_payload_for_this_unique_identifier_value = $unmodified_decision_payload_copy[$unique_identifier_value];
 
             foreach ($row as $col_name => $value) {
+                // in the case of where site_id is explicitly applied on $row, for example, it may not exist in $unmodified_site_id_decision_payload_for_this_unique_identifier_value; hence we continue if it doesn't exist in there
+                if (!array_key_exists($col_name, $unmodified_site_id_decision_payload_for_this_unique_identifier_value)) {
+                    continue;
+                }
+
                 $site_id = $unmodified_site_id_decision_payload_for_this_unique_identifier_value[$col_name];
+                $site    = $site_collection->filterByCondition(array('site_id' => $site_id), true);
 
-                $site = $site_collection->filterByCondition(array('site_id' => $site_id), true);
-
-                $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSiteAndTargetSiteAndUniqueIdentifierValue($site);
+                $comparison_collection = $comparison_collection_library->getComparisonCollectionBySourceSiteAndTargetSiteAndUniqueIdentifierValue($site, $target_site, $unique_identifier_value);
 
                 $comparison_entity = $comparison_collection->getComparisonEntityByComparateColumnName($col_name);
                 $comparison_entity->getFix()->performMiscTasksByDecisionPayloadAndActiveRecordRowAfterSave($value, $decision_payload, $active_record_row);
