@@ -44,15 +44,17 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
 
     protected $_has_many_maps = array();
 
+    protected $_has_many_maps_join_types = array();
+
     protected $_belongs_to;
 
     /**
      * @param $paginator Syncee_Paginator
      * @return Syncee_Collection_Abstract
      */
-    public static function findAll(Syncee_Paginator $paginator = null)
+    public static function findAll(Syncee_Paginator $paginator = null, $get_map_columns = false)
     {
-        ee()->db->select('*')->from(static::TABLE_NAME);
+        ee()->db->select(static::TABLE_NAME . '.*')->from(static::TABLE_NAME);
 
         if ($paginator) {
             $paginator->modifyQueryOnDriver(ee()->db);
@@ -60,6 +62,35 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
 
         $empty_row        = new static();
         $collection_model = $empty_row->getCollectionModel();
+
+        if ($get_map_columns) {
+            $has_many_maps            = $empty_row->getHasManyMaps();
+            $has_many_maps_join_types = $empty_row->getHasManyMapsJoinTypes();
+
+            foreach ($has_many_maps as $has_many_map) {
+                $empty_map_row = new $has_many_map();
+
+                $empty_row_table_name     = $empty_row::TABLE_NAME;
+                $empty_map_row_table_name = $empty_map_row::TABLE_NAME;
+
+                $join_type                = isset($has_many_maps_join_types[$has_many_map]) ? $has_many_maps_join_types[$has_many_map] : null;
+
+                foreach ($empty_map_row->getPrimaryKeyNames() as $primary_key_name) {
+                    // if primary key name already is in the main table, then prevent selection of the map column name as well
+                    if ($primary_key_name_already_in_main_table = in_array($primary_key_name, $empty_row->getPrimaryKeyNames())) {
+                        continue;
+                    }
+
+                    ee()->db->select($empty_map_row_table_name . '.' . $primary_key_name);
+                }
+
+                ee()->db->join(
+                    $empty_map_row_table_name,
+                    "{$empty_row_table_name}.{$empty_row->getPrimaryKeyNames(true)} = {$empty_map_row_table_name}.{$empty_row->getPrimaryKeyNames(true)}",
+                    $join_type
+                );
+            }
+        }
 
         $rows = ee()->db->get()->result_array();
 
@@ -79,8 +110,9 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
         /**
          * @var $empty_map_row Syncee_ActiveRecord_Abstract
          */
-        $empty_row     = new static();
-        $has_many_maps = $empty_row->getHasManyMaps();
+        $empty_row                = new static();
+        $has_many_maps            = $empty_row->getHasManyMaps();
+        $has_many_maps_join_types = $empty_row->getHasManyMapsJoinTypes();
 
         foreach ($conditions as $column => $value) {
             $condition_able_to_be_employed = false;
@@ -100,9 +132,12 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
                         $empty_row_table_name     = $empty_row::TABLE_NAME;
                         $empty_map_row_table_name = $empty_map_row::TABLE_NAME;
 
+                        $join_type                = isset($has_many_maps_join_types[$has_many_map]) ? $has_many_maps_join_types[$has_many_map] : null;
+
                         ee()->db->join(
                             $empty_map_row_table_name,
-                            "{$empty_row_table_name}.{$empty_row->getPrimaryKeyNames(true)} = {$empty_map_row_table_name}.{$empty_row->getPrimaryKeyNames(true)}"
+                            "{$empty_row_table_name}.{$empty_row->getPrimaryKeyNames(true)} = {$empty_map_row_table_name}.{$empty_row->getPrimaryKeyNames(true)}",
+                            $join_type
                         );
 
                         $condition_able_to_be_employed = true;
@@ -228,19 +263,23 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
 
             // assign values in row to nested objects if properties are defined
             foreach ($object_properties as $object_key => $possible_nested_object) {
-                if (is_object($possible_nested_object)) {
-                    $nested_object                   = $possible_nested_object;
-                    $nested_object_object_properties = get_object_vars($nested_object);
+                if (!is_object($possible_nested_object)) {
+                    continue;
+                }
 
-                    if (array_key_exists($key, $nested_object_object_properties)) {
-                        $this->$object_key->$key = $val;
+                $nested_object                   = $possible_nested_object;
+                $nested_object_object_properties = get_object_vars($nested_object);
 
-                        if (in_array($key, static::$_cols)) {
-                            $this->_col_val_mapping[$key]     =& $this->$object_key->$key;
-                        } else {
-                            $this->_non_col_val_mapping[$key] =& $this->$object_key->$key;
-                        }
-                    }
+                if (!array_key_exists($key, $nested_object_object_properties)) {
+                    continue;
+                }
+
+                $this->$object_key->$key = $val;
+
+                if (in_array($key, static::$_cols)) {
+                    $this->_col_val_mapping[$key]     =& $this->$object_key->$key;
+                } else {
+                    $this->_non_col_val_mapping[$key] =& $this->$object_key->$key;
                 }
             }
         }
@@ -252,12 +291,14 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
                 $nested_object_object_properties = get_object_vars($nested_object);
 
                 foreach (static::$_cols as $col) {
-                    if (array_key_exists($col, $nested_object_object_properties)) {
-                        if (in_array($col, static::$_cols)) {
-                            $this->$object_key->$col =& $this->_col_val_mapping[$col];
-                        } else {
-                            $this->$object_key->$col =& $this->_non_col_val_mapping[$col];
-                        }
+                    if (!array_key_exists($col, $nested_object_object_properties)) {
+                        continue;
+                    }
+
+                    if (in_array($col, static::$_cols)) {
+                        $this->$object_key->$col =& $this->_col_val_mapping[$col];
+                    } else {
+                        $this->$object_key->$col =& $this->_non_col_val_mapping[$col];
                     }
                 }
             }
@@ -332,6 +373,11 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
     public function getHasManyMaps()
     {
         return $this->_has_many_maps;
+    }
+
+    public function getHasManyMapsJoinTypes()
+    {
+        return $this->_has_many_maps_join_types;
     }
 
     // TODO - perhaps assign $this->_is_new to the return value???
