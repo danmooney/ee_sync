@@ -46,7 +46,12 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
         $remote_entity_obj  = new $remote_entity();
         $remote_entity_name = ucwords($remote_entity_obj->getName()) . 's';
 
-        $page_title         = "Synchronize $remote_entity_name: <strong>{$site_group->title}</strong>";
+        $page_title         = sprintf(
+            'Synchronize %s: <a href="%s"><strong>%s</strong></a>',
+            $remote_entity_name,
+            Syncee_Helper::createModuleCpUrl('editSiteGroup', $site_group->getPrimaryKeyNamesValuesMap()),
+            $site_group->title
+        );
 
         Syncee_View::setPageTitle($page_title, true);
 
@@ -92,7 +97,7 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
         $page_title         = sprintf('Synchronize %s', $remote_entity_name . 's');
 
         if (!$site_group->isEmptyRow()) {
-            $page_title .= ": <strong>{$site_group->title}</strong>";
+            $page_title .= sprintf(': <a href="%s"><strong>%s</strong></a>', Syncee_Helper::createModuleCpUrl('editSiteGroup', $site_group->getPrimaryKeyNamesValuesMap()), $site_group->title);
         }
 
         Syncee_View::setPageTitle($page_title, true);
