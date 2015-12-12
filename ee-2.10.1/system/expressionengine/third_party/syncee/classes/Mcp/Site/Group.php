@@ -20,6 +20,12 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->_setSubjectPageTitleBasedOnSiteGroupPassedInRequest();
+    }
+
     public function viewSiteGroupList()
     {
         $paginator          = new Syncee_Paginator_Site_Group($_GET, $this);
@@ -122,5 +128,25 @@ class Syncee_Mcp_Site_Group extends Syncee_Mcp_Abstract
         }
 
         Syncee_Helper::redirect('viewSiteGroupList', array(), $this);
+    }
+
+    private function _setSubjectPageTitleBasedOnSiteGroupPassedInRequest()
+    {
+        $site_group_id        = ee()->input->get('site_group_id');
+        $site_group_id_passed = (bool) $site_group_id;
+
+        if (!$site_group_id_passed) {
+            return;
+        }
+
+        $site_group = Syncee_Site_Group::findByPk($site_group_id);
+
+        if ($site_group->isEmptyRow()) {
+            return;
+        }
+
+        $site_group_edit_href = Syncee_Helper::createModuleCpUrl('editSiteGroup', $site_group->getPrimaryKeyNamesValuesMap());
+
+        Syncee_View::setPageTitleSubjectHref($site_group_edit_href);
     }
 }

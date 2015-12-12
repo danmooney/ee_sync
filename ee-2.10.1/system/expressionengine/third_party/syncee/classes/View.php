@@ -22,6 +22,8 @@ class Syncee_View
 {
     private static $_page_title;
 
+    private static $_subject_href;
+
     public static function render($template_filename, array $vars = array(), Syncee_Mcp_Abstract $mcp)
     {
         static::setPageTitle(static::_getPageTitleByMcpAndVars($mcp, $vars));
@@ -122,6 +124,11 @@ class Syncee_View
         static::$_page_title = $title;
     }
 
+    public static function setPageTitleSubjectHref($subject_href)
+    {
+        static::$_subject_href = $subject_href;
+    }
+
     public static function addStylesheets()
     {
         $module_theme_path = static::_getThemePath();
@@ -183,7 +190,13 @@ class Syncee_View
         $page_title = ucwords(implode(' ', $view_method_exploded));
 
         if (isset($subject)) {
-            $page_title .= sprintf(': <strong>%s</strong>', $subject);
+            $subject_html = sprintf('<strong>%s</strong>', $subject);
+
+            if (static::$_subject_href) {
+                $subject_html = sprintf('<a href="%s">%s</a>', static::$_subject_href, $subject_html);
+            }
+
+            $page_title  .= ': ' . $subject_html;
         }
 
         return $page_title;

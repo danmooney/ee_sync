@@ -30,6 +30,8 @@ abstract class Syncee_Mcp_Abstract
      */
     protected $_form;
 
+    public function __construct() {}
+
     public function setCalledMethod($called_method)
     {
         $this->_called_method = $called_method;
