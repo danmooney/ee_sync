@@ -57,7 +57,7 @@ $(function ($) {
             stickyRowTopRelativeToViewport = stickyRow.getBoundingClientRect().top;
 
             stickyRowIndexInTable = $stickyRowsInTable.index($stickyRow);
-            isLastStuckRow        = $stickyRow.hasClass('stuck') && stickyRowIndexInTable === $stickyRowsInTable.filter('.stuck').length - 1;
+            isLastStuckRow        = $stickyRow.hasClass('stuck') && stickyRow === $stickyRowsInTable.filter('.stuck').last().get(0);
 
             if (maxNumberOfStickyRowsLimitMet) {
                 if (isLastStuckRow) {
