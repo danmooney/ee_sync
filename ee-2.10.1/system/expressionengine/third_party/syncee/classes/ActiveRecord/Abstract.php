@@ -459,7 +459,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
         return $success;
     }
 
-    public function delete($where = array())
+    public function delete($where = array(), $handle_many_map_references = true)
     {
         if ($this->_is_new) {
             return false;
@@ -485,13 +485,15 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
             return $where_value !== null;
         });
 
-        $success = ee()->db->delete(static::TABLE_NAME, $where);
+        $success = count($where) ? ee()->db->delete(static::TABLE_NAME, $where) : false;
 
         if ($success) {
             $this->_is_new = true;
         }
 
-        $this->_handleManyMapReferences(__FUNCTION__);
+        if ($handle_many_map_references) {
+            $this->_handleManyMapReferences(__FUNCTION__);
+        }
 
         return $success;
     }
