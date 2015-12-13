@@ -151,9 +151,9 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         return $this;
     }
 
-    public function getSourceValue($prepend_type_and_coerce_to_string_if_necessary = false)
+    public function getSourceValue($prepend_type_and_coerce_to_string_if_necessary = false, $format_for_human_readable_output = false)
     {
-        $source_value = $this->_source_value;
+        $source_value = is_string($format_for_human_readable_output) ? $format_for_human_readable_output : $this->_source_value;
 
         if ($prepend_type_and_coerce_to_string_if_necessary) {
             $source_value_str = is_array($source_value) ? serialize($source_value) : $source_value;
@@ -169,9 +169,9 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         return $this;
     }
 
-    public function getTargetValue($prepend_type_and_coerce_to_string_if_necessary = false)
+    public function getTargetValue($prepend_type_and_coerce_to_string_if_necessary = false, $format_for_human_readable_output = false)
     {
-        $target_value = $this->_target_value;
+        $target_value = is_string($format_for_human_readable_output) ? $format_for_human_readable_output : $this->_target_value;
 
         if ($prepend_type_and_coerce_to_string_if_necessary) {
             $target_value_str = is_array($target_value) ? serialize($target_value) : $target_value;
