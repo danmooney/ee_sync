@@ -77,6 +77,10 @@ class Syncee_Site_Request_Log extends Syncee_ActiveRecord_Abstract implements Sy
 
         $this->site           = Syncee_Site::findByPk($this->site_id);
 
+        if ($this->site->isEmptyRow()) {
+            $this->site = Syncee_Site::getRemoteSitePlaceholderInstance();
+        }
+
         $this->request_entity = class_exists($this->entity_class_name)
             ? new $this->entity_class_name()
             : new Syncee_Request_Remote_Entity_Empty()
