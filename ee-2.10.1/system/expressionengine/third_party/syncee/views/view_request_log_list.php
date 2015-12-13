@@ -17,6 +17,10 @@ require_once dirname(__FILE__) . '/../_init.php';
             new Syncee_Table_Column_Collection(array(
                 new Syncee_Table_Column('Syncee Request ID', 'request_log_id', true, 'center', new Syncee_Table_Column_Value_Formatter_Link('viewRequestLog', null, array('request_direction'))),
                 new Syncee_Table_Column('Site', function (Syncee_Site_Request_Log $request_log) {
+                    if ($request_log->site->isRemotePlaceholder()) {
+                        return $request_log->site->title;
+                    }
+
                     return sprintf(
                         '<a href="%s">%s</a>',
                         Syncee_Helper::createModuleCpUrl($request_log->site->isRemote() ? 'editRemoteSite' : 'editLocalSite', $request_log->site->getPrimaryKeyNamesValuesMap()),
