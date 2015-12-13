@@ -6,7 +6,8 @@ $(function ($) {
         $stickyRows = $(stickyRowsSelectorStr),
         bracketRegex = new RegExp('[\\[|\\]]', 'g'),
         tableLayoutAutoHasWidthBug,
-        $stuckRows
+        $stuckRows,
+        unstickifyFn
     ;
 
     function evaluateStickyRowHighestBottomInTable ($stickyTable) {
@@ -26,6 +27,10 @@ $(function ($) {
     }
 
     function evaluateStickiness () {
+        if (Syncee.Table && Syncee.Table.StickyHeader && Syncee.Table.StickyHeader.isSliding) {
+            return;
+        }
+
         $stickyRows.each(function evaluateStickinessOfStickyRow (idx, stickyRow) {
             var $stickyRow = $(stickyRow),
                 $nextStickyRow,
@@ -243,6 +248,8 @@ $(function ($) {
             if (evaluateStickinessAgain) {
                 setTimeout(evaluateStickiness, 10); // settimeout required so we can free up the thread in case we need to re-evaluate repeatedly
             }
+
+            unstickifyFn = unstickify;
         });
     }
 
@@ -255,6 +262,7 @@ $(function ($) {
     }
 
     $(document).on('scroll', evaluateStickiness);
+    evaluateStickiness();
 
     // add observers to sticky table row
     $stickyTables.each(function () {
@@ -295,4 +303,10 @@ $(function ($) {
     $stickyRows.each(function () {
         makeRowSticky($(this));
     });
+
+    Syncee.Table = Syncee.Table || {};
+    Syncee.Table.StickyHeader = {
+        unstickify: unstickifyFn,
+        evaluateStickiness: evaluateStickiness
+    };
 });

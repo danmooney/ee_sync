@@ -123,16 +123,25 @@ $(function ($, undefined) {
 
         comparisonDetailsIsSlidUp = $comparisonDetails.find('table').is(':hidden');
 
+        Syncee.Table.StickyHeader.isSliding = true;
+
+        if ($comparisonSummary.hasClass('stuck')) { // unstickify and remove sticky row data attribute
+            Syncee.Table.StickyHeader.unstickify($comparisonSummary);
+            $comparisonSummary.removeAttr('data-sticky-table-row');
+        }
+
         $comparisonDetails.addClass('sliding').find('.nested-table-container div').slideToggle(undefined, function () {
             $comparisonDetails.removeClass('sliding');
+            Syncee.Table.StickyHeader.isSliding = false;
 
             if (comparisonDetailsIsSlidUp) { // corresponding comparison details is about to be exposed; add sticky row data attribute to comparison summary
                 $comparisonSummary.attr('data-sticky-table-row', 1);
                 $comparisonDetails.addClass('slid-down').removeClass('slid-up');
-            } else { // remove sticky row data attribute
-                $comparisonSummary.removeAttr('data-sticky-table-row');
+            } else {
                 $comparisonDetails.addClass('slid-up').removeClass('slid-down');
             }
+
+            Syncee.Table.StickyHeader.evaluateStickiness();
         });
     });
 
