@@ -55,13 +55,18 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
 
         $syncee_site->assign($form->getValues());
 
-        $local_sites_with_same_values = Syncee_Site::findAllByCondition(array(
+        $sites_with_same_values = Syncee_Site::findAllByCondition(array(
             'ee_site_id' => $syncee_site->ee_site_id,
             'site_host'  => $syncee_site->site_host,
         ));
 
-        if (count($local_sites_with_same_values)) {
-            Syncee_Helper_Flashdata::setFlashData('The remote site you\'re trying to save exists as a local site on this machine.', 'error');
+        if (count($sites_with_same_values)) {
+            if ($sites_with_same_values[0]->is_local) {
+                Syncee_Helper_Flashdata::setFlashData('The remote site you\'re trying to save exists as a local site on this machine.', 'error');
+            } else {
+                Syncee_Helper_Flashdata::setFlashData('The remote site you\'re trying to save already exists.', 'error');
+            }
+
             Syncee_Helper::redirect('viewRemoteSiteList', array(), $this, false);
         }
 
@@ -176,7 +181,7 @@ class Syncee_Mcp_Site_Remote extends Syncee_Mcp_Abstract
             // TODO
         }
 
-        if (!$syncee_site->delete()) {
+        if (!$syncee_site->delete(array(), false)) {
             // TODO
         }
 
