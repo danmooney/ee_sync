@@ -293,4 +293,13 @@ class Syncee_Helper
     {
         return defined('APP_VER') && version_compare(APP_VER, '3.0.0', '>=');
     }
+
+    public static function xssCleanAndFormat($str, $escape_newlines = false)
+    {
+        if ($escape_newlines) {
+            $str = str_replace(array("\r\n", "\n", "\r"), array('\r\n', '\n', '\r'), $str);
+        }
+
+        return ee()->security->xss_clean($str);
+    }
 }

@@ -78,7 +78,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
         </tr>
         <tr class="comparison-table-header-row" data-row-idx="<?= $row_idx++ ?>" data-sticky-table-row>
             <th class="comparate-column-header" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>"><span><?= $unique_identifier_key ?></span></th>
-            <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= ee()->security->xss_clean($local_site->title) ?>" data-site-id="<?= $local_site->getPrimaryKeyValues(true) ?>">
+            <th class="target-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= Syncee_Helper::xssCleanAndFormat($local_site->title) ?>" data-site-id="<?= $local_site->getPrimaryKeyValues(true) ?>">
                 <span>
                     <?= $local_site->title ?> - <em>(Local Site)</em>
                 </span>
@@ -90,7 +90,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
             </th>
             <?php
                 foreach ($remote_site_collection as $remote_site): ?>
-                    <th class="source-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= ee()->security->xss_clean($remote_site->title) ?>" data-site-id="<?= $remote_site->getPrimaryKeyValues(true) ?>">
+                    <th class="source-site-header" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>" data-site-title="<?= Syncee_Helper::xssCleanAndFormat($remote_site->title) ?>" data-site-id="<?= $remote_site->getPrimaryKeyValues(true) ?>">
                         <span>
                             <?php
                                 $remote_site_title = $remote_site->isRemotePlaceholder()
@@ -98,7 +98,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                     : $remote_site->title
                                 ;
 
-                                echo ee()->security->xss_clean($remote_site_title);
+                                echo Syncee_Helper::xssCleanAndFormat($remote_site_title);
 
                                 if (!$remote_site->last_request_log->isSuccess()): ?>
                                     <br><br>
@@ -113,14 +113,14 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
     </thead>
     <tbody>
     <?php
-        // iterate through all of the channels comparisons one by one, grouped by unique identifier value (channel_name, which is short name)
+        // iterate through all of the comparisons one by one, grouped by unique identifier value (channel_name, for example, which is short name in channel comparisons)
         foreach ($unique_identifier_values as $unique_identifier_value):
             $entity_comparison_library_with_unique_identifier_value = $entity_comparison_library->getComparisonLibraryByUniqueIdentifierKeyAndValue($unique_identifier_key, $unique_identifier_value);
             $target_has_entity_missing = $entity_comparison_library_with_unique_identifier_value[0]->getTarget()->isEmptyRow();
             $col_idx = 0;
             $comparison_summary_row_idx = $row_idx++;
         ?>
-        <tr class="comparison-summary" data-row-idx="<?= $comparison_summary_row_idx ?>" data-name="<?= ee()->security->xss_clean($unique_identifier_value) ?>">
+        <tr class="comparison-summary" data-row-idx="<?= $comparison_summary_row_idx ?>" data-name="<?= Syncee_Helper::xssCleanAndFormat($unique_identifier_value) ?>">
             <td class="comparate-field-container comparate-key-field-container" data-col-idx="<?= $col_idx++ ?>">
                 <span>
                     <?= $unique_identifier_value ?>
@@ -242,7 +242,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                 if (!$entity_missing_in_target && null === $entity_comparison->getTargetValue()) {
                                     $target_value_to_output = '<i>(NULL)</i>';
                                 } else {
-                                    $target_value_to_output = strlen(trim($entity_comparison->getTargetValue())) > 0 ? trim($entity_comparison->getTargetValue()) : '&nbsp;';
+                                    $target_value_to_output = strlen(trim($entity_comparison->getTargetValue())) > 0 ? trim($entity_comparison->getTargetValue(false, true)) : '&nbsp;';
                                 }
 
                                 $comparate_column_class = '';
@@ -285,7 +285,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                     <td class="target-field comparate-value-field <?= $entity_missing_in_target ? 'comparate-value-field-missing' : '' ?>" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                         <span>
                                             <span class="value">
-                                                <?= ee()->security->xss_clean($target_value_to_output) ?>
+                                                <?= Syncee_Helper::xssCleanAndFormat($target_value_to_output) ?>
                                             </span>
                                             <?php
                                                 if (!$entity_missing_in_target): ?>
@@ -309,7 +309,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                             if (!$entity_missing_in_source && null === $entity_comparison->getSourceValue()) {
                                                 $source_value_to_output = '<i>(NULL)</i>';
                                             } else {
-                                                $source_value_to_output = strlen(trim($entity_comparison->getSourceValue())) > 0 ? trim($entity_comparison->getSourceValue()) : '&nbsp;';
+                                                $source_value_to_output = strlen(trim($entity_comparison->getSourceValue())) > 0 ? trim($entity_comparison->getSourceValue(false, true)) : '&nbsp;';
                                             }
 
                                             $entity_exists_in_both_source_and_target = (
@@ -345,7 +345,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                             <td class="source-field comparate-value-field <?= $match_class ?> <?= $entity_missing_in_source ? 'comparate-value-field-missing' : '' ?>" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                                 <span>
                                                     <span class="value">
-                                                        <?= ee()->security->xss_clean($source_value_to_output) ?>
+                                                        <?= Syncee_Helper::xssCleanAndFormat($source_value_to_output) ?>
                                                     </span>
                                                     <?php
                                                         $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites;
@@ -384,7 +384,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
     <?php
     foreach ($unique_identifier_values as $unique_identifier_value): ?>
         <tr>
-            <td class="site-name" data-name="<?= ee()->security->xss_clean($unique_identifier_value) ?>">
+            <td class="site-name" data-name="<?= Syncee_Helper::xssCleanAndFormat($unique_identifier_value) ?>">
                 <a href="#"><?= $unique_identifier_value ?></a>
             </td>
             <td class="summary">&nbsp;</td>
