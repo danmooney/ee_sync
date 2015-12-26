@@ -30,7 +30,7 @@ Syncee.updateSummaryBasedOnRow = function ($row, isMerged) {
         if (mergeIsAllFromTargetSite) {
             questionMarkHtml += 'requires no further input.  However, nothing will change since all options have been chosen from the local site.';
         } else {
-            questionMarkHtml += ' will be merged from ' + mergeResultSummarySourceSiteNames.join(' and ') + '.  It requires no further input.';
+            questionMarkHtml += 'will be merged from ' + mergeResultSummarySourceSiteNames.join(' and ') + '.  It requires no further input.';
         }
     } else {
         questionMarkHtml += 'will not be merged in.  It still requires your input.  No action will be taken until all inputs are filled.';
