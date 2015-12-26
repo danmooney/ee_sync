@@ -169,7 +169,7 @@ $(function ($, undefined) {
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, summaryCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length ||
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, resultCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length
             ),
-            detailCellHtml = $.trim($cell.find('.value').html()) ? '<span>' + $cell.find('.value').html() + '</span>' : '<span>&nbsp;</span>',
+            detailCellHtml = $.trim($cell.find('.value').html()) ? $cell.find('.value').html() : '&nbsp;',
             summaryCellTargetHtmlArr = [],
             summaryCellSourceHtmlArr = [],
             totalCheckboxInColumnCount = totalEntityComparateColumnNames/*getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).length*/,
@@ -222,7 +222,7 @@ $(function ($, undefined) {
 
             if ($checkbox.is(':checked')) {
                 $correspondingMergeCell.addClass('merged').addClass('positive');
-                $correspondingMergeCell.html(detailCellHtml);
+                $correspondingMergeCell.find('.value').html(detailCellHtml);
 
                 $row.attr('data-action-taken', 1);
 
@@ -236,7 +236,7 @@ $(function ($, undefined) {
 
         $.each(checkboxesCheckedInDetailResultsByColIdx, function (idx, value) {
             var isTargetColIdx = idx === 1,
-                hasOnlyTwoColumns = $('.source-site-header').length === 1,
+                hasOnlyOneTargetAndOneSourceColumn = $('.source-site-header').length === 1,
                 arrToPushOnto = isTargetColIdx ? summaryCellTargetHtmlArr : summaryCellSourceHtmlArr
             ;
 
@@ -247,11 +247,11 @@ $(function ($, undefined) {
             if (value === null || parseInt(value, 10) == 0) {
 
             } else {
-                if (isTargetColIdx || hasOnlyTwoColumns) { // if there's only one site being compared on either side or if comparing target, then forgo outputting the site name
+                if (isTargetColIdx) { // if there's only one site being compared on either side or if comparing target, then forgo outputting the site name
                     arrToPushOnto.push(value + '/' + totalCheckboxInColumnCount);
                 } else {
                     arrToPushOnto.push(
-                        '<span class="merge-result-summary-source-site">' + siteNamesByColIdx[idx] + ': ' + value + '/' + totalCheckboxInColumnCount + '</span>'
+                        '<span class="merge-result-summary-source-site">' + (!hasOnlyOneTargetAndOneSourceColumn ? siteNamesByColIdx[idx] + ': ' : '') + value + '/' + totalCheckboxInColumnCount + '</span>'
                     );
                 }
             }

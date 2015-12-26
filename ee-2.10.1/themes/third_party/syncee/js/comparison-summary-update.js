@@ -12,13 +12,18 @@ Syncee.updateSummaryBasedOnRow = function ($row, isMerged) {
     ;
 
     $mergeResultSummarySourceSites.each(function () {
-        var siteName = $(this).text().replace(/:\s+\d+\/\d+$/, '');
+        var mergeResultText = $.trim($(this).text()),
+            siteNameIsInMergeResult = !/^\d+\/\d+$/.test(mergeResultText),
+            siteName
+        ;
 
-        mergeResultSummarySourceSiteNames.push(siteName);
-    });
+        if (siteNameIsInMergeResult) {
+            siteName = mergeResultText.replace(/:\s+\d+\/\d+$/, '');
+        } else {
+            siteName = $('.source-site-header').data('site-title');
+        }
 
-    [].forEach.call(mergeResultSummarySourceSiteNames, function (siteName) {
-        mergeResultSummarySourceSiteNamesHtmlCollection.push(''); // TODO
+        mergeResultSummarySourceSiteNames.push('<strong>' + siteName + '</strong>');
     });
 
     if (isMerged) {
