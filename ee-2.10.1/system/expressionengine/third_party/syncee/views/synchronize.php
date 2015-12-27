@@ -150,6 +150,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                 foreach ($remote_site_collection as $remote_site):
                     $entity_comparison_collection = $entity_comparison_library_with_unique_identifier_value->getComparisonCollectionBySourceSiteAndTargetSiteAndUniqueIdentifierValue($remote_site);
                     $source_has_entity_missing    = $entity_comparison_collection->getSource()->isEmptyRow();
+                    $percentage_difference        = null;
                     ?>
                     <td class="comparison-site-collection-existence-container source-field-container comparison-site-field-container source-field" data-col-idx="<?= $col_idx++ ?>">
                         <span>
@@ -194,7 +195,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                     endif ?>
                             </span>
                         <?php
-                            if (!$source_has_entity_missing && (!isset($percentage_difference) || $percentage_difference < 100) ): ?>
+                            if (!$source_has_entity_missing && (!isset($percentage_difference) || $percentage_difference < 100)): ?>
                                 <span class="decision-checkbox">
                                     <input type="checkbox">
                                 </span>
@@ -207,7 +208,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
         </tr>
 
         <?php // BEGIN Comparison Details ?>
-        <tr class="comparison-details" data-row-idx="<?= $row_idx++ ?>">
+        <tr class="comparison-details" data-row-idx="<?= $row_idx++ ?>" data-name="<?= Syncee_Helper::xssCleanAndFormat($unique_identifier_value) ?>">
             <td colspan="<?= $total_columns ?>" class="nested-table-container">
                 <div style="display: none;">
                     <table>
