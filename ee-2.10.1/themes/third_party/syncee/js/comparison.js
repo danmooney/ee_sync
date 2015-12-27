@@ -441,12 +441,17 @@ $(function ($, undefined) {
                 $resultCheckboxes.each(function (idx) {
                     var $resultCheckbox = $(this),
                         $row = $(this).closest('tr[data-row-idx]'),
-                        isChecked = $resultCheckbox.prop('checked')
+                        isChecked = $resultCheckbox.prop('checked'),
+                        $mergeResult,
+                        mergeResultIsEdited
                     ;
 
                     if (!isChecked) {
                         return true; // continue
                     }
+
+                    $mergeResult = $row.find('.merge-result');
+                    mergeResultIsEdited = $mergeResult.find('.merge-result-edit-symbol').hasClass('merge-result-edited');
 
                     fieldName = $row.children('.comparate-key-field').text().trim();
 
@@ -454,7 +459,7 @@ $(function ($, undefined) {
                         payloadData[uniqueIdentifierKey] = {};
                     }
 
-                    payloadData[uniqueIdentifierKey][fieldName] = siteId;
+                    payloadData[uniqueIdentifierKey][fieldName] = mergeResultIsEdited ? [siteId, $mergeResult.find('.value').text()] : siteId;
                 });
             }
         }
@@ -467,6 +472,8 @@ $(function ($, undefined) {
         updateCheckbox(e);
         updatePayloadData();
     });
+
+    $(document).on('merge-result-edited', updatePayloadData);
 
     (function checkOffAndDisableCellsThatHaveNoOtherOption() {
         // check off summary rows that have no other option
