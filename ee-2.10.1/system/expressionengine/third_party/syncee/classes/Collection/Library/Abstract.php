@@ -70,6 +70,12 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
         return $collection_exists_already;
     }
 
+    public function getEmptyCollection()
+    {
+        $collection_model_name = $this->_collection_model;
+        return new $collection_model_name();
+    }
+
     public function sortByCallback(Closure $sortFunc)
     {
         usort($this->_collections, $sortFunc);
