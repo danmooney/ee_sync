@@ -145,5 +145,8 @@ $(function ($) {
         }
     };
 
-    $('.merge-result-edit-symbol').magnificPopup(options);
+    $(document).on('click', '.merge-result-edit-symbol', function (e) {
+        e.mfpEl = this;
+        $.magnificPopup.instance._openClick(e, this, options);
+    });
 });
