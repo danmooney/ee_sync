@@ -8,7 +8,9 @@
     -webkit-font-smoothing: antialiased;
 }
 
-
+textarea, input {
+    color: #000;
+}
 
 .syncee-version {
     font-size: 14px;
@@ -82,7 +84,7 @@ body .syncee-version .btn {
     position: relative;
 }
 
-#syncee .btn {
+#syncee .btn, .syncee-btn {
     display: inline-block;
     padding: 8px 12px;
     border-radius: 4px;
@@ -91,13 +93,13 @@ body .syncee-version .btn {
     font-size: 12px;
 }
 
-#syncee a.btn-secondary {
+#syncee a.btn-secondary, .syncee-btn-secondary {
     color: #FFF;
     background: #56646C;
     border: 0;
 }
 
-#syncee a.btn-tertiary {
+#syncee a.btn-tertiary, .syncee-btn-tertiary {
     /*background: /!*#98AAB6*!/#56646C;*/
     /*color: #FFF;*/
 
@@ -107,11 +109,11 @@ body .syncee-version .btn {
     border: 0;
 }
 
-#syncee a.btn-secondary.active {
+#syncee a.btn-secondary.active, .syncee-btn-secondary.active {
     background: #1B1D36;
 }
 
-#syncee a.btn-tertiary.active {
+#syncee a.btn-tertiary.active, .syncee-btn-tertiary.active {
     /*background: #272937;*/
     background: #1B1D36;
     color: #FFF;
@@ -631,6 +633,11 @@ body .syncee-version .btn {
     /*text-align: center;*/
 }
 
+#syncee-page .collection-table.comparison-collection-table .comparate-column-container .merge-result > span {
+    /* Leave room for the pencil edit icon */
+    padding-right: 60px;
+}
+
 #syncee-page .collection-table.comparison-collection-table .merge-result .merge-result-summary-target {
     float: left;
 }
@@ -759,6 +766,29 @@ body .syncee-version .btn {
     background-position: center;
 }
 
+#syncee-page .collection-table.comparison-collection-table .merge-result .merge-result-edit-symbol {
+    content: "";
+    background: url('../img/pencil_symbol.png') no-repeat;
+    background-size: 68%;
+    width: 24px;
+    height: 31px;
+    position: absolute;
+    right: 31px;
+    top: 0;
+    background-position: center;
+    display: none;
+
+    cursor: pointer;
+}
+
+#syncee-page .collection-table.comparison-collection-table .merge-result:hover .merge-result-edit-symbol {
+    display: block;
+}
+
+#syncee-page .collection-table.comparison-collection-table .merge-result .merge-result-edit-symbol.merge-result-edited {
+    background-image: url('../img/pencil_symbol_red.png');
+    display: block;
+}
 
 .table-layout-auto {
     table-layout: auto !important;
