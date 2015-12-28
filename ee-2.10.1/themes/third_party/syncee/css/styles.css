@@ -790,6 +790,12 @@ body .syncee-version .btn {
     display: block;
 }
 
+#syncee-page .collection-table.comparison-collection-table .merge-result .merge-result-summary-edited,
+.merge-result-edit-checkbox
+{
+    display: none;
+}
+
 .table-layout-auto {
     table-layout: auto !important;
 }
