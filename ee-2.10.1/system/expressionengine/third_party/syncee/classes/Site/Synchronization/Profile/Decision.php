@@ -77,9 +77,11 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
 
                 // if comparate value is missing from payload, then determine the most appropriate value from the comparison library by evaluating frequency of site ids in decision payload
                 if ($comparate_value_is_missing_from_payload) {
-                    $site_ids_in_decision_payload = array_map(function ($val) {
+                    $comparate_value_has_been_assigned = false;
+
+                    $site_ids_in_decision_payload = array_filter(array_map(function ($val) {
                         return is_array($val) && isset($val[self::VALUE_OVERRIDE_SITE_ID_IDX]) ? $val[self::VALUE_OVERRIDE_SITE_ID_IDX] : $val;
-                    }, $unmodified_decision_payload_copy[$unique_identifier_value]);
+                    }, $unmodified_decision_payload_copy[$unique_identifier_value]));
 
                     $site_ids_in_decision_payload_grouped_by_count = array_count_values($site_ids_in_decision_payload);
 
@@ -102,16 +104,26 @@ class Syncee_Site_Synchronization_Profile_Decision extends Syncee_ActiveRecord_A
                             continue 2;
                         }
 
-                        $comparison_entity         = $comparison_collection->getComparisonEntityByComparateColumnName($col_name);
-                        $comparate_value_to_assign = $comparison_entity->getSourceValue();
+                        $comparison_entity                 = $comparison_collection->getComparisonEntityByComparateColumnName($col_name);
+                        $comparate_value_to_assign         = $comparison_entity->getSourceValue();
+
+                        $comparate_value_has_been_assigned = true;
 
                         $unmodified_decision_payload_copy[$unique_identifier_value][$col_name] = $site_id;
                         break;
+                    }
+
+                    if (!$comparate_value_has_been_assigned) {
+                        continue;
                     }
                 } else {
                     if (is_array($site_id)) {
                         list($site_id, $value_override) = $site_id;
                         $has_value_override = true;
+
+                        if (!$site_id) {
+                            $site_id = $target_site->getPrimaryKeyValues(true);
+                        }
 
                         // flatten array to simply numeric site_id
                         $unmodified_decision_payload_copy[$unique_identifier_value][$col_name] = intval($site_id);
