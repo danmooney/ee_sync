@@ -52,8 +52,7 @@ $(function ($) {
         events: {
             'click $btnOk': function ($mergeResultValue, $mfpMergeResultValue, $editButton) {
                 $mergeResultValue.text($mfpMergeResultValue.val());
-                $editButton.addClass('merge-result-edited');
-                $(document).trigger('merge-result-edited');
+                $editButton.addClass('merge-result-edited').trigger('merge-result-edited');
                 this.close();
             },
             'click $btnCancel': function () {
