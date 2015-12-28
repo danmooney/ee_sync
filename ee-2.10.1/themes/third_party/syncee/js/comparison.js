@@ -152,15 +152,13 @@ $(function ($, undefined) {
             rowIdx = $row.data('row-idx'),
             isSummaryRow = !$row.data('summary-row-idx'), // lack of data-summary-row-idx indicates summary row
             summaryRowIdx = isSummaryRow ? rowIdx : $row.data('summary-row-idx'),
-            $correspondingMergeCell = $cell.siblings('.merge-result'),
-            $correspondingMergeCellSpan = $correspondingMergeCell.children('span'),
+            $correspondingMergeCell = $cell.siblings('.merge-result').length ? $cell.siblings('.merge-result') : $cell.closest('.merge-result'),
+            $correspondingMergeCellValue = isSummaryRow ? $correspondingMergeCell : $correspondingMergeCell.find('.value'),
             isTargetField = $cell.hasClass('target-field'),
-            isSourceField = !isTargetField,
             isExistenceSummaryCell = $cell.hasClass('comparison-site-collection-existence-container'),
             $summaryCheckbox = getSummaryCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx),
             $summaryRow = $summaryCheckbox.closest('tr'),
             $summaryMergeCell = $summaryRow.find('.merge-result'),
-            $summaryMergeCellSpan = $summaryMergeCell.children('span'),
             checkedCheckboxesExistInTarget = (
                 getSummaryCheckboxesByColIdxAndSummaryRowIdx(1, summaryRowIdx).filter(':checked').length ||
                 getResultCheckboxesByColIdxAndSummaryRowIdx(1, summaryRowIdx).filter(':checked').length
@@ -169,11 +167,12 @@ $(function ($, undefined) {
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, summaryCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length ||
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, resultCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length
             ),
-            detailCellHtml = $.trim($cell.find('.value').html()) ? $cell.find('.value').html() : '&nbsp;',
+            detailCellHtml = $cell.find('.value').html(),
             summaryCellTargetHtmlArr = [],
             summaryCellSourceHtmlArr = [],
             totalCheckboxInColumnCount = totalEntityComparateColumnNames/*getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).length*/,
             hasAllDetailedRowsChecked = getResultCheckboxesBySummaryRowIdx(summaryRowIdx).filter(':checked').length === totalCheckboxInColumnCount,
+            hasAtLeastOneEditedMergeResult = !!getResultCheckboxesBySummaryRowIdx(summaryRowIdx).filter('.merge-result-edit-checkbox:checked').length,
             hasSummaryCheckboxChecked = $summaryCheckbox.is(':checked'),
             checkboxesCheckedInDetailResultsByColIdx = [],
             i
@@ -189,8 +188,8 @@ $(function ($, undefined) {
             checkboxesCheckedInDetailResultsByColIdx[i] = getResultCheckboxesByColIdxAndSummaryRowIdx(i, summaryRowIdx).filter(':checked').length;
         }
 
-        if (!$correspondingMergeCell.data('original-content')) {
-            $correspondingMergeCell.data('original-content', $correspondingMergeCell.html());
+        if (!$correspondingMergeCellValue.data('original-content')) {
+            $correspondingMergeCellValue.data('original-content', $correspondingMergeCellValue.html());
         }
 
         if (!checkedCheckboxesExistInTarget) {
@@ -228,7 +227,7 @@ $(function ($, undefined) {
 
             } else if (!$row.find(':checked').length) {
                 $correspondingMergeCell.removeClass('merged').removeClass('positive');
-                $correspondingMergeCell.html($correspondingMergeCell.data('original-content'));
+                $correspondingMergeCellValue.html($correspondingMergeCellValue.data('original-content'));
 
                 $row.removeAttr('data-action-taken');
             }
@@ -236,24 +235,24 @@ $(function ($, undefined) {
 
         $.each(checkboxesCheckedInDetailResultsByColIdx, function (idx, value) {
             var isTargetColIdx = idx === 1,
+                isMergeResultColIdx = idx === 2,
                 hasOnlyOneTargetAndOneSourceColumn = $('.source-site-header').length === 1,
                 arrToPushOnto = isTargetColIdx ? summaryCellTargetHtmlArr : summaryCellSourceHtmlArr
             ;
 
-            if (typeof idx === 'undefined' || typeof value === 'undefined') {
-                return true;
+            if (typeof idx === 'undefined' || typeof value === 'undefined' || !parseInt(value, 10)) {
+                return true; // continue
             }
 
-            if (value === null || parseInt(value, 10) == 0) {
 
-            } else {
-                if (isTargetColIdx) { // if there's only one site being compared on either side or if comparing target, then forgo outputting the site name
-                    arrToPushOnto.push(value + '/' + totalCheckboxInColumnCount);
-                } else {
-                    arrToPushOnto.push(
-                        '<span class="merge-result-summary-source-site">' + (!hasOnlyOneTargetAndOneSourceColumn ? siteNamesByColIdx[idx] + ': ' : '') + value + '/' + totalCheckboxInColumnCount + '</span>'
-                    );
-                }
+            if (isTargetColIdx) { // if there's only one site being compared on either side or if comparing target, then forgo outputting the site name
+                arrToPushOnto.push(value + '/' + totalCheckboxInColumnCount);
+            } else if (isMergeResultColIdx) {
+                // TODO - should we show some tally summary of columns that are edited?
+            } else { // source col idx
+                arrToPushOnto.push(
+                    '<span class="merge-result-summary-source-site">' + (!hasOnlyOneTargetAndOneSourceColumn ? siteNamesByColIdx[idx] + ': ' : '') + value + '/' + totalCheckboxInColumnCount + '</span>'
+                );
             }
         });
 
@@ -261,14 +260,24 @@ $(function ($, undefined) {
             '<span class="merge-result-summary-target">'
         +       summaryCellTargetHtmlArr.join('')
         +   '</span>'
-        +   '<span class="merge-result-summary-source">'
-        +       summaryCellSourceHtmlArr.join('<br>')
-        +   '<span>'
+        +   (
+               hasAtLeastOneEditedMergeResult
+                    ? '<span class="merge-result-summary-edited">'
+                    + '</span>'
+                    : ''
+            )
+        +   (
+                summaryCellSourceHtmlArr.length
+                    ? '<span class="merge-result-summary-source">'
+                    +     summaryCellSourceHtmlArr.join('<br>')
+                    +  '</span>'
+                    : ''
+            )
         );
 
 
         if (triggeredByClickEvent) {
-            if (hasAllDetailedRowsChecked && (!isSummaryRow || (isSummaryRow && hasSummaryCheckboxChecked))) {
+            if (hasAllDetailedRowsChecked && (!isSummaryRow || (isSummaryRow && hasSummaryCheckboxChecked) || hasAtLeastOneEditedMergeResult)) {
                 $summaryMergeCell.addClass('positive');
             } else {
                 $summaryMergeCell.removeClass('positive');
@@ -297,10 +306,13 @@ $(function ($, undefined) {
             $otherCheckboxesToTrigger,
             allCheckboxesInColumnAreChecked,
             $checkboxesToCheck,
-            $checkboxesToUncheck
+            $checkboxesToUncheck,
+            isMergeResultCheckbox = $checkbox.hasClass('merge-result-edit-checkbox'),
+            hasEditedMergeResult = !!$row.find('.merge-result-edit-checkbox:checked').length
         ;
 
         triggerOtherCheckboxesOnSummaryRow = typeof triggerOtherCheckboxesOnSummaryRow === 'boolean' ? triggerOtherCheckboxesOnSummaryRow : true;
+
 
         if (isSummaryRow) {
             $comparisonSummaryRow = $checkbox.closest('.comparison-summary');
@@ -310,15 +322,19 @@ $(function ($, undefined) {
             $comparisonSummaryRow = $comparisonResultsRow.prevAll('.comparison-summary').first();
         }
 
-        if (!$checkbox.prop('disabled')) {
-            $checkbox.prop('checked', isChecked);
+        if (!hasEditedMergeResult || isMergeResultCheckbox) {
+            if (!$checkbox.prop('disabled')) {
+                $checkbox.prop('checked', isChecked);
+            }
+
+            if (isChecked) {
+                $cell.addClass('clicked');
+            } else {
+                $cell.removeClass('clicked');
+            }
         }
 
-        if (isChecked) {
-            $cell.addClass('clicked');
-        } else {
-            $cell.removeClass('clicked');
-        }
+        $checkbox.trigger('change');
 
         summaryRowIdx = $comparisonSummaryRow.data('row-idx');
 
@@ -396,7 +412,8 @@ $(function ($, undefined) {
             isTargetColumn,
             checkboxesOnlyExistInTarget,
             mergeResultsBySummaryRowIdx = [],
-            uniqueIdentifierIsFullyMerged
+            uniqueIdentifierIsFullyMerged,
+            isMergeResultCheckbox
         ;
 
         for (i = 0; i < resultCheckboxesByColIdxAndSummaryRowIdx.length; i += 1) {
@@ -405,7 +422,7 @@ $(function ($, undefined) {
             }
 
             colIdx = i;
-            siteId = siteIdsByColIdx[colIdx];
+            siteId = siteIdsByColIdx[colIdx] || 0;
 
             for (j = 0; j < resultCheckboxesByColIdxAndSummaryRowIdx[i].length; j += 1) {
                 if (!resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][j]) {
@@ -414,13 +431,16 @@ $(function ($, undefined) {
 
                 summaryRowIdx               = j;
                 $resultCheckboxes           = resultCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
+                isMergeResultCheckbox       = $resultCheckboxes.hasClass('merge-result-edit-checkbox');
+
+
                 $summaryCheckbox            = summaryCheckboxesByColIdxAndSummaryRowIdx[colIdx][summaryRowIdx];
 
-                if (!$summaryCheckbox.length) {
+                if (!$summaryCheckbox.length && !isMergeResultCheckbox) {
                     continue;
                 }
 
-                if (typeof mergeResultsBySummaryRowIdx[summaryRowIdx] === 'undefined') {
+                if ($summaryCheckbox.length && typeof mergeResultsBySummaryRowIdx[summaryRowIdx] === 'undefined') {
                     mergeResultsBySummaryRowIdx[summaryRowIdx] = calculateAndGetMergeResult($summaryCheckbox, triggerCalculationOfMergeResultAsAClickEvent);
                 }
 
@@ -442,16 +462,16 @@ $(function ($, undefined) {
                     var $resultCheckbox = $(this),
                         $row = $(this).closest('tr[data-row-idx]'),
                         isChecked = $resultCheckbox.prop('checked'),
-                        $mergeResult,
-                        mergeResultIsEdited
+                        $mergeResult = $row.find('.merge-result'),
+                        mergeResultIsEdited = !!$mergeResult.find('.merge-result-edit-checkbox:checked').length,
+                        mergeResultValueIsNullAssignment,
+                        $mergeResultValue,
+                        mergeResultValue
                     ;
 
-                    if (!isChecked) {
+                    if (!isChecked && !mergeResultIsEdited) {
                         return true; // continue
                     }
-
-                    $mergeResult = $row.find('.merge-result');
-                    mergeResultIsEdited = $mergeResult.find('.merge-result-edit-symbol').hasClass('merge-result-edited');
 
                     fieldName = $row.children('.comparate-key-field').text().trim();
 
@@ -459,7 +479,21 @@ $(function ($, undefined) {
                         payloadData[uniqueIdentifierKey] = {};
                     }
 
-                    payloadData[uniqueIdentifierKey][fieldName] = mergeResultIsEdited ? [siteId, $mergeResult.find('.value').text()] : siteId;
+                    if (mergeResultIsEdited) {
+                        $mergeResultValue = $mergeResult.find('.value');
+
+                        mergeResultValueIsNullAssignment = $.trim($mergeResultValue.html()).indexOf('<i>') === 0;
+
+                        if (mergeResultValueIsNullAssignment) {
+                            mergeResultValue = null;
+                        } else {
+                            mergeResultValue = $mergeResultValue.text();
+                        }
+
+                        payloadData[uniqueIdentifierKey][fieldName] = [siteId, mergeResultValue];
+                    } else {
+                        payloadData[uniqueIdentifierKey][fieldName] = siteId;
+                    }
                 });
             }
         }
@@ -473,7 +507,115 @@ $(function ($, undefined) {
         updatePayloadData();
     });
 
-    $(document).on('merge-result-edited', updatePayloadData);
+    $(document)
+        .on('merge-result-pre-edit', function storeOriginalContentIfNecessary (e) {
+            var $editButton = $(e.target),
+                $mergeResultColumn = $editButton.closest('.merge-result'),
+                $checkbox = $mergeResultColumn.find(':checkbox')
+            ;
+
+            calculateAndGetMergeResult($checkbox);
+        })
+        .on('merge-result-edited', function (e) {
+            var $editButton = $(e.target),
+                $mergeResultColumn = $editButton.closest('.merge-result'),
+                $row = $mergeResultColumn.closest('tr'),
+                rowIdx = $row.data('row-idx'),
+                $mergeResultCheckbox = $mergeResultColumn.find(':checkbox'),
+                $otherCheckboxes = getResultCheckboxesByRowIdx(rowIdx).filter(function () {
+                    return this !== $mergeResultCheckbox.get(0);
+                })
+            ;
+
+            $mergeResultColumn
+                .addClass('merged')
+                .addClass('positive')
+                .removeClass('source')
+                .removeClass('target')
+            ;
+
+            $mergeResultCheckbox
+                .prop('checked', true)
+                .trigger('change')
+            ;
+
+            $otherCheckboxes.prop('checked', false).each(function () {
+                var $checkbox = $(this),
+                    isDisabled = $checkbox.is(':disabled')
+                ;
+
+                if (isDisabled) {
+                    $checkbox.attr('data-originally-disabled', 1);
+                }
+
+                $checkbox.prop('disabled', true);
+            });
+
+            updateCheckbox($otherCheckboxes, false, true);
+
+            $row.attr('data-action-taken', 1);
+
+            updatePayloadData(true);
+        })
+        .on('merge-result-reverted', function (e) {
+            var $editButton = $(e.target),
+                $mergeResultColumn = $editButton.closest('.merge-result'),
+                $mergeResultColumnValue = $mergeResultColumn.find('.value'),
+                $row = $mergeResultColumn.closest('tr'),
+                rowIdx = $row.data('row-idx'),
+                $mergeResultCheckbox = $mergeResultColumn.find(':checkbox'),
+                $otherCheckboxes = getResultCheckboxesByRowIdx(rowIdx).filter(function () {
+                    return this !== $mergeResultCheckbox.get(0);
+                }),
+                originallyDisabledCheckboxExistsInRow = false
+            ;
+
+            $mergeResultColumn
+                .removeClass('merged')
+                .removeClass('positive')
+                .removeClass('source')
+                .removeClass('target')
+            ;
+
+            $mergeResultCheckbox
+                .prop('checked', false)
+                .trigger('change')
+            ;
+
+            $otherCheckboxes.prop('checked', false).each(function () {
+                var $checkbox = $(this),
+                    wasAlwaysDisabled = $checkbox.data('originally-disabled')
+                ;
+
+                if (!wasAlwaysDisabled) {
+                    $checkbox.prop('disabled', false);
+                } else {
+                    $checkbox.prop('checked', true);
+                    originallyDisabledCheckboxExistsInRow = true;
+                }
+            });
+
+            updateCheckbox($otherCheckboxes);
+
+            $row.attr('data-action-taken', originallyDisabledCheckboxExistsInRow);
+
+            if (!originallyDisabledCheckboxExistsInRow) {
+                $mergeResultColumnValue.html($mergeResultColumnValue.data('original-content'));
+            }
+
+            updatePayloadData(true);
+        })
+    ;
+
+    $('.merge-result-edit-checkbox').on('change', function (e) {
+        var $checkbox = $(e.currentTarget),
+            isChecked = $checkbox.is(':checked'),
+            $mergeResultEditSymbol = $checkbox.closest('.merge-result').find('.merge-result-edit-symbol'),
+            classChangeMethodToCall = isChecked ? 'addClass' : 'removeClass'
+        ;
+
+        $mergeResultEditSymbol[classChangeMethodToCall]('merge-result-edit-symbol-edited');
+    });
 
     (function checkOffAndDisableCellsThatHaveNoOtherOption() {
         // check off summary rows that have no other option
