@@ -142,9 +142,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                 </span>
             </td>
             <td class="comparison-site-collection-merge-result-container merge-result" data-col-idx="<?= $col_idx++ ?>">
-                <span>
-                    &nbsp;
-                </span>
+                <span></span>
             </td>
             <?php
                 foreach ($remote_site_collection as $remote_site):
@@ -243,7 +241,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                 if (!$entity_missing_in_target && null === $entity_comparison->getTargetValue()) {
                                     $target_value_to_output = '<i>(NULL)</i>';
                                 } else {
-                                    $target_value_to_output = strlen(trim($entity_comparison->getTargetValue())) > 0 ? trim($entity_comparison->getTargetValue(false, true)) : '&nbsp;';
+                                    $target_value_to_output = /*trim*/($entity_comparison->getTargetValue(false, true));
                                 }
 
                                 $comparate_column_class = 'comparate-column-container ';
@@ -299,7 +297,11 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                     <td class="merge-result" data-col-idx="<?= $col_idx++ ?>">
                                         <span>
                                             <span class="value"><i>(No Action Chosen)</i></span>
-                                            <span class="merge-result-edit-symbol" title="Click to edit this value"></span>
+                                            <?php
+                                                if ($comparate_column_name !== $unique_identifier_key): ?>
+                                                    <span class="merge-result-edit-symbol" title="Click to edit this value"></span>
+                                            <?php
+                                                endif ?>
                                         </span>
                                         <input type="checkbox" class="merge-result-edit-checkbox">
                                     </td>
@@ -311,7 +313,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                             if (!$entity_missing_in_source && null === $entity_comparison->getSourceValue()) {
                                                 $source_value_to_output = '<i>(NULL)</i>';
                                             } else {
-                                                $source_value_to_output = strlen(trim($entity_comparison->getSourceValue())) > 0 ? trim($entity_comparison->getSourceValue(false, true)) : '&nbsp;';
+                                                $source_value_to_output = /*trim*/($entity_comparison->getSourceValue(false, true));
                                             }
 
                                             $entity_exists_in_both_source_and_target = (
@@ -387,7 +389,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
             <td class="site-name" data-name="<?= Syncee_Helper::xssCleanAndFormat($unique_identifier_value) ?>">
                 <a href="#"><?= $unique_identifier_value ?></a>
             </td>
-            <td class="summary">&nbsp;</td>
+            <td class="summary"></td>
         </tr>
     <?php
     endforeach ?>
