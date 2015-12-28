@@ -241,7 +241,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                 if (!$entity_missing_in_target && null === $entity_comparison->getTargetValue()) {
                                     $target_value_to_output = '<i>(NULL)</i>';
                                 } else {
-                                    $target_value_to_output = /*trim*/($entity_comparison->getTargetValue(false, true));
+                                    $target_value_to_output = $entity_comparison->getTargetValue(false, true);
                                 }
 
                                 $comparate_column_class = 'comparate-column-container ';
@@ -313,7 +313,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                             if (!$entity_missing_in_source && null === $entity_comparison->getSourceValue()) {
                                                 $source_value_to_output = '<i>(NULL)</i>';
                                             } else {
-                                                $source_value_to_output = /*trim*/($entity_comparison->getSourceValue(false, true));
+                                                $source_value_to_output = $entity_comparison->getSourceValue(false, true);
                                             }
 
                                             $entity_exists_in_both_source_and_target = (
