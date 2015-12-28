@@ -300,8 +300,8 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                         <span>
                                             <span class="value"><i>(No Action Chosen)</i></span>
                                             <span class="merge-result-edit-symbol" title="Click to edit this value"></span>
-
                                         </span>
+                                        <input type="checkbox" class="merge-result-edit-checkbox">
                                     </td>
                                     <?php
                                         foreach ($entity_comparison_library_with_unique_identifier_value as $entity_comparison_collection):
