@@ -2,10 +2,13 @@ Syncee.updateSummaryBasedOnRow = function ($row, isMerged) {
     var $questionMark = $row.find('.question-mark'),
         uniqueIdentifierValue = $row.data('name'),
         $mergeResultSummaryTargetSite = $row.find('.merge-result-summary-target'),
+        $mergeResultSummaryEdited = $row.find('.merge-result-summary-edited'),
         $mergeResultSummarySourceSites = $row.find('.merge-result-summary-source-site'),
         mergeResultSummarySourceSiteNames = [],
+        atLeastOneDetailedMergeResultHasBeenEdited = $mergeResultSummaryEdited.length,
+        atLeastOneDetailedMergeResultHasBeenChosenFromASource = $mergeResultSummarySourceSites.length,
         mergeResultSummarySourceSiteNamesHtmlCollection = [],
-        mergeIsAllFromTargetSite = isMerged && !$mergeResultSummarySourceSites.length,
+        mergeIsAllFromTargetSite = isMerged && !atLeastOneDetailedMergeResultHasBeenEdited && !atLeastOneDetailedMergeResultHasBeenChosenFromASource,
         $summarizationTableCell = $('#syncee').find('.summary-table [data-name="' + uniqueIdentifierValue + '"]').siblings('.summary'),
         $summarizationRow = $summarizationTableCell.closest('tr'),
         questionMarkHtml = ''
@@ -30,7 +33,23 @@ Syncee.updateSummaryBasedOnRow = function ($row, isMerged) {
         if (mergeIsAllFromTargetSite) {
             questionMarkHtml += 'requires no further input.  However, nothing will change since all options have been chosen from the local site.';
         } else {
-            questionMarkHtml += 'will be merged from ' + mergeResultSummarySourceSiteNames.join(' and ') + '.  It requires no further input.';
+            questionMarkHtml += 'will be merged from ';
+
+            if (atLeastOneDetailedMergeResultHasBeenChosenFromASource) {
+                questionMarkHtml += mergeResultSummarySourceSiteNames.join(' and ');
+
+                if (atLeastOneDetailedMergeResultHasBeenEdited) {
+                    questionMarkHtml += ', as well as ';
+                } else {
+                    questionMarkHtml += ' ';
+                }
+            }
+
+            if (atLeastOneDetailedMergeResultHasBeenEdited) {
+                questionMarkHtml += 'locally custom-edited input.';
+            }
+
+            questionMarkHtml += '  It requires no further input.';
         }
     } else {
         questionMarkHtml += 'will not be merged in.  It still requires your input.  No action will be taken until all inputs are filled.';
