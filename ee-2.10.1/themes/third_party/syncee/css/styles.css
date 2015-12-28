@@ -577,6 +577,7 @@ body .syncee-version .btn {
 
 #syncee-page .collection-table.comparison-collection-table .comparison-details .value {
     width: 90%;
+    display: inline-block;
     /*float: left;*/
 }
 
