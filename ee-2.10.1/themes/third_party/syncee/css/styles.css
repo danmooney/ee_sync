@@ -785,7 +785,7 @@ body .syncee-version .btn {
     display: block;
 }
 
-#syncee-page .collection-table.comparison-collection-table .merge-result .merge-result-edit-symbol.merge-result-edited {
+#syncee-page .collection-table.comparison-collection-table .merge-result .merge-result-edit-symbol.merge-result-edit-symbol-edited {
     background-image: url('../img/pencil_symbol_red.png');
     display: block;
 }
