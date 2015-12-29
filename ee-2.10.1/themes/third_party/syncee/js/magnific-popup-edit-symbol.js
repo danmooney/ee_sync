@@ -42,7 +42,10 @@ $(function ($) {
                         return;
                     }
 
-                    $el[bindMethod](eventType, function () {
+                    $el[bindMethod](eventType, function (e) {
+                        // add current event object to instance
+                        instance.currentEvent = e;
+
                         callback.apply(instance, callbackParams);
                     });
                 });
@@ -71,7 +74,6 @@ $(function ($) {
                 $editButton.trigger('merge-result-reverted');
                 this.close();
             },
-            'change $checkboxSetToEmptyString': function () {}, // TODO
             'change $checkboxSetToNull': function ($checkboxSetToNull, $mfpMergeResultValue) {
                 if ($checkboxSetToNull.is(':checked')) {
                     $mfpMergeResultValue.attr('data-overridden-content', $mfpMergeResultValue.val());
@@ -107,10 +109,10 @@ $(function ($) {
                 return $editButton.closest('.merge-result').find('.value');
             },
             $mfpMergeResultValue: function () {
-                return this.container.find('.mfp-mergeResultValue');
+                return this.container.find('.syncee-merge-result-value-input');
             },
             $checkboxSetToNull: function () {
-                return this.container.find('#syncee-set-to-null');
+                return this.container.find('.syncee-set-to-null');
             },
             $btnOk: function () {
                 return this.container.find('.syncee-btn-ok');
@@ -130,14 +132,15 @@ $(function ($) {
         },
         inline: {
             markup: (
-                // TODO - implement overflow support
                 '<div class="syncee-popup">' +
                     '<div class="mfp-close"></div>' +
                     '<h1 class="mfp-uniqueIdentifierValue"></h1>' +
                     '<h2 class="mfp-comparateColumnName"></h2>' +
-                    '<input id="syncee-set-to-null" type="checkbox" name="set_to_null">' +
-                    '<label for="syncee-set-to-null">Set as <i>(NULL)</i></label>' +
-                    '<textarea class="mfp-mergeResultValue"></textarea>' +
+                    '<div class="syncee-merge-result-values-container">' +
+                        '<input id="syncee-set-to-null" class="syncee-set-to-null" type="checkbox" name="set_to_null">' +
+                        '<label for="syncee-set-to-null">Set as <i>(NULL)</i></label>' +
+                        '<textarea class="mfp-mergeResultValue syncee-merge-result-value-input"></textarea>' +
+                    '</div>' +
                     '<button class="syncee-btn syncee-btn-ok">OK</button>' +
                     '<button class="syncee-btn syncee-btn-cancel">Cancel</button>' +
                     '<button class="syncee-btn syncee-btn-clear-value">Clear Edited Value</button>' +
@@ -182,7 +185,7 @@ $(function ($) {
                 }
 
                 setTimeout(function () {
-                    instance.elements.$mfpMergeResultValue.focus();
+                    instance.elements.$mfpMergeResultValue.first().focus();
                 }, 100);
             },
             close: function () {
@@ -190,6 +193,10 @@ $(function ($) {
                 this.elements = {};
             }
         }
+    };
+
+    Syncee.Mfp = {
+        optionsEditSymbol: options
     };
 
     $(document).on('click', '.merge-result-edit-symbol', function (e) {
