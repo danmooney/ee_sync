@@ -26,6 +26,8 @@ abstract class Syncee_Entity_Comparate_Abstract extends Syncee_Entity_Abstract i
 
     protected $_ignored_columns_in_comparison = array();
 
+    protected $_serialized_base64_columns_in_comparison = array();
+
     public function getIgnoredColumnsFromComparison()
     {
         return $this->_ignored_columns_in_comparison;
@@ -34,6 +36,11 @@ abstract class Syncee_Entity_Comparate_Abstract extends Syncee_Entity_Abstract i
     public function getHiddenColumnsFromComparison()
     {
         return $this->_hidden_columns_in_comparison;
+    }
+
+    public function getSerializedBase64ColumnsFromComparison()
+    {
+        return $this->_serialized_base64_columns_in_comparison;
     }
 
     /**

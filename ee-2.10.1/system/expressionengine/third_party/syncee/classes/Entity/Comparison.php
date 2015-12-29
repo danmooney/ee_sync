@@ -112,6 +112,12 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
      */
     protected $_column_is_hidden_in_comparison;
 
+    /**
+     * TODO - these bools are simply for ease of inspection when debugging
+     * @var bool
+     */
+    protected $_column_is_serialized_and_base64_encoded;
+
     public function __construct(Syncee_Entity_Abstract $source, Syncee_Entity_Abstract $target)
     {
         $this->_source = $source;
@@ -155,6 +161,10 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
     {
         $source_value = is_string($format_for_human_readable_output) ? $format_for_human_readable_output : $this->_source_value;
 
+        if (is_bool($format_for_human_readable_output) && $this->comparateColumnIsSerializedAndBase64Encoded()) {
+            $source_value = @unserialize(base64_decode(($source_value)));
+        }
+
         if ($prepend_type_and_coerce_to_string_if_necessary) {
             $source_value_str = is_array($source_value) ? serialize($source_value) : $source_value;
             return gettype($source_value) . $source_value_str;
@@ -172,6 +182,10 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
     public function getTargetValue($prepend_type_and_coerce_to_string_if_necessary = false, $format_for_human_readable_output = false)
     {
         $target_value = is_string($format_for_human_readable_output) ? $format_for_human_readable_output : $this->_target_value;
+
+        if (is_bool($format_for_human_readable_output) && $this->comparateColumnIsSerializedAndBase64Encoded()) {
+            $target_value = @unserialize(base64_decode(($target_value)));
+        }
 
         if ($prepend_type_and_coerce_to_string_if_necessary) {
             $target_value_str = is_array($target_value) ? serialize($target_value) : $target_value;
@@ -259,6 +273,18 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Abstract implements Syncee_
         }
 
         return $this->_column_is_hidden_in_comparison;
+    }
+
+    public function comparateColumnIsSerializedAndBase64Encoded()
+    {
+        if (!isset($this->_column_is_serialized_and_base64_encoded)) {
+            $this->_column_is_serialized_and_base64_encoded = in_array(
+                $this->getComparateColumnName(),
+                $this->_source->getSerializedBase64ColumnsFromComparison()
+            );
+        }
+
+        return $this->_column_is_serialized_and_base64_encoded;
     }
 
     public function comparateColumnIsPrimaryKey()

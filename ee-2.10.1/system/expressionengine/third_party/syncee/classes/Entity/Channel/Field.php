@@ -28,6 +28,10 @@ class Syncee_Entity_Channel_Field extends Syncee_Entity_Comparate_Abstract
 
     );
 
+    protected $_serialized_base64_columns_in_comparison = array(
+        'field_settings'
+    );
+
     protected $_active_record_class_name = 'Syncee_Channel_Field';
 
     protected $_unique_identifier_key = 'field_name';
