@@ -53,9 +53,6 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
 
 ?>
 
-<?php
-/* <a class="btn btn-secondary" href="<?= $synchronize_profile_list_url ?>">Back to <?= $remote_entity_name ?> Synchronization Profiles</a>
-<br> */ ?>
 <br>
 
 <table class="collection-table comparison-collection-table" data-sticky-table data-sticky-table-max-rows="3" data-resizable-table data-total-entity-comparate-column-names="<?= count($entity_comparate_column_names) ?>">
@@ -233,13 +230,16 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                     count($unique_values_for_this_comparate) <= 1
                                 );
 
-                                $comparate_column_is_ignored_in_comparison = $entity_comparison->comparateColumnIsIgnoredInComparison();
-                                $comparate_column_is_primary_key           = $entity_comparison->comparateColumnIsPrimaryKey();
+                                $comparate_column_is_ignored_in_comparison         = $entity_comparison->comparateColumnIsIgnoredInComparison();
+                                $comparate_column_is_primary_key                   = $entity_comparison->comparateColumnIsPrimaryKey();
+                                $comparate_column_is_serialized_and_base64_encoded = $entity_comparison->comparateColumnIsSerializedAndBase64Encoded();
 
                                 $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites || $comparate_column_is_primary_key;
 
                                 if (!$entity_missing_in_target && null === $entity_comparison->getTargetValue()) {
                                     $target_value_to_output = '<i>(NULL)</i>';
+                                } elseif (!$entity_missing_in_target && $comparate_column_is_serialized_and_base64_encoded) {
+                                    $target_value_to_output = '<i>(Click to Inspect Values)</i>';
                                 } else {
                                     $target_value_to_output = $entity_comparison->getTargetValue(false, true);
                                 }
@@ -254,6 +254,10 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                     $comparate_column_class .= 'comparate-column-primary-key';
                                 }
 
+                                if ($comparate_column_is_serialized_and_base64_encoded) {
+                                    $comparate_column_class .= 'comparate-column-serialized-and-base64-encoded';
+                                }
+
                                 if ($comparate_column_class) {
                                     $comparate_column_class = sprintf('class="%s"', $comparate_column_class);
                                 }
@@ -264,7 +268,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                 }
 
                                 ?>
-                                <tr <?= $comparate_column_class ?> data-row-idx="<?= $row_idx++ ?>" data-name="<?= $comparate_column_name ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>" <?= $comparate_column_is_ignored_in_comparison ? 'data-comparate-column-ignored' : '' ?> <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'data-no-action' : '' ?>>
+                                <tr <?= $comparate_column_class ?> data-row-idx="<?= $row_idx++ ?>" data-name="<?= $comparate_column_name ?>" data-summary-row-idx="<?= $comparison_summary_row_idx ?>" <?= $comparate_column_is_ignored_in_comparison ? 'data-comparate-column-ignored' : '' ?> <?= $comparate_column_is_serialized_and_base64_encoded ? 'data-serialized-and-base64-encoded' : '' ?> <?= $checkbox_should_be_hidden_because_no_action_needs_to_be_taken ? 'data-no-action' : '' ?>>
                                     <td class="comparate-key-field" style="width: <?= $unique_identifier_column_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                         <span>
                                             <?= $comparate_column_name ?>
@@ -283,8 +287,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                     </td>
                                     <td class="target-field comparate-value-field <?= $entity_missing_in_target ? 'comparate-value-field-missing' : '' ?>" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                         <span>
-                                            <span class="value"><?= Syncee_Helper::xssCleanAndFormat($target_value_to_output) ?></span>
-
+                                            <span class="value<?= $comparate_column_is_serialized_and_base64_encoded ?  sprintf(' has-data-value" data-value="%s"', htmlspecialchars(json_encode($entity_comparison->getTargetValue(false, true))), ENT_QUOTES, 'UTF-8') : '"' ?>><?= Syncee_Helper::xssCleanAndFormat($target_value_to_output) ?></span>
                                             <?php
                                                 if (!$entity_missing_in_target): ?>
                                                     <span class="decision-checkbox">
@@ -312,6 +315,8 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
 
                                             if (!$entity_missing_in_source && null === $entity_comparison->getSourceValue()) {
                                                 $source_value_to_output = '<i>(NULL)</i>';
+                                            } elseif (!$entity_missing_in_source && $comparate_column_is_serialized_and_base64_encoded) {
+                                                $source_value_to_output = '<i>(Click to Inspect Values)</i>';
                                             } else {
                                                 $source_value_to_output = $entity_comparison->getSourceValue(false, true);
                                             }
@@ -348,7 +353,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                             ?>
                                             <td class="source-field comparate-value-field <?= $match_class ?> <?= $entity_missing_in_source ? 'comparate-value-field-missing' : '' ?>" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                                 <span>
-                                                    <span class="value"><?= Syncee_Helper::xssCleanAndFormat($source_value_to_output) ?></span>
+                                                    <span class="value" <?= $comparate_column_is_serialized_and_base64_encoded ? sprintf(' has-data-value" data-value="%s"', htmlspecialchars(json_encode($entity_comparison->getSourceValue(false, true))), ENT_QUOTES, 'UTF-8') : '"' ?>><?= Syncee_Helper::xssCleanAndFormat($source_value_to_output) ?></span>
                                                     <?php
                                                         $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites;
 
