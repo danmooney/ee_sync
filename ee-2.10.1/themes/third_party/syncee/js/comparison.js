@@ -167,7 +167,7 @@ $(function ($, undefined) {
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, summaryCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length ||
                 getSourceCheckboxesBySummaryRowIdx(summaryRowIdx, resultCheckboxesByColIdxAndSummaryRowIdx).filter(':checked').length
             ),
-            detailCellHtml = $cell.find('.value').html(),
+            $detailCellValueEl = $cell.find('.value'),
             summaryCellTargetHtmlArr = [],
             summaryCellSourceHtmlArr = [],
             totalCheckboxInColumnCount = totalEntityComparateColumnNames/*getResultCheckboxesByColIdxAndSummaryRowIdx(colIdx, summaryRowIdx).length*/,
@@ -221,7 +221,7 @@ $(function ($, undefined) {
 
             if ($checkbox.is(':checked')) {
                 $correspondingMergeCell.addClass('merged').addClass('positive');
-                $correspondingMergeCell.find('.value').html(detailCellHtml);
+                $correspondingMergeCell.find('.value').replaceWith($detailCellValueEl.clone());
 
                 $row.attr('data-action-taken', 1);
 
@@ -482,12 +482,12 @@ $(function ($, undefined) {
                     if (mergeResultIsEdited) {
                         $mergeResultValue = $mergeResult.find('.value');
 
-                        mergeResultValueIsNullAssignment = $.trim($mergeResultValue.html()).indexOf('<i>') === 0;
+                        mergeResultValueIsNullAssignment = $.trim($mergeResultValue.html()).indexOf('<i>(NULL)</i>') === 0; // TODO - not the best way of referencing the NULL human-readable format.  should only be defined once in the code
 
                         if (mergeResultValueIsNullAssignment) {
                             mergeResultValue = null;
                         } else {
-                            mergeResultValue = $mergeResultValue.text();
+                            mergeResultValue = $mergeResultValue.attr('data-value') || $mergeResultValue.text();
                         }
 
                         payloadData[uniqueIdentifierKey][fieldName] = [siteId, mergeResultValue];
