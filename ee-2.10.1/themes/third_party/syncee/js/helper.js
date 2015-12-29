@@ -13,3 +13,7 @@ Syncee.Helper = {
         return result;
     }
 };
+
+$.fn.outerHTML = function () {
+    return this[0].outerHTML;
+};
