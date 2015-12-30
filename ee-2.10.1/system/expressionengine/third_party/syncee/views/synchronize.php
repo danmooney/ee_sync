@@ -280,14 +280,14 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
 
                                             <?php
                                                 if ($comparate_column_is_primary_key): ?>
-                                                    <span title="This column is a primary key." class="comparate-column-primary-key-symbol"></span>
+                                                    <span title="This column is a primary key.  This value is ignored in the comparison." class="comparate-column-primary-key-symbol"></span>
                                             <?php
                                                 endif ?>
                                         </span>
                                     </td>
                                     <td class="target-field comparate-value-field <?= $entity_missing_in_target ? 'comparate-value-field-missing' : '' ?>" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                         <span>
-                                            <span class="value<?= $comparate_column_is_serialized_and_base64_encoded ?  sprintf(' has-data-value" data-value="%s"', htmlspecialchars(json_encode($entity_comparison->getTargetValue(false, true))), ENT_QUOTES, 'UTF-8') : '"' ?>><?= Syncee_Helper::xssCleanAndFormat($target_value_to_output) ?></span>
+                                            <span class="value<?= $comparate_column_is_serialized_and_base64_encoded ? sprintf(' has-data-value" data-value="%s', htmlspecialchars(json_encode($entity_comparison->getTargetValue(false, true))), ENT_QUOTES, 'UTF-8') : '' ?>"><?= Syncee_Helper::xssCleanAndFormat($target_value_to_output) ?></span>
                                             <?php
                                                 if (!$entity_missing_in_target): ?>
                                                     <span class="decision-checkbox">
@@ -353,7 +353,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                             ?>
                                             <td class="source-field comparate-value-field <?= $match_class ?> <?= $entity_missing_in_source ? 'comparate-value-field-missing' : '' ?>" style="width: <?= $other_columns_percentage_width ?>%" data-col-idx="<?= $col_idx++ ?>">
                                                 <span>
-                                                    <span class="value" <?= $comparate_column_is_serialized_and_base64_encoded ? sprintf(' has-data-value" data-value="%s"', htmlspecialchars(json_encode($entity_comparison->getSourceValue(false, true))), ENT_QUOTES, 'UTF-8') : '"' ?>><?= Syncee_Helper::xssCleanAndFormat($source_value_to_output) ?></span>
+                                                    <span class="value <?= $comparate_column_is_serialized_and_base64_encoded ? sprintf(' has-data-value" data-value="%s', htmlspecialchars(json_encode($entity_comparison->getSourceValue(false, true))), ENT_QUOTES, 'UTF-8') : '' ?>"><?= Syncee_Helper::xssCleanAndFormat($source_value_to_output) ?></span>
                                                     <?php
                                                         $checkbox_should_be_hidden_because_no_action_needs_to_be_taken = $entity_comparison_has_only_one_unique_value_or_less_across_all_sites;
 
