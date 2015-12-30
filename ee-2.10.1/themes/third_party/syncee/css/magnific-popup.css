@@ -6,3 +6,33 @@
     max-width: 500px;
     margin: 20px auto;
 }
+
+.syncee-popup .syncee-merge-result-values-container {
+    margin-top: 15px;
+}
+
+.syncee-popup .syncee-merge-result-values-container .syncee-value-heading {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.syncee-popup .syncee-merge-result-values-container input.syncee-set-to-null {
+    margin-right: 5px;
+}
+
+.syncee-popup .syncee-merge-result-values-container .syncee-set-to-null-container {
+    float: right;
+}
+
+.syncee-popup .syncee-merge-result-values-container .syncee-merge-result-value-input {
+    margin: 5px 0;
+}
+
+.syncee-popup .syncee-merge-result-values-container .syncee-merge-result-value {
+    margin: 0 -20px;
+    padding: 10px 20px;
+}
+
+.syncee-popup .syncee-merge-result-values-container .syncee-merge-result-value:nth-of-type(even) {
+    background: #ECECEC;
+}
