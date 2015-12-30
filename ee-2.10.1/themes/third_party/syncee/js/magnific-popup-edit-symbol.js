@@ -199,7 +199,7 @@ $(function ($) {
         optionsEditSymbol: options
     };
 
-    $(document).on('click', '.merge-result-edit-symbol', function (e) {
+    $(document).on('click', '.merge-result-edit-symbol:not(".merge-result-edit-symbol-multivalue")', function (e) {
         e.mfpEl = this;
         $.magnificPopup.instance._openClick(e, this, options);
     });

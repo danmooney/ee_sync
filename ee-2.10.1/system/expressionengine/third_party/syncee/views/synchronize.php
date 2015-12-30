@@ -302,7 +302,7 @@ $synchronize_profile_list_url = Syncee_Helper::createModuleCpUrl('viewSynchroniz
                                             <span class="value"><i>(No Action Chosen)</i></span>
                                             <?php
                                                 if ($comparate_column_name !== $unique_identifier_key): ?>
-                                                    <span class="merge-result-edit-symbol" title="Click to edit this value"></span>
+                                                    <span class="merge-result-edit-symbol <?= $comparate_column_is_serialized_and_base64_encoded ? 'merge-result-edit-symbol-multivalue' : '' ?>" title="Click to edit this value"></span>
                                             <?php
                                                 endif ?>
                                         </span>
