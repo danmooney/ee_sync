@@ -20,6 +20,8 @@ if (!defined('SYNCEE_PATH')) {
 
 abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface, Syncee_Container_Interface, Countable, Iterator, ArrayAccess
 {
+    const ROW_MODEL_GENERIC = 'Syncee_Entity_Generic';
+
     protected $_position = 0;
 
     protected $_rows = array();
@@ -64,6 +66,14 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
     public function getRowModel()
     {
         return $this->_row_model;
+    }
+
+    public function hasGenericRowModel()
+    {
+        return is_object($this->_row_model)
+            ? get_class($this->_row_model) === self::ROW_MODEL_GENERIC
+            : $this->_row_model === self::ROW_MODEL_GENERIC
+        ;
     }
 
     public function setRowModel($row_model)

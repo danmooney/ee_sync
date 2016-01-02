@@ -169,7 +169,7 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
          */
         $collection_model = $empty_row->getCollectionModel();
 
-        if ($is_generic = !$collection_model->getRowModel()) {
+        if ($is_generic = $collection_model->hasGenericRowModel()) {
             $collection_model->setRowModel($empty_row);
         }
 
