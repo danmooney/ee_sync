@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Collection_Generic extends Syncee_Collection_Abstract
+class Syncee_Collection_Library_Generic extends Syncee_Collection_Library_Abstract
 {
-    protected $_row_model = 'Syncee_Entity_Generic';
+    protected $_collection_model = 'Syncee_Collection_Generic';
 }
