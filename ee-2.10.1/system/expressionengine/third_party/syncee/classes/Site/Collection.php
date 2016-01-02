@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Site_Collection extends Syncee_Collection_Abstract implements Syncee_Site_Container_Interface
+class Syncee_Site_Collection extends Syncee_Collection_Generic implements Syncee_Site_Container_Interface
 {
     /**
      * @var Syncee_Site_Request_Log_Collection

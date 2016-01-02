@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Collection_Empty extends Syncee_Collection_Abstract
+class Syncee_Collection_Empty extends Syncee_Collection_Generic
 {
 
 }

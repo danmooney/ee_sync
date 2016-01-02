@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-class Syncee_Site_Request_Log_Collection extends Syncee_Collection_Abstract
+class Syncee_Site_Request_Log_Collection extends Syncee_Collection_Generic
 {
     protected $_row_model = 'Syncee_Site_Request_Log';
 }

@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Entity_Comparate_Abstract extends Syncee_Entity_Abstract implements Syncee_Entity_Comparate_Ignore_Interface
+abstract class Syncee_Entity_Comparate_Abstract extends Syncee_Entity_Generic implements Syncee_Entity_Comparate_Ignore_Interface
 {
     protected $_active_record_class_name;
 

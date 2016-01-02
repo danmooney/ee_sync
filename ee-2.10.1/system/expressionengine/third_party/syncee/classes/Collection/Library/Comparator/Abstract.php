@@ -18,7 +18,7 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
-abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Collection_Library_Abstract
+abstract class Syncee_Collection_Library_Comparator_Abstract extends Syncee_Collection_Library_Generic
     implements Syncee_Collection_Library_Comparator_Interface
 {
     public function compareCollections()
