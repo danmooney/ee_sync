@@ -100,6 +100,18 @@ class Syncee_Response
             }
         }
 
+        if (isset($decoded_response['references']) && is_string($decoded_response['references'])) {
+            if (!is_array(json_decode($decoded_response['references'], true))) {
+                $decoded_response['references'] = $this->_decryptResponseData($site, $decoded_response['references']);
+            }
+
+            $decoded_response['references'] = json_decode($decoded_response['references'], true);
+
+            if (!is_array($decoded_response['references'])) {
+                $this->_errors[] = 'Unable to decode response data with private key on this local machine.';
+            }
+        }
+
         if (defined('APP_VER') && $decoded_response['ee_version'] !== APP_VER) {
             $this->_errors[] = 'ExpressionEngine Version mismatch.  Unexpected behavior may occur.';
         }
