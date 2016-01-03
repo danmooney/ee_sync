@@ -13,7 +13,7 @@ require_once dirname(__FILE__) . '/../_init.php';
 
 <?php
     if (!count($synchronization_profile_collection)): ?>
-        <p>You haven't generated any <?= strtolower($remote_entity->getName()) ?> synchronization profiles yet.  Click the "Generate New <?= ucwords($remote_entity->getName()) ?> Synchronization Profile" to generate one.</p>
+        <p>You haven't generated any <?= strtolower($remote_entity->getName()) ?> synchronization profiles yet.  Click the "Generate New <?= ucwords($remote_entity->getName()) ?> Synchronization Profile" button to generate one.</p>
         <br>
 <?php
     endif ?>
