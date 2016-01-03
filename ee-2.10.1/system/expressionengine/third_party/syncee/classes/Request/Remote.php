@@ -95,9 +95,21 @@ class Syncee_Request_Remote
         }
 
         // get the data for the entity requested
+        $collection        = $entity->queryDatabaseAndGenerateCollection();
+        $data              = json_encode($collection->toArray(false));
 
-        $collection       = $entity->queryDatabaseAndGenerateCollection();
-        $data             = json_encode($collection->toArray(false));
+        // get the references necessary
+        $reference_library = $entity->getReferenceLibraryBasedOnCollection($collection);
+        $references        = array();
+
+        /**
+         * @var $reference_collection Syncee_Collection_Abstract
+         */
+        foreach ($reference_library as $reference_collection) {
+            $references[$reference_collection->getRowModel()->getName()] = $reference_collection->toArray(false);
+        }
+
+        $references       = json_encode(array_filter($references));
 
         $needs_encryption = !$is_local_internal_request;
 
@@ -105,7 +117,8 @@ class Syncee_Request_Remote
             $crypt = $site->rsa->getCrypt();
             $crypt->loadKey($site->rsa->getPublicKey());
 
-            $data = base64_encode($crypt->encrypt($data));
+            $data       = base64_encode($crypt->encrypt($data));
+            $references = base64_encode($crypt->encrypt($references));
         }
 
         if (!$data) {
@@ -113,7 +126,7 @@ class Syncee_Request_Remote
             $message = 'Bad public key.';
         }
 
-        $response_data_to_send = $this->_getJsonResponse($data, $errors, $code, $message);
+        $response_data_to_send = $this->_getJsonResponse($data, $errors, $code, $message, $references);
 
         if ($log) {
             // decrypt the encrypted response data for easy viewing in inbound request log
@@ -152,18 +165,21 @@ class Syncee_Request_Remote
         return $this->_status_code;
     }
 
-    private function _getJsonResponse($data = array(), $errors = array(), $code = 200, $message = '', $meta = array())
+    private function _getJsonResponse($data = array(), $errors = array(), $code = 200, $message = '', $references = array())
     {
         $site = $this->_site;
 
 		$data = array(
-            'version' => SYNCEE_VERSION,
-			'code'    => $code,
-			'data'    => $data,
-			'errors'  => $errors
+            'version'    => SYNCEE_VERSION,
+			'code'       => $code,
+			'data'       => $data,
+            'references' => $references,
+			'errors'     => $errors
 		);
 
         $data['ee_version'] = SYNCEE_EE_VERSION;
+
+        $meta = array();
 
         if (SYNCEE_TEST_MODE) {
             $meta['public_key']           = $site->rsa->getPublicKey();
