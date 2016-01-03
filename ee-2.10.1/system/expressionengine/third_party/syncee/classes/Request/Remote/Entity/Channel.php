@@ -20,6 +20,12 @@ if (!defined('SYNCEE_PATH')) {
 
 class Syncee_Request_Remote_Entity_Channel extends Syncee_Request_Remote_Entity_Abstract
 {
+    protected $_references = array(
+        'cat_group'    => 'Syncee_Request_Remote_Entity_Category_Group',
+        'field_group'  => 'Syncee_Request_Remote_Entity_Channel_Field_Group',
+        'status_group' => 'Syncee_Request_Remote_Entity_Status_Group',
+    );
+
     protected $_collection_class_name = 'Syncee_Entity_Channel_Collection';
 
     public function queryDatabaseAndGenerateCollection()
