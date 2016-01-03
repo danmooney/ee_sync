@@ -26,6 +26,9 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
 
     protected $_rows = array();
 
+    /**
+     * @var string|Syncee_Entity_Abstract
+     */
     protected $_row_model;
 
     public function sortByCallback(Closure $sortFunc)
