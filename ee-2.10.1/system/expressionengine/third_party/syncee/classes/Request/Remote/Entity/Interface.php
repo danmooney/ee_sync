@@ -33,6 +33,12 @@ interface Syncee_Request_Remote_Entity_Interface
     public function queryDatabaseAndGenerateCollection();
 
     /**
+     * @param Syncee_Collection_Abstract $collection
+     * @return Syncee_Collection_Library_Abstract
+     */
+    public function getReferenceLibraryBasedOnCollection(Syncee_Collection_Abstract $collection);
+
+    /**
      * @param $ee_site_id
      */
     public function setRequestedEeSiteId($ee_site_id);
