@@ -30,6 +30,8 @@ abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_R
      */
     protected $_collection_class_name;
 
+    protected $_references = array();
+
     public function getName()
     {
         $class_exploded = explode('_', get_class($this));
@@ -55,6 +57,37 @@ abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_R
     {
         $collection_class_name = $this->_collection_class_name;
         return new $collection_class_name();
+    }
+
+    public function getReferenceLibraryBasedOnCollection(Syncee_Collection_Abstract $collection)
+    {
+        $reference_class_names_fetched = array();
+        $reference_collections         = array();
+
+        /**
+         * @var $remote_entity Syncee_Request_Remote_Entity_Abstract
+         */
+        foreach ($this->_references as $column => $remote_entity_class_name) {
+            $already_fetched_reference_collection_for_this_class = (
+                in_array($remote_entity_class_name, $reference_class_names_fetched) ||
+                get_class($this) === $remote_entity_class_name
+            );
+
+            if ($already_fetched_reference_collection_for_this_class) {
+                continue;
+            }
+
+            $remote_entity                                    = new $remote_entity_class_name();
+            $reference_collection                             = $remote_entity->queryDatabaseAndGenerateCollection();
+
+            // set row model $remote_entity on $reference_collection so we can fetch the entity's name when the request gets grouped with the other references
+            $reference_collection->setRowModel($remote_entity);
+
+            $reference_collections[]         = $reference_collection;
+            $reference_class_names_fetched[] = $remote_entity_class_name;
+        }
+
+        return new Syncee_Collection_Library_Generic($reference_collections);
     }
 
     public function getNextRemoteEntityRequestInChain()
