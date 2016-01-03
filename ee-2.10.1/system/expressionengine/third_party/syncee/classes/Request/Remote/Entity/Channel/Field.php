@@ -22,6 +22,13 @@ class Syncee_Request_Remote_Entity_Channel_Field extends Syncee_Request_Remote_E
 {
     protected $_collection_class_name = 'Syncee_Entity_Channel_Field_Collection';
 
+    protected $_references = array(
+        'site_id'              => 'Syncee_Request_Remote_Entity_Site',
+        'group_id'             => 'Syncee_Request_Remote_Entity_Channel_Field_Group',
+        'field_pre_channel_id' => 'Syncee_Request_Remote_Entity_Channel',
+        'field_pre_field_id'   => 'Syncee_Request_Remote_Entity_Channel_Field',
+    );
+
     public function getName()
     {
         return 'channel field';
