@@ -181,11 +181,14 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
     }
 
     /**
-     * @param $primary_key_value
+     * @param mixed $primary_key_value
+     * @param bool $check_cache
      * @return Syncee_ActiveRecord_Abstract|static
      */
-    public static function findByPk($primary_key_value)
+    public static function findByPk($primary_key_value, $check_cache = false)
     {
+        static $cached_rows_by_pk;
+
         /**
          * @var $empty_row Syncee_ActiveRecord_Abstract
          */
@@ -195,8 +198,15 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
             return $empty_row;
         }
 
+        $empty_row->setPrimaryKeyValues($primary_key_value);
+
+        if ($check_cache && isset($cached_rows_by_pk[$empty_row->getUniqueIdentifier(true)])) {
+            return $cached_rows_by_pk[$empty_row->getUniqueIdentifier(true)];
+        }
+
         $primary_keys_on_row  = (array) $empty_row->getPrimaryKeyNames();
 
+        // TODO - need to possibly make method to generate custom select here, since request log payload is slowing down queries (presumably, for the moment)
         ee()->db->select('*')->from(static::TABLE_NAME);
 
         if (count($primary_keys_on_row) === 1) {
@@ -225,7 +235,9 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
         $row    = (array) ee()->db->get()->row();
         $is_new = empty($row);
 
-        return new static($row, $is_new);
+        $cached_rows_by_pk[$empty_row->getUniqueIdentifier(true)] = new static($row, $is_new);
+
+        return $cached_rows_by_pk[$empty_row->getUniqueIdentifier(true)];
     }
 
     public function __construct(array $row = array(), $is_new = true)
@@ -337,6 +349,20 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
             ? reset($primary_key_values)
             : $primary_key_values
         ;
+    }
+
+    public function setPrimaryKeyValues($primary_key_values)
+    {
+        $primary_key_values = (array) $primary_key_values;
+
+        foreach ($primary_key_values as $name => $val) {
+            $no_column_passed = is_numeric($name);
+
+            if ($no_column_passed) {
+                $name = $this->_primary_key_names[$name];
+                $this->$name = $val;
+            }
+        }
     }
 
     public function getPrimaryKeyNamesValuesMap()
@@ -516,15 +542,30 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
         return $row;
     }
 
-    public function getUniqueIdentifier()
+    /**
+     * Get unique identifier string based on primary key values of the row
+     * @param bool $increase_uniqueness
+     * @return string
+     */
+    public function getUniqueIdentifier($increase_uniqueness = false)
     {
         $identifiers = array();
 
         foreach ($this->_primary_key_names as $key) {
-            $identifiers[] = $this->$key;
+            $identifier  = '';
+
+            if ($increase_uniqueness) {
+                $identifier .= get_class($this) . '!' .  $key . '^';
+            }
+
+            $identifier .= $this->$key;
+
+            $identifiers[] = $identifier;
         }
 
-        return implode('|', $identifiers);
+        $unique_identifier = implode('|', $identifiers);
+
+        return $unique_identifier;
     }
 
     public function __set($property, $value)
