@@ -32,7 +32,7 @@ $php_version_major_and_minor_only         = preg_replace('#\.\d+$#', '', PHP_VER
 
 
 if (version_compare($php_version_major_and_minor_only, $minimum_php_version_major_and_minor_only) < 0) {
-    header('HTTP 1.1 500 Internal Server Error', true, 500);
+    header('HTTP/1.1 500 Internal Server Error', true, 500);
     die("PHP version must be at least $minimum_php_version_major_and_minor_only;  the version installed on the server is " . $php_version_major_and_minor_only . '.  Please upgrade in order to use this module.');
 }
 
@@ -45,17 +45,17 @@ $ee_will_eval_templates                            = !ini_get('short_open_tag') 
 $ee_will_literally_output_unparsed_short_open_tags = $php_unable_to_parse_short_open_tag && !config_item('rewrite_short_tags');
 
 if ($php_unable_to_parse_short_open_tag) {
-    header('HTTP 1.1 500 Internal Server Error', true, 500);
+    header('HTTP/1.1 500 Internal Server Error', true, 500);
     die('short_open_tag PHP setting must be turned on, or you must upgrade to PHP 5.4 or later.');
 }
 
 if ($ee_will_literally_output_unparsed_short_open_tags) {
-    header('HTTP 1.1 500 Internal Server Error', true, 500);
+    header('HTTP/1.1 500 Internal Server Error', true, 500);
     die('rewrite_short_tags EE config item must be turned on in order for this addon to work on your installation.');
 }
 
 if ($ee_will_eval_templates) {
-    header('HTTP 1.1 500 Internal Server Error', true, 500);
+    header('HTTP/1.1 500 Internal Server Error', true, 500);
     die('short_open_tag PHP setting must be turned on, or you must turn off the rewrite_short_tags EE config item.');
 }
 
