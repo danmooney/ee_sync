@@ -38,32 +38,40 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
 
     public function __construct(array $rows = array())
     {
-        foreach ($rows as $row) {
+        foreach ($rows as $key => $row) {
             if (is_bool($row)) {
                 $row = array();
             }
 
             if (is_array($row)) {
-                $this->appendToCollectionAsArray($row);
+                $this->appendToCollectionAsArray($row,  !is_numeric($key) ? $key : null);
             } else {
-                $this->appendToCollectionAsEntity($row);
+                $this->appendToCollectionAsEntity($row, !is_numeric($key) ? $key : null);
             }
         }
     }
 
-    public function appendToCollectionAsArray(array $row)
+    public function appendToCollectionAsArray(array $row, $key = null)
     {
-        $this->_rows[] = new $this->_row_model($row, false);
+        if (null === $key) {
+            $this->_rows[]     = new $this->_row_model($row, false);
+        } else {
+            $this->_rows[$key] = new $this->_row_model($row, false);
+        }
     }
 
-    public function appendToCollectionAsEntity(Syncee_Entity_Interface $row)
+    public function appendToCollectionAsEntity(Syncee_Entity_Interface $row, $key = null)
     {
         $row_model = $this->_row_model;
         if (!$row instanceof $row_model) {
             throw new Syncee_Exception('Row passed to ' . __METHOD__ . ' must be instance of ' . $this->_row_model . ', instance of ' . get_class($row) . ' passed');
         }
 
-        $this->_rows[] = $row;
+        if (null === $key) {
+            $this->_rows[]     = $row;
+        } else {
+            $this->_rows[$key] = $row;
+        }
     }
 
     public function getRowModel()
