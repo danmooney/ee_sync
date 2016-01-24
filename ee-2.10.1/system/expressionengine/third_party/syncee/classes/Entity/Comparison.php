@@ -295,6 +295,11 @@ class Syncee_Entity_Comparison extends Syncee_Entity_Generic implements Syncee_C
         );
     }
 
+    public function comparateColumnIsAReference()
+    {
+        return $this->_source->getRemoteRequestEntity()->isAReferenceColumn($this->getComparateColumnName());
+    }
+
     public function isMissingInTarget()
     {
         return in_array($this->getComparisonResult(), self::$_missing_in_target_comparison_results);
