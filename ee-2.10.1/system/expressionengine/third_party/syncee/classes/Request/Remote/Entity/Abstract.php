@@ -90,6 +90,11 @@ abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_R
         return new Syncee_Collection_Library_Generic($reference_collections);
     }
 
+    public function isAReferenceColumn($reference_column_name)
+    {
+        return isset($this->_references[$reference_column_name]);
+    }
+
     public function getNextRemoteEntityRequestInChain()
     {
         return false;
