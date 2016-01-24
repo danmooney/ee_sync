@@ -191,6 +191,27 @@ class Syncee_Response
         return new $collection_class_name((array) $this->getResponseDataDecoded());
     }
 
+    public function getReferenceDataDecoded()
+    {
+        if (!is_array($this->_response_decoded) || !isset($this->_response_decoded['references'])) {
+            return false;
+        }
+
+        if (!is_array($this->_response_decoded['references'])) {
+            $this->_response_decoded['references'] = json_decode($this->_response_decoded['references'], true);
+        }
+
+        return $this->_response_decoded['references'];
+    }
+
+    /**
+     * @return Syncee_Entity_Reference_Collection
+     */
+    public function getReferenceDataDecodedAsCollection()
+    {
+        return new Syncee_Entity_Reference_Collection((array) $this->getReferenceDataDecoded());
+    }
+
     public function setEntity(Syncee_Request_Remote_Entity_Interface $entity)
     {
         $this->_entity = $entity;
