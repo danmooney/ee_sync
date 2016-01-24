@@ -20,6 +20,11 @@ if (!defined('SYNCEE_PATH')) {
 
 abstract class Syncee_Entity_Comparate_Abstract extends Syncee_Entity_Generic implements Syncee_Entity_Comparate_Ignore_Interface
 {
+    /**
+     * @var Syncee_Request_Remote_Entity_Abstract
+     */
+    protected $_remote_request_entity;
+
     protected $_active_record_class_name;
 
     protected $_hidden_columns_in_comparison  = array();
@@ -55,5 +60,16 @@ abstract class Syncee_Entity_Comparate_Abstract extends Syncee_Entity_Generic im
     public function getActiveRecordClassName()
     {
         return $this->_active_record_class_name;
+    }
+
+    public function getRemoteRequestEntity()
+    {
+        if (!isset($this->_remote_request_entity)) {
+            $this_class_name                  = get_class($this);
+            $remote_request_entity_class_name = str_replace('Entity', 'Request_Remote_Entity', $this_class_name);
+            $this->_remote_request_entity     = new $remote_request_entity_class_name();
+        }
+
+        return $this->_remote_request_entity;
     }
 }
