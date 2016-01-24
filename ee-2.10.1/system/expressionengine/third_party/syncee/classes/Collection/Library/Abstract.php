@@ -46,7 +46,9 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
     {
         $collection_model = $this->_collection_model;
         if (!$collection instanceof $collection_model) {
-            throw new Syncee_Exception('Collection passed to ' . __METHOD__ . ' must be instance of ' . $this->_collection_model . ', instance of ' . get_class($collection) . ' passed');
+            throw new Syncee_Exception(
+                'Collection passed to ' . __METHOD__ . ' must be instance of ' . $this->_collection_model . ', instance of ' . get_class($collection) . ' passed'
+            );
         }
 
         $this->_collections[] = $collection;
