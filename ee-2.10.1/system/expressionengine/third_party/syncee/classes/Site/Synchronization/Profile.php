@@ -42,6 +42,11 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
     private $_comparison_collection_library;
 
     /**
+     * @var Syncee_Entity_Reference_Collection_Library
+     */
+    private $_reference_collection_library;
+
+    /**
      * @var string
      */
     protected $_entity_name;
@@ -155,7 +160,7 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
             $site_ids_involved_in_synchronization_profile[] = $request_log->site_id;
         }
 
-        $site_ids_involved_in_synchronization_profile = array_unique($site_ids_involved_in_synchronization_profile);
+        $site_ids_involved_in_synchronization_profile   = array_unique($site_ids_involved_in_synchronization_profile);
 
         $site_ids_involved_in_synchronization_profile[] = $this->local_site_id;
 
@@ -193,7 +198,6 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
     public function getComparisonCollectionLibrary()
     {
         if (!isset($this->_comparison_collection_library)) {
-
             $request_log_collection          = $this->getRequestLogCollection();
             $site_container                  = $this->getSiteContainer();
             $entity                          = $this->getEntity();
@@ -231,8 +235,8 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
 
                 $collection  = $response->getResponseDataDecodedAsCollection();
 
-                $comparator_collection_library->appendToLibraryAsCollection($collection);
                 $collection->setSite($local_site);
+                $comparator_collection_library->appendToLibraryAsCollection($collection);
             }
 
             $this->_comparison_collection_library = $comparator_collection_library->compareCollections();
@@ -241,10 +245,60 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
         return $this->_comparison_collection_library;
     }
 
-    public function setComparisonCollectionLibrary(Syncee_Entity_Comparison_Collection_Library $comparison_collection_Library)
+    public function setComparisonCollectionLibrary(Syncee_Entity_Comparison_Collection_Library $comparison_collection_library)
     {
-        $this->_comparison_collection_library = $comparison_collection_Library;
+        $this->_comparison_collection_library = $comparison_collection_library;
         return $this;
+    }
+
+    public function getReferenceCollectionLibrary()
+    {
+        if (!isset($this->_reference_collection_library)) {
+            $request_log_collection        = $this->getRequestLogCollection();
+            $site_container                = $this->getSiteContainer();
+            $entity                        = $this->getEntity();
+            $reference_collection_library  = new Syncee_Entity_Reference_Collection_Library();
+
+            $local_site_is_in_request_log_collection = false;
+
+            /**
+             * @var $site Syncee_Site
+             * @var $local_site Syncee_Site
+             * @var $collection Syncee_Entity_Comparate_Collection_Abstract
+             */
+            foreach ($request_log_collection as $request_log) {
+                $site = $site_container->filterByCondition(array(
+                    'site_id' => $request_log->site_id
+                ), true);
+
+                if ($site->isLocal()) {
+                    $local_site_is_in_request_log_collection = true;
+                }
+
+                $response   = new Syncee_Response($request_log, $site);
+                $collection = $response->getReferenceDataDecodedAsCollection();
+
+                $collection->setSite($site);
+
+                $reference_collection_library->appendToLibraryAsCollection($collection);
+            }
+
+            // get local site data
+            if (!$local_site_is_in_request_log_collection) {
+                $local_site  = $site_container->filterByCondition(array('is_local' => true), true);
+                $request     = new Syncee_Request();
+                $response    = $request->makeEntityCallToSite($local_site, $entity);
+
+                $collection  = $response->getReferenceDataDecodedAsCollection();
+
+                $collection->setSite($local_site);
+                $reference_collection_library->appendToLibraryAsCollection($collection);
+            }
+
+            $this->_reference_collection_library = $reference_collection_library;
+        }
+
+        return $this->_reference_collection_library;
     }
 
     public function determineAndSetEntityNameOnInstance()
