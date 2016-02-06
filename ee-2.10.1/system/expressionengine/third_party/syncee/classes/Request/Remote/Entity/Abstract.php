@@ -77,8 +77,8 @@ abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_R
                 continue;
             }
 
-            $remote_entity                                    = new $remote_entity_class_name();
-            $reference_collection                             = $remote_entity->queryDatabaseAndGenerateCollection();
+            $remote_entity                   = new $remote_entity_class_name();
+            $reference_collection            = $remote_entity->queryDatabaseAndGenerateCollection();
 
             // set row model $remote_entity on $reference_collection so we can fetch the entity's name when the request gets grouped with the other references
             $reference_collection->setRowModel($remote_entity);
