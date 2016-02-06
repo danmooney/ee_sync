@@ -265,6 +265,7 @@ class Syncee_Site_Synchronization_Profile extends Syncee_ActiveRecord_Abstract
              * @var $site Syncee_Site
              * @var $local_site Syncee_Site
              * @var $collection Syncee_Entity_Comparate_Collection_Abstract
+             * @var $request_log Syncee_Site_Request_Log
              */
             foreach ($request_log_collection as $request_log) {
                 $site = $site_container->filterByCondition(array(
