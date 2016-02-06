@@ -212,8 +212,8 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
         /**
          * @var $row Syncee_Entity_Abstract
          */
-        foreach ($this->_rows as $row) {
-            $rows[] = $row->toArray($table_data_only);
+        foreach ($this->_rows as $key => $row) {
+            $rows[$key] = $row->toArray($table_data_only);
         }
 
         return $rows;

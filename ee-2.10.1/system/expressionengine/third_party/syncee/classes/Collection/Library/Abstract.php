@@ -37,12 +37,16 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
         }
     }
 
-    public function appendToLibraryAsArray(array $collection)
+    public function appendToLibraryAsArray(array $collection, $key = null)
     {
-        $this->_collections[] = new $this->_collection_model($collection, false);
+        if (null === $key) {
+            $this->_collections[]     = new $this->_collection_model($collection, false);
+        } else {
+            $this->_collections[$key] = new $this->_collection_model($collection, false);
+        }
     }
 
-    public function appendToLibraryAsCollection(Syncee_Collection_Abstract $collection)
+    public function appendToLibraryAsCollection(Syncee_Collection_Abstract $collection, $key = null)
     {
         $collection_model = $this->_collection_model;
         if (!$collection instanceof $collection_model) {
@@ -51,7 +55,11 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
             );
         }
 
-        $this->_collections[] = $collection;
+        if (null === $key) {
+            $this->_collections[]     = $collection;
+        } else {
+            $this->_collections[$key] = $collection;
+        }
     }
 
     public function collectionAlreadyExistsInLibrary(Syncee_Collection_Abstract $collection)
@@ -111,6 +119,20 @@ abstract class Syncee_Collection_Library_Abstract implements Syncee_Collection_L
         $unique_identifier_values = array_unique($unique_identifier_values);
 
         return $unique_identifier_values;
+    }
+
+    public function toArray($table_data_only = true)
+    {
+        $collections = array();
+
+        /**
+         * @var $collection Syncee_Collection_Abstract
+         */
+        foreach ($this->_collections as $key => $collection) {
+            $collections[$key] = $collection->toArray($table_data_only);
+        }
+
+        return $collections;
     }
 
     public function count()
