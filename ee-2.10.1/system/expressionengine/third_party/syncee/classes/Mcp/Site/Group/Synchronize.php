@@ -84,7 +84,7 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
         $site_collection    = $synchronization_profile->getSiteContainer();
 
         $comparison_library = $synchronization_profile->getComparisonCollectionLibrary();
-        $references         = $synchronization_profile->getReferenceCollectionLibrary();
+        $reference_library  = $synchronization_profile->getReferenceCollectionLibrary();
 
         // sort collections by source site primary key.
         // this is to have a known and predictable way to iterate over collections and get everything in the right order.
@@ -114,7 +114,7 @@ class Syncee_Mcp_Site_Group_Synchronize extends Syncee_Mcp_Site_Group
             'site_collection'            => $site_collection,
             'entity_comparison_library'  => $comparison_library,
             'remote_entity_name'         => $remote_entity_name,
-            'references'                 => $references
+            'reference_library'          => $reference_library
         ), $this);
     }
 
