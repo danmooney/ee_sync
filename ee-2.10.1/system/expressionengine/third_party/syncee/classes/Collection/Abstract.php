@@ -26,6 +26,8 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
 
     protected $_rows = array();
 
+    protected $_use_strict_row_model_enforcement_when_appending = true;
+
     /**
      * @var string|Syncee_Entity_Abstract
      */
@@ -63,7 +65,7 @@ abstract class Syncee_Collection_Abstract implements Syncee_Collection_Interface
     public function appendToCollectionAsEntity(Syncee_Entity_Interface $row, $key = null)
     {
         $row_model = $this->_row_model;
-        if (!$row instanceof $row_model) {
+        if (!($row instanceof $row_model) && $this->_use_strict_row_model_enforcement_when_appending) {
             throw new Syncee_Exception('Row passed to ' . __METHOD__ . ' must be instance of ' . $this->_row_model . ', instance of ' . get_class($row) . ' passed');
         }
 
