@@ -18,10 +18,16 @@ if (!defined('SYNCEE_PATH')) {
     require_once $ancestor_realpath;
 }
 
+
 class Syncee_Upd_Setting extends Syncee_Upd_Abstract
 {
-
-
+    /**
+     * TODO - some desired settings to employ:
+     * - store data from requests (still keep synchronization log, only for the purpose of determining the site ids involved in case user changes site group config in the future)
+     * -
+     *
+     * @var array
+     */
     protected $_fields = array(
         'setting_key' => array(
             'type'           => 'VARCHAR',
