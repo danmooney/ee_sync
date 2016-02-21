@@ -21,6 +21,16 @@ if (!defined('SYNCEE_PATH')) {
 abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_Remote_Entity_Chain_Interface
 {
     /**
+     * @var array
+     */
+    protected static $_remote_entity_class_names;
+
+    /**
+     * @var array
+     */
+    protected static $_remote_entity_class_objects;
+
+    /**
      * @var string
      */
     protected $_requested_ee_site_id;
@@ -31,6 +41,54 @@ abstract class Syncee_Request_Remote_Entity_Abstract implements Syncee_Request_R
     protected $_collection_class_name;
 
     protected $_references = array();
+
+    public static function getAllRemoteEntityClassNames()
+    {
+        if (!isset(static::$_remote_entity_class_names)) {
+            $remote_entity_class_names = array();
+
+            $dir_iterator = new RecursiveDirectoryIterator(dirname(__FILE__), RecursiveDirectoryIterator::SKIP_DOTS);
+
+            /**
+             * @var $file  SplFileInfo
+             */
+            foreach (new RecursiveIteratorIterator($dir_iterator) as $file) {
+                $file_pathnames[] = $file->getPathname();
+                if (!$file->isFile() || !$file->isReadable() || preg_match('#Abstract|Interface#i', $file->getFilename())) {
+                    continue;
+                }
+
+                $class_name = Syncee_Helper::getClassNameFromPathname($file->getPathname());
+
+                if (!$class_name) {
+                    continue;
+                }
+
+                $remote_entity_class_names[] = $class_name;
+            }
+
+            static::$_remote_entity_class_names = $remote_entity_class_names;
+        }
+
+        return static::$_remote_entity_class_names;
+    }
+
+    public static function getAllRemoteEntityClassObjects()
+    {
+        if (!isset(static::$_remote_entity_class_objects)) {
+            $remote_entity_class_names = static::getAllRemoteEntityClassNames();
+
+            $remote_entity_class_objects = array();
+
+            foreach ($remote_entity_class_names as $remote_entity_class_name) {
+                $remote_entity_class_objects[] = new $remote_entity_class_name();
+            }
+
+            static::$_remote_entity_class_objects = $remote_entity_class_objects;
+        }
+
+        return static::$_remote_entity_class_objects;
+    }
 
     public function getName()
     {
