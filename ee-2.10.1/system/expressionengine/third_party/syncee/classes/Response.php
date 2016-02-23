@@ -140,7 +140,7 @@ class Syncee_Response
 
     public function getErrors()
     {
-        return $this->_errors;
+        return array_unique($this->_errors);
     }
 
     public function getMessage()
