@@ -653,4 +653,9 @@ abstract class Syncee_ActiveRecord_Abstract implements Syncee_Entity_Interface, 
             }
         }
     }
+
+    public function getActiveRecord()
+    {
+        return $this;
+    }
 }
