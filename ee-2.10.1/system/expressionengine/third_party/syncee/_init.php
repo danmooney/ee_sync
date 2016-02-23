@@ -148,7 +148,7 @@ restore_error_handler();
 
 set_error_handler(function ($severity, $message) {
     // if decryption error occurs, prevent showing EE-related error handling since nicer errors will appear after propagation
-    if ($message === 'Decryption Error' && !SYNCEE_UNIT_TEST_MODE) {
+    if (strtolower($message) === 'decryption error' && !SYNCEE_UNIT_TEST_MODE) {
         return;
     }
 
