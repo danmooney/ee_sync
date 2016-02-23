@@ -133,7 +133,11 @@ abstract class Syncee_Form_Abstract implements Syncee_Form_Interface
             $values[$field->getName()] = $field->getValue();
         }
 
-        foreach ($this->_meta_values as $meta_key => $meta_value) {
+        $meta_values = array_filter($this->_meta_values, function ($meta_value) {
+            return $meta_value !== null;
+        });
+
+        foreach ($meta_values as $meta_key => $meta_value) {
             $values[$meta_key] = $meta_value;
         }
 
